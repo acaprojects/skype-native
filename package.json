@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Node bindings for the native Skype for Business SDK",
   "repository": "aca-labs/skype-native",
-  "main": "dist/skype.js",
+  "main": "dist/index.js",
   "keywords": [
     "skype",
     "lync",

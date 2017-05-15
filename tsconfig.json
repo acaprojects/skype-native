@@ -1,6 +1,6 @@
 {
   "files": [
-    "src/skype.ts"
+    "src/index.ts"
   ],
   "compilerOptions": {
     "outDir": "dist",
