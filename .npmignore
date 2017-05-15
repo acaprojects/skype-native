@@ -1,1 +1,9 @@
 src
+.babelrc
+.gitattributes
+.travis.yml
+.vs
+gulpfile.babel.js
+skype-native.sln
+tsconfig.json
+tslint.json
