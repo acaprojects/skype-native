@@ -1,4 +1,4 @@
-import * as edge from 'edge';
+import * as edge from 'electron-edge';
 import * as path from 'path';
 
 const lyncSDK = path.join(__dirname, '../lib/native/win32', 'Microsoft.Lync.Model.dll');
