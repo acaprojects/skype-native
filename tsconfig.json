@@ -5,6 +5,7 @@
   "compilerOptions": {
     "outDir": "dist",
     "baseUrl": "src",
+    "typeRoots": ["node_modules/@types"],
     "target": "es5",
     "module": "commonjs",
     "declaration": true,

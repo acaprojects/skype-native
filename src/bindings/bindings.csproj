@@ -45,5 +45,8 @@
       <HintPath>..\..\lib\native\win32\Microsoft.Office.Uc.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Call.cs" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
