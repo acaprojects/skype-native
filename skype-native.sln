@@ -6,10 +6,18 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A48FB95D-821B-4C14-A7DD-D91A75B86ED6}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		gulpfile.babel.js = gulpfile.babel.js
 		package.json = package.json
+		tsconfig.json = tsconfig.json
+		tslint.json = tslint.json
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bindings", "src\bindings\bindings.csproj", "{88A2EF84-E167-4240-8AE1-B895E8CC5CC3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{04CE1800-3484-44A4-9691-6AD595F3FEF3}"
+	ProjectSection(SolutionItems) = preProject
+		src\skype.ts = src\skype.ts
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,5 +35,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{88A2EF84-E167-4240-8AE1-B895E8CC5CC3} = {A48FB95D-821B-4C14-A7DD-D91A75B86ED6}
+		{04CE1800-3484-44A4-9691-6AD595F3FEF3} = {A48FB95D-821B-4C14-A7DD-D91A75B86ED6}
 	EndGlobalSection
 EndGlobal
