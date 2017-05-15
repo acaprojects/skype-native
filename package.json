@@ -13,7 +13,6 @@
   ],
   "author": "Kim Burgess <kim@acaprojects.com>",
   "license": "MIT",
-  "os": [ "win32" ],
   "scripts": {
     "prepublish": "gulp build",
     "test": "echo \"Error: no test specified\" && exit 1"
