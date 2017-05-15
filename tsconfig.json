@@ -1,0 +1,14 @@
+{
+  "files": [
+    "src/skype.ts"
+  ],
+  "compilerOptions": {
+    "outDir": "dist",
+    "baseUrl": "src",
+    "target": "es5",
+    "module": "commonjs",
+    "declaration": true,
+    "moduleResolution": "node",
+    "noImplicitAny": false
+  }
+}

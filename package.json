@@ -4,6 +4,7 @@
   "description": "Node bindings for the native Skype for Business SDK",
   "main": "dist/skype.js",
   "scripts": {
+    "start": "gulp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -13,5 +14,11 @@
     "native"
   ],
   "author": "Kim Burgess <kim@acaprojects.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.1.6",
+    "merge2": "^1.0.3",
+    "typescript": "^2.3.2"
+  }
 }
