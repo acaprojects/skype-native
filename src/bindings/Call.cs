@@ -18,35 +18,30 @@ public class Startup
         {
             uri
         };
-
+  
         try
         {
-            LyncClient.GetAutomation().BeginStartConversation(
-                AutomationModalities.Video,
-                participants,
-                null,
-                (ar) =>
-                {
-                    ConversationWindow win = LyncClient.GetAutomation().EndStartConversation(ar);
-                    if (fullscreen)
-                    {
-                        win.ShowFullScreen(display);
-                    }
+            // TODO: switch this back to async
+            ConversationWindow win = LyncClient.GetAutomation().EndStartConversation(
+                LyncClient.GetAutomation().BeginStartConversation(
+                    AutomationModalities.Video,
+                    participants,
+                    null,
+                    null,
+                    null
+                )
+            );
 
-                    // TODO: close window on call hangup
-                    //win.Conversation.StateChanged += Conversation_StateChanged;
-                },
-                null);
+            if (fullscreen)
+            {
+                win.ShowFullScreen(display);
+            }
+
             return true;
         }
         catch (ClientNotFoundException)
         {
             return false;
         }
-    }
-
-    private static void Conversation_StateChanged(object sender, ConversationStateChangedEventArgs e)
-    {
-        //throw new System.NotImplementedException();
     }
 }
