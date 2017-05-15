@@ -1,0 +1,17 @@
+{
+  "name": "skype-native",
+  "version": "0.1.0",
+  "description": "Node bindings for the native Skype for Business SDK",
+  "main": "dist/skype.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "skype",
+    "lync",
+    "windows",
+    "native"
+  ],
+  "author": "Kim Burgess <kim@acaprojects.com>",
+  "license": "MIT"
+}
