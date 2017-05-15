@@ -1,4 +1,5 @@
-src/*.ts
+src
+!src/bindings/*.cs
 .babelrc
 .gitattributes
 .travis.yml
