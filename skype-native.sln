@@ -5,6 +5,7 @@ VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A48FB95D-821B-4C14-A7DD-D91A75B86ED6}"
 	ProjectSection(SolutionItems) = preProject
+		.babelrc = .babelrc
 		.gitignore = .gitignore
 		.travis.yml = .travis.yml
 		gulpfile.babel.js = gulpfile.babel.js
