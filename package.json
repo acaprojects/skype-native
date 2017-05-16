@@ -31,7 +31,6 @@
     "typescript": "^2.3.2"
   },
   "dependencies": {
-    "edge": "^7.10.0",
-    "electron-edge": "^6.5.5"
+    "edge": "^7.10.0"
   }
 }
