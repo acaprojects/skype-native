@@ -1,23 +1,23 @@
 import { join } from 'path';
-import { bindToCLR } from './util/binder';
+import binder from './util/binder';
 
-const relative = (...paths: string[]) => join(__dirname, ...paths);
+/**
+ * Resolves a set of paths relative to the curent directory.
+ */
+const relative = (...path: string[]) => join(__dirname, ...path);
 
-// Lync SDK redist assembly
+/**
+ * Lync SDK redist assembly.
+ */
 const lyncSDK = relative('../lib/native/win32', 'Microsoft.Lync.Model.dll');
 
 /**
- * Resolve the path to the .NET source for an action.
+ * Creates binding to our Skype CLR actions for use in Node.
  */
-const sourcePath = (action: string) => relative('../src/bindings', `${action}.cs`);
-
-/**
- * Creates a CLR binding for use in Node.
- */
-const bind = (action: string) => bindToCLR(sourcePath(action), [lyncSDK]);
+const bind = binder(relative('../src/bindings'), [lyncSDK]);
 
 export function call(uri: string, fullscreen = true, display = 0) {
-    bind('Call')({
+    bind('Call.cs')({
         uri,
         fullscreen,
         display
