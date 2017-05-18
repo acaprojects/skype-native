@@ -19,3 +19,10 @@ export function isElectron() {
 export function isSupportedPlatform() {
     return process.platform === 'win32';
 }
+
+/**
+ * Check if the mock client should be used in place of the live bindings.
+ */
+export function useMock() {
+    return !!process.env.MOCK;
+}

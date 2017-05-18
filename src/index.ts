@@ -1,8 +1,6 @@
+import { bindings as mock } from './mock-bindings';
+import { bindings as live } from './sdk-bindings';
 import { SkypeClient } from './skype-client';
-import { isSupportedPlatform } from './util/runtime-env';
+import { isSupportedPlatform, useMock } from './util/runtime-env';
 
-const provider: {bindings: SkypeClient} = isSupportedPlatform() ?
-    require('./sdk-bindings') :
-    require('./mock-bindings');
-
-export const client = provider.bindings;
+export const client = useMock() || !isSupportedPlatform() ? mock : live;
