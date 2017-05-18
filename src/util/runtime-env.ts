@@ -12,3 +12,10 @@ export function isElectron() {
 
     return inRenderer(window) || inBackground(process);
 }
+
+/**
+ * Checks if we're running on a supported platform for the SDK interop.
+ */
+export function isSupportedPlatform() {
+    return process.platform === 'win32';
+}

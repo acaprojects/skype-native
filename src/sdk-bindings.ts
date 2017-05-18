@@ -1,4 +1,5 @@
 import { join } from 'path';
+import { SkypeClient } from './skype-client';
 import binder from './util/binder';
 
 /**
@@ -16,30 +17,16 @@ const lyncSDK = relative('../lib/native/win32', 'Microsoft.Lync.Model.dll');
  */
 const bind = binder(relative('../src/bindings'), [lyncSDK]);
 
-export function call(uri: string, fullscreen = true, display = 0) {
-    bind('Call.cs')({
-        uri,
-        fullscreen,
-        display
-    }, true);
-}
+/**
+ * Live bindings into the native Skype SDK.
+ * @type {SkypeClient}
+ */
+const bindings: SkypeClient = {
 
-/*
-call
-endCall
+    call(uri: string, fullscreen = true, display = 0): boolean {
+        return bind('Call.cs')({uri, fullscreen, display}, true);
+    }
 
-accept
-reject
+};
 
-mute
-
-selfView
-
-callInfo
-
-addParticipant
-removeParticipant
-
-addIncomingCallListener
-
-*/
+module.exports = bindings;
