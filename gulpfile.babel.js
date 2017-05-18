@@ -1,25 +1,35 @@
 import gulp from 'gulp';
 import ts from 'gulp-typescript';
 import tslint from "gulp-tslint";
+import del from 'del';
 import merge from 'merge2';
 
 const tsProject = ts.createProject('tsconfig.json');
 
+const paths = {
+    allSrcTs: 'src/**/*.ts',
+    distDir: 'dist/'
+}
+
 gulp.task('lint', () =>
-    gulp.src('src/**/*.ts')
+    gulp.src(paths.allSrcTs)
         .pipe(tslint({
             formatter: 'verbose'
         }))
         .pipe(tslint.report())
 );
 
-gulp.task("build", () => {
+gulp.task('clean', () =>
+  del(paths.distDir)
+);
+
+gulp.task('build', ['clean'], () => {
     const tsResult = tsProject.src()
         .pipe(tsProject());
 
     return merge([
-        tsResult.dts.pipe(gulp.dest("dist")),
-        tsResult.js.pipe(gulp.dest("dist"))
+        tsResult.dts.pipe(gulp.dest(paths.distDir)),
+        tsResult.js.pipe(gulp.dest(paths.distDir))
     ]);
 });
 

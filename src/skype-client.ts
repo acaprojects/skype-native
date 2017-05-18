@@ -26,7 +26,6 @@ export interface SkypeClient {
 }
 
 /*
-call
 endCall
 
 accept
@@ -45,7 +44,5 @@ addIncomingCallListener
 
 isSignedIn
 ? event listener for auth ?
-
-
 
 */
