@@ -43,4 +43,9 @@ removeParticipant
 
 addIncomingCallListener
 
+isSignedIn
+? event listener for auth ?
+
+
+
 */

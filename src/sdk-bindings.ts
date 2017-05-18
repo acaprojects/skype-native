@@ -21,12 +21,10 @@ const bind = binder(relative('../src/bindings'), [lyncSDK]);
  * Live bindings into the native Skype SDK.
  * @type {SkypeClient}
  */
-const bindings: SkypeClient = {
+export const bindings: SkypeClient = {
 
     call(uri: string, fullscreen = true, display = 0): boolean {
         return bind('Call.cs')({uri, fullscreen, display}, true);
     }
 
 };
-
-module.exports = bindings;
