@@ -17,6 +17,6 @@ export function bindToCLR(source: string, references: string[] = []) {
  * Create a binder function for a given basepath and set of references that may
  * then be used to build CLR bound methods.
  */
-export default function binder(basePath = '', references: string[] = []) {
+export function binder(basePath = '', references: string[] = []) {
     return (source: string) => bindToCLR(join(basePath, source), references);
 }

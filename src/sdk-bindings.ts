@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { SkypeClient } from './skype-client';
-import binder from './util/binder';
+import { binder } from './util/binder';
 
 /**
  * Resolves a set of paths relative to the curent directory.
