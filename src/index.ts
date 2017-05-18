@@ -3,4 +3,4 @@ import { bindings as live } from './sdk-bindings';
 import { SkypeClient } from './skype-client';
 import { isSupportedPlatform, useMock } from './util/runtime-env';
 
-export const client = useMock() || !isSupportedPlatform() ? mock : live;
+export const skype = useMock() || !isSupportedPlatform() ? mock : live;
