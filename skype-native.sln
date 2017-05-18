@@ -20,6 +20,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{04CE1800-3484-44A4-9691-6AD595F3FEF3}"
 	ProjectSection(SolutionItems) = preProject
 		src\index.ts = src\index.ts
+		src\skype.ts = src\skype.ts
 	EndProjectSection
 EndProject
 Global

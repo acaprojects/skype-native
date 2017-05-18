@@ -1,7 +1,4 @@
 {
-  "files": [
-    "src/index.ts"
-  ],
   "compilerOptions": {
     "outDir": "dist",
     "baseUrl": "src",
@@ -11,5 +8,12 @@
     "declaration": true,
     "moduleResolution": "node",
     "noImplicitAny": false
-  }
+  },
+  "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+    ]
 }
