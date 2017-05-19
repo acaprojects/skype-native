@@ -14,7 +14,7 @@ export type BindingCallback = (error: any | null, result: any | null) => void;
 /**
  * Binding to an asynchronous native action.
  */
-export type AsyncBinding = (input: any | null, callback?: BindingCallback) => void;
+export type AsyncBinding = (input?: any | null, callback?: BindingCallback) => void;
 
 /**
  * Binding to a synchronous native action.
@@ -48,6 +48,6 @@ export function binder(basePath = '', references: string[] = []) {
          * Create a binding to a synchronous native action.
          */
         sync: (source: string) =>
-            (input: any | null) => bindToCLR<SyncBinding>(join(basePath, source), references)(input, true)
+            (input?: any) => bindToCLR<SyncBinding>(join(basePath, source), references)(input, true)
     };
 }
