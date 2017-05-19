@@ -18,13 +18,20 @@ const lyncSDK = relative('../lib/native/win32', 'Microsoft.Lync.Model.dll');
 const bind = binder(relative('../src/bindings'), [lyncSDK]);
 
 /**
+ * Mappings to .NET source for the native client bindings.
+ */
+const bindings = {
+    call: bind.sync('Call.cs')
+};
+
+/**
  * Live bindings into the native Skype SDK.
  * @type {SkypeClient}
  */
-export const bindings: SkypeClient = {
+export const client: SkypeClient = {
 
     call(uri: string, fullscreen = true, display = 0): boolean {
-        return bind('Call.cs')({uri, fullscreen, display}, true);
+        return bindings.call({uri, fullscreen, display});
     }
 
 };

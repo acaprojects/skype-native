@@ -3,7 +3,7 @@ export interface SkypeClient {
     /**
      * Start a fullscreen, outbound call on the primary diplay.
      * @param  {string}  uri        the uri to dial
-     * @return {boolean}            [description]
+     * @return {boolean}            true if the call was started
      */
     call(uri: string): boolean;
 
@@ -11,7 +11,7 @@ export interface SkypeClient {
      * Start an outbound call on the primary display.
      * @param  {string}  uri        the uri to dial
      * @param  {boolean} fullscreen true if the UI should be shown full screen
-     * @return {boolean}            [description]
+     * @return {boolean}            true if the call was started
      */
     call(uri: string, fullscreen: boolean): boolean;
 
@@ -20,7 +20,7 @@ export interface SkypeClient {
      * @param  {string}  uri        the uri to dial
      * @param  {boolean} fullscreen true if the UI should be shown full screen
      * @param  {number}  display    the monitor to show the call UI on
-     * @return {boolean}            [description]
+     * @return {boolean}            true if the call was started
      */
     call(uri: string, fullscreen: boolean, display: number): boolean;
 }
