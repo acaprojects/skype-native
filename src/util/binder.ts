@@ -29,25 +29,31 @@ export type Binding = AsyncBinding | SyncBinding;
 /**
  * Creates a CLR binding for use in Node.
  */
-export function bindToCLR<T extends Binding>(source: string, references: string[] = []) {
-    return edge.func({source, references}) as T;
+export function bindToCLR<T extends Binding>(source: string,
+                                             references: string[] = [],
+                                             typeName = 'StartUp',
+                                             methodName = 'Invoke') {
+    return edge.func({source, references, typeName, methodName}) as T;
 }
 
 /**
  * Curried methods for creating bindings to a predefined CLR environment.
  */
 export function binder(basePath = '', references: string[] = []) {
+    // Resolve the path to the relevent C# source
+    const sourcePath = (name: string) => join(basePath, `${name}.cs`);
+
     return {
         /**
          * Create a binding to an asynchronous native action.
          */
-        async: (source: string) =>
-            bindToCLR<AsyncBinding>(join(basePath, source), references),
+        async: (action: string) =>
+            bindToCLR<AsyncBinding>(sourcePath(action), references, action),
 
         /**
          * Create a binding to a synchronous native action.
          */
-        sync: (source: string) =>
-            (input?: any) => bindToCLR<SyncBinding>(join(basePath, source), references)(input, true)
+        sync: (action: string) =>
+            (input?: any) => bindToCLR<SyncBinding>(sourcePath(action), references, action)(input, true)
     };
 }

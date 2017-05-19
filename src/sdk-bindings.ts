@@ -21,7 +21,8 @@ const bind = binder(relative('../src/bindings'), [lyncSDK]);
  * Mappings to .NET source for the native client bindings.
  */
 const bindings = {
-    call: bind.sync('Call.cs')
+    startCall: bind.sync('StartCall'),
+    endCall: bind.sync('EndCall')
 };
 
 /**
@@ -31,7 +32,11 @@ const bindings = {
 export const client: SkypeClient = {
 
     call(uri: string, fullscreen = true, display = 0): boolean {
-        return bindings.call({uri, fullscreen, display});
+        return bindings.startCall({uri, fullscreen, display});
+    },
+
+    endCall(): boolean {
+        return bindings.endCall();
     }
 
 };

@@ -5,7 +5,7 @@ using Microsoft.Lync.Model;
 using Microsoft.Lync.Model.Extensibility;
 using Microsoft.Lync.Model.Conversation;
 
-public class Startup
+public class StartCall
 {
     public async Task<object> Invoke(dynamic options)
     {

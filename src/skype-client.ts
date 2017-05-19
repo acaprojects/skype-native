@@ -23,6 +23,12 @@ export interface SkypeClient {
      * @return {boolean}            true if the call was started
      */
     call(uri: string, fullscreen: boolean, display: number): boolean;
+
+    /**
+     * End all currently active calls
+     * @return {boolean} true if successfull
+     */
+    endCall(): boolean;
 }
 
 /*
