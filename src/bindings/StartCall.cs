@@ -18,7 +18,7 @@ public class Startup
         {
             uri
         };
-  
+
         try
         {
             // TODO: switch this back to async
@@ -36,6 +36,15 @@ public class Startup
             {
                 win.ShowFullScreen(display);
             }
+                
+            // Close the converation window on AudioVideo disconnect.
+            win.Conversation.Modalities[ModalityTypes.AudioVideo].ModalityStateChanged += (object o, ModalityStateChangedEventArgs e) =>
+            {
+                if (e.NewState == ModalityState.Disconnected)
+                {
+                    win.Close();
+                }
+            };
 
             return true;
         }
