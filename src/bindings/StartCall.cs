@@ -36,7 +36,7 @@ public class StartCall
             {
                 win.ShowFullScreen(display);
             }
-                
+
             // Close the converation window on AudioVideo disconnect.
             win.Conversation.Modalities[ModalityTypes.AudioVideo].ModalityStateChanged += (object o, ModalityStateChangedEventArgs e) =>
             {

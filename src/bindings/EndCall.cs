@@ -1,10 +1,7 @@
 ﻿using System.Threading.Tasks;
-using System.Collections.Generic;
 
 using Microsoft.Lync.Model;
-using Microsoft.Lync.Model.Extensibility;
 using Microsoft.Lync.Model.Conversation;
-
 
 public class EndCall
 {
@@ -16,6 +13,11 @@ public class EndCall
     private static bool HangupAll()
     {
         try {
+            foreach(Conversation conversation in LyncClient.GetClient().ConversationManager.Conversations)
+            {
+                conversation.End();
+            }
+
             return true;
         }
         catch (ClientNotFoundException)
