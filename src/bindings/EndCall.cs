@@ -25,9 +25,4 @@ public class EndCall
             return false;
         }
     }
-
-    private static void EndConversation(Conversation conversation)
-    {
-        //conversation.
-    }
 }
