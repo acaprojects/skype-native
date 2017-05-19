@@ -42,7 +42,7 @@ public class StartCall
             {
                 if (e.NewState == ModalityState.Disconnected)
                 {
-                    win.Close();
+                    win.Conversation.End();
                 }
             };
 
