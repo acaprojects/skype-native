@@ -13,7 +13,7 @@ ratings:
   paths:
   - "**.ts"
   - "**.js"
-  - src/**
+  - "src/**/*"
 exclude_paths:
 - node_modules/
 - dist/
