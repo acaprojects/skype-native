@@ -1,28 +1,52 @@
 /**
+ * Safe references to some of the Globals that may exist.
+ */
+const runtime = {
+    window: typeof window !== 'undefined' ? window : {} as any,
+    process: typeof process !== 'undefined' ? process : {} as any
+};
+
+/**
+ * Attempt to run a function that may fail due to a ReferenceError.
+ */
+function attempt<T>(func: () => T, fallback: T): T {
+    try {
+        return func();
+    }
+    catch (e) {
+        if (e instanceof ReferenceError) {
+            return fallback;
+        } else {
+            throw e;
+        }
+    }
+}
+
+/**
  * Checks to see if the current process is executing within an electron app.
  */
 export function isElectron() {
-    const isDefined = (x: any) => typeof x !== 'undefined';
+    const inRenderer = () => runtime.window.process === 'renderer';
 
-    const inRenderer = (w: any) =>
-        isDefined(w) && w.process && w.process === 'renderer';
+    const inBackground = () => !!runtime.process.versions.electron;
 
-    const inBackground = (p: any) =>
-        isDefined(p) && p.versions && !!p.versions.electron;
-
-    return inRenderer(window) || inBackground(process);
+    return attempt(inRenderer, false) || attempt(inBackground, false);
 }
 
 /**
  * Checks if we're running on a supported platform for the SDK interop.
  */
 export function isSupportedPlatform() {
-    return process.platform === 'win32';
+    const supported = () => runtime.process.platform === 'win32';
+
+    return attempt(supported, false);
 }
 
 /**
  * Check if the mock client should be used in place of the live bindings.
  */
 export function useMock() {
-    return !!process.env.MOCK_SKYPE_CLIENT;
+    const mock = () => !!runtime.process.env.MOCK_SKYPE_CLIENT;
+
+    return attempt(mock, true);
 }
