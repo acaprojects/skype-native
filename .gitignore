@@ -262,3 +262,7 @@ __pycache__/
 
 # Transpiled TypeScript
 dist/
+
+# Test coverage results
+coverage/
+.nyc_output/

@@ -16,7 +16,21 @@
   "scripts": {
     "prepublish": "gulp build",
     "pretest": "gulp lint",
-    "test": "mocha --opts mocha.opts"
+    "test": "nyc mocha --opts mocha.opts"
+  },
+  "nyc": {
+    "extension": [
+      ".ts"
+    ],
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "lcov"
+    ]
   },
   "devDependencies": {
     "@types/chai": "^3.5.2",
@@ -34,6 +48,8 @@
     "gulp-typescript": "^3.1.6",
     "merge2": "^1.0.3",
     "mocha": "^3.4.1",
+    "nyc": "^10.3.2",
+    "source-map-support": "^0.4.15",
     "ts-node": "^3.0.4",
     "tslint": "^5.2.0",
     "typescript": "^2.3.2"

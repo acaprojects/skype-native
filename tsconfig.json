@@ -8,7 +8,8 @@
     "declaration": true,
     "moduleResolution": "node",
     "noImplicitAny": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "sourceMap": true
   },
   "include": [
         "src/**/*"

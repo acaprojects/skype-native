@@ -21,11 +21,11 @@ gulp.task('lint', () =>
 );
 
 gulp.task('test', () =>
-    run('mocha --opts mocha.opts').exec()
+    run('npm test').exec()
 );
 
 gulp.task('clean', () =>
-  del(paths.distDir)
+    del([paths.distDir])
 );
 
 gulp.task('build', ['clean'], () => {
