@@ -25,10 +25,10 @@ function attempt<T>(func: () => T, fallback: T): T {
 /**
  * Checks to see if the current process is executing within an electron app.
  */
-export function isElectron() {
-    const inRenderer = () => runtime.window.process === 'renderer';
+export function isElectron(environment = runtime) {
+    const inRenderer = () => environment.window.process === 'renderer';
 
-    const inBackground = () => !!runtime.process.versions.electron;
+    const inBackground = () => !!environment.process.versions.electron;
 
     return attempt(inRenderer, false) || attempt(inBackground, false);
 }
@@ -36,8 +36,8 @@ export function isElectron() {
 /**
  * Checks if we're running on a supported platform for the SDK interop.
  */
-export function isSupportedPlatform() {
-    const supported = () => runtime.process.platform === 'win32';
+export function isSupportedPlatform(environment = runtime) {
+    const supported = () => environment.process.platform === 'win32';
 
     return attempt(supported, false);
 }
@@ -45,8 +45,8 @@ export function isSupportedPlatform() {
 /**
  * Check if the mock client should be used in place of the live bindings.
  */
-export function useMock() {
-    const mock = () => !!runtime.process.env.MOCK_SKYPE_CLIENT;
+export function useMock(environment = runtime) {
+    const mock = () => !!environment.process.env.MOCK_SKYPE_CLIENT;
 
     return attempt(mock, true);
 }
