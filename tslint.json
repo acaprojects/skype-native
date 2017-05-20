@@ -58,6 +58,7 @@
       true,
       "never-prefix"
     ],
-    "unified-signatures": false
+    "unified-signatures": false,
+    "ordered-imports": false
   }
 }

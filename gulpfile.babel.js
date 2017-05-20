@@ -1,6 +1,7 @@
 import gulp from 'gulp';
 import ts from 'gulp-typescript';
-import tslint from "gulp-tslint";
+import tslint from 'gulp-tslint';
+import run from 'gulp-run';
 import del from 'del';
 import merge from 'merge2';
 
@@ -19,6 +20,10 @@ gulp.task('lint', () =>
         .pipe(tslint.report())
 );
 
+gulp.task('test', () =>
+    run('mocha --opts mocha.opts').exec()
+);
+
 gulp.task('clean', () =>
   del(paths.distDir)
 );
@@ -33,4 +38,4 @@ gulp.task('build', ['clean'], () => {
     ]);
 });
 
-gulp.task('default', ['lint', 'build']);
+gulp.task('default', ['lint', 'test', 'build']);
