@@ -4,8 +4,6 @@ engines:
   tslint:
     enabled: true
     channel: beta
-  nodesecurity:
-    enabled: true
   duplication:
     enabled: true
     config:
