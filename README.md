@@ -1,7 +1,7 @@
 # Skype-Native
 
-[![Build Status](https://travis-ci.org/aca-labs/skype-native.svg?branch=master)](https://travis-ci.org/aca-labs/skype-native)
-[![Dependencies Status](https://david-dm.org/aca-labs/skype-native/status.svg)](https://david-dm.org/aca-labs/skype-native)
+[![Build Status](https://travis-ci.org/acaprojects/skype-native.svg?branch=master)](https://travis-ci.org/acaprojects/skype-native)
+[![Dependencies Status](https://david-dm.org/acaprojects/skype-native/status.svg)](https://david-dm.org/acaprojects/skype-native)
 [![npm version](https://badge.fury.io/js/skype-native.svg)](https://badge.fury.io/js/skype-native)
 
 Node bindings for control and interaction with the Skype for Business / Lync desktop client.

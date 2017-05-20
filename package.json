@@ -2,7 +2,7 @@
   "name": "skype-native",
   "version": "0.2.0",
   "description": "Node bindings for the native Skype for Business SDK",
-  "repository": "aca-labs/skype-native",
+  "repository": "acaprojects/skype-native",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "keywords": [
