@@ -5,4 +5,4 @@ import { isSupportedPlatform, useMock } from './binder/runtime-env';
 
 const client = useMock() || !isSupportedPlatform() ? MockClient : LiveClient;
 
-export const skype = new client();
+export const skype: SkypeClient = new client();
