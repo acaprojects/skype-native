@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
 
-public class StartUp
+public class TestBinding
 {
-    public async Task<object> Invoke(string input)
+    // Simple identity function for use by unit tests
+    public async Task<object> Invoke(dynamic input)
     {
         return input;
     }

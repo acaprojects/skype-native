@@ -37,7 +37,8 @@ export function bindToCLR<T extends Binding>(source: string,
 }
 
 /**
- * Curried methods for creating bindings to a predefined CLR environment.
+ * Enclose around a CLR environment for simplifying the creation of individual
+ * bindings.
  */
 export function binder(basePath = '', references: string[] = []) {
     // Resolve the path to the relevent C# source
@@ -54,6 +55,7 @@ export function binder(basePath = '', references: string[] = []) {
          * Create a binding to a synchronous native action.
          */
         sync: (action: string) =>
-            (input?: any) => bindToCLR<SyncBinding>(sourcePath(action), references, action)(input, true)
+            (input?: any) =>
+                bindToCLR<SyncBinding>(sourcePath(action), references, action)(input, true)
     };
 }
