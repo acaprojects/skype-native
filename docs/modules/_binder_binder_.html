@@ -73,10 +73,11 @@
 						<section class="tsd-index-section ">
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-type-alias tsd-parent-kind-external-module"><a href="_binder_binder_.html#asyncbinding" class="tsd-kind-icon">Async<wbr>Binding</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-external-module"><a href="_binder_binder_.html#asyncaction" class="tsd-kind-icon">Async<wbr>Action</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-external-module"><a href="_binder_binder_.html#binding" class="tsd-kind-icon">Binding</a></li>
-								<li class="tsd-kind-type-alias tsd-parent-kind-external-module"><a href="_binder_binder_.html#bindingcallback" class="tsd-kind-icon">Binding<wbr>Callback</a></li>
-								<li class="tsd-kind-type-alias tsd-parent-kind-external-module"><a href="_binder_binder_.html#syncbinding" class="tsd-kind-icon">Sync<wbr>Binding</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-external-module"><a href="_binder_binder_.html#clrcallback" class="tsd-kind-icon">CLRCallback</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-external-module"><a href="_binder_binder_.html#clrproxy" class="tsd-kind-icon">CLRProxy</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-external-module"><a href="_binder_binder_.html#syncaction" class="tsd-kind-icon">Sync<wbr>Action</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-not-exported">
@@ -90,6 +91,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter"><a href="_binder_binder_.html#bindtoclr" class="tsd-kind-icon">bind<wbr>ToCLR</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_binder_binder_.html#createbindingenv" class="tsd-kind-icon">create<wbr>Binding<wbr>Env</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_binder_binder_.html#createclrproxy" class="tsd-kind-icon">createCLRProxy</a></li>
 							</ul>
 						</section>
 					</div>
@@ -98,12 +100,12 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Type aliases</h2>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-external-module">
-					<a name="asyncbinding" class="tsd-anchor"></a>
-					<h3>Async<wbr>Binding</h3>
-					<div class="tsd-signature tsd-kind-icon">Async<wbr>Binding<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+					<a name="asyncaction" class="tsd-anchor"></a>
+					<h3>Async<wbr>Action</h3>
+					<div class="tsd-signature tsd-kind-icon">Async<wbr>Action<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/fb32948/src/binder/binder.ts#L17">binder/binder.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/9b5a4e5/src/binder/binder.ts#L18">binder/binder.ts:18</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -116,7 +118,7 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-siganture">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-not-exported">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, callback<span class="tsd-signature-symbol">?: </span><a href="_binder_binder_.html#bindingcallback" class="tsd-signature-type">BindingCallback</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, callback<span class="tsd-signature-symbol">?: </span><a href="_binder_binder_.html#clrcallback" class="tsd-signature-type">CLRCallback</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
@@ -126,7 +128,7 @@
 												<h5><span class="tsd-flag ts-flagOptional">Optional</span> input: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
 											</li>
 											<li>
-												<h5><span class="tsd-flag ts-flagOptional">Optional</span> callback: <a href="_binder_binder_.html#bindingcallback" class="tsd-signature-type">BindingCallback</a></h5>
+												<h5><span class="tsd-flag ts-flagOptional">Optional</span> callback: <a href="_binder_binder_.html#clrcallback" class="tsd-signature-type">CLRCallback</a></h5>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -139,10 +141,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-external-module">
 					<a name="binding" class="tsd-anchor"></a>
 					<h3>Binding</h3>
-					<div class="tsd-signature tsd-kind-icon">Binding<span class="tsd-signature-symbol">:</span> <a href="_binder_binder_.html#asyncbinding" class="tsd-signature-type">AsyncBinding</a><span class="tsd-signature-symbol"> | </span><a href="_binder_binder_.html#syncbinding" class="tsd-signature-type">SyncBinding</a></div>
+					<div class="tsd-signature tsd-kind-icon">Binding<span class="tsd-signature-symbol">:</span> <a href="_binder_binder_.html#asyncaction" class="tsd-signature-type">AsyncAction</a><span class="tsd-signature-symbol"> | </span><a href="_binder_binder_.html#syncaction" class="tsd-signature-type">SyncAction</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/fb32948/src/binder/binder.ts#L27">binder/binder.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/9b5a4e5/src/binder/binder.ts#L28">binder/binder.ts:28</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -152,17 +154,18 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-external-module">
-					<a name="bindingcallback" class="tsd-anchor"></a>
-					<h3>Binding<wbr>Callback</h3>
-					<div class="tsd-signature tsd-kind-icon">Binding<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+					<a name="clrcallback" class="tsd-anchor"></a>
+					<h3>CLRCallback</h3>
+					<div class="tsd-signature tsd-kind-icon">CLRCallback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/fb32948/src/binder/binder.ts#L12">binder/binder.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/9b5a4e5/src/binder/binder.ts#L13">binder/binder.ts:13</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Event handler for working with asyncronous native calls.</p>
+							<p>A callback function that will be invoked by .NET on completion of an async
+							action.</p>
 						</div>
 					</div>
 					<div class="tsd-type-declaration">
@@ -170,17 +173,17 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-siganture">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-not-exported">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, result<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, result<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
 											<li>
-												<h5>error: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+												<h5><span class="tsd-flag ts-flagOptional">Optional</span> error: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
 											</li>
 											<li>
-												<h5>result: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+												<h5><span class="tsd-flag ts-flagOptional">Optional</span> result: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -191,12 +194,52 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-external-module">
-					<a name="syncbinding" class="tsd-anchor"></a>
-					<h3>Sync<wbr>Binding</h3>
-					<div class="tsd-signature tsd-kind-icon">Sync<wbr>Binding<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+					<a name="clrproxy" class="tsd-anchor"></a>
+					<h3>CLRProxy</h3>
+					<div class="tsd-signature tsd-kind-icon">CLRProxy<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/fb32948/src/binder/binder.ts#L22">binder/binder.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/9b5a4e5/src/binder/binder.ts#L34">binder/binder.ts:34</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A Node function that can be exposed to CLR for async execution. This will be
+							marshelled into .NET as a Func<object, Task<object>&gt;.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-siganture">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-not-exported">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>payload<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, callback<span class="tsd-signature-symbol">: </span><a href="_binder_binder_.html#clrcallback" class="tsd-signature-type">CLRCallback</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>payload: <span class="tsd-signature-type">any</span></h5>
+											</li>
+											<li>
+												<h5>callback: <a href="_binder_binder_.html#clrcallback" class="tsd-signature-type">CLRCallback</a></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-external-module">
+					<a name="syncaction" class="tsd-anchor"></a>
+					<h3>Sync<wbr>Action</h3>
+					<div class="tsd-signature tsd-kind-icon">Sync<wbr>Action<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/9b5a4e5/src/binder/binder.ts#L23">binder/binder.ts:23</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -238,7 +281,7 @@
 					<div class="tsd-signature tsd-kind-icon">edge<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;isElectron() ? require(&#x27;electron-edge&#x27;) : require(&#x27;edge&#x27;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/fb32948/src/binder/binder.ts#L7">binder/binder.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/9b5a4e5/src/binder/binder.ts#L7">binder/binder.ts:7</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -255,7 +298,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/fb32948/src/binder/binder.ts#L32">binder/binder.ts:32</a></li>
+									<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/9b5a4e5/src/binder/binder.ts#L39">binder/binder.ts:39</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -298,7 +341,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/fb32948/src/binder/binder.ts#L43">binder/binder.ts:43</a></li>
+									<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/9b5a4e5/src/binder/binder.ts#L50">binder/binder.ts:50</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -327,7 +370,7 @@
 										<li class="tsd-description">
 											<aside class="tsd-sources">
 												<ul>
-													<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/fb32948/src/binder/binder.ts#L51">binder/binder.ts:51</a></li>
+													<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/9b5a4e5/src/binder/binder.ts#L58">binder/binder.ts:58</a></li>
 												</ul>
 											</aside>
 											<div class="tsd-comment tsd-typography">
@@ -345,7 +388,7 @@
 											<ul class="tsd-parameters">
 												<li class="tsd-parameter-siganture">
 													<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
-														<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, callback<span class="tsd-signature-symbol">?: </span><a href="_binder_binder_.html#bindingcallback" class="tsd-signature-type">BindingCallback</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+														<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, callback<span class="tsd-signature-symbol">?: </span><a href="_binder_binder_.html#clrcallback" class="tsd-signature-type">CLRCallback</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 													</ul>
 													<ul class="tsd-descriptions">
 														<li class="tsd-description">
@@ -355,7 +398,7 @@
 																	<h5><span class="tsd-flag ts-flagOptional">Optional</span> input: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
 																</li>
 																<li>
-																	<h5><span class="tsd-flag ts-flagOptional">Optional</span> callback: <a href="_binder_binder_.html#bindingcallback" class="tsd-signature-type">BindingCallback</a></h5>
+																	<h5><span class="tsd-flag ts-flagOptional">Optional</span> callback: <a href="_binder_binder_.html#clrcallback" class="tsd-signature-type">CLRCallback</a></h5>
 																</li>
 															</ul>
 															<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -374,7 +417,7 @@
 										<li class="tsd-description">
 											<aside class="tsd-sources">
 												<ul>
-													<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/fb32948/src/binder/binder.ts#L57">binder/binder.ts:57</a></li>
+													<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/9b5a4e5/src/binder/binder.ts#L64">binder/binder.ts:64</a></li>
 												</ul>
 											</aside>
 											<div class="tsd-comment tsd-typography">
@@ -392,6 +435,56 @@
 										</li>
 								</ul>        </li>
 							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="createclrproxy" class="tsd-anchor"></a>
+					<h3>createCLRProxy</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">createCLRProxy<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_binder_binder_.html#clrproxy" class="tsd-signature-type">CLRProxy</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/9b5a4e5/src/binder/binder.ts#L78">binder/binder.ts:78</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Wrap a function into a form that can be marshalled into .NET for execution
+									there.</p>
+								</div>
+								<p>Functions passed to .NET must be of a prescriptive async pattern for edge
+									to marshall them neatly. This simply turns a Node function of arity 1 into
+								the ordaned format.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>action: <span class="tsd-signature-type">function</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>payload<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>payload: <span class="tsd-signature-type">any</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="_binder_binder_.html#clrproxy" class="tsd-signature-type">CLRProxy</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -432,16 +525,19 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
-						<a href="_binder_binder_.html#asyncbinding" class="tsd-kind-icon">Async<wbr>Binding</a>
+						<a href="_binder_binder_.html#asyncaction" class="tsd-kind-icon">Async<wbr>Action</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
 						<a href="_binder_binder_.html#binding" class="tsd-kind-icon">Binding</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
-						<a href="_binder_binder_.html#bindingcallback" class="tsd-kind-icon">Binding<wbr>Callback</a>
+						<a href="_binder_binder_.html#clrcallback" class="tsd-kind-icon">CLRCallback</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
-						<a href="_binder_binder_.html#syncbinding" class="tsd-kind-icon">Sync<wbr>Binding</a>
+						<a href="_binder_binder_.html#clrproxy" class="tsd-kind-icon">CLRProxy</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="_binder_binder_.html#syncaction" class="tsd-kind-icon">Sync<wbr>Action</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
 						<a href="_binder_binder_.html#edge" class="tsd-kind-icon">edge</a>
@@ -451,6 +547,9 @@
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module">
 						<a href="_binder_binder_.html#createbindingenv" class="tsd-kind-icon">create<wbr>Binding<wbr>Env</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_binder_binder_.html#createclrproxy" class="tsd-kind-icon">createCLRProxy</a>
 					</li>
 				</ul>
 			</nav>

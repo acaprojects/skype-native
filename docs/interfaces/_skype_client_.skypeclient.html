@@ -69,6 +69,14 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Comms proxy for controlling and interacting with the desktop Skype for
+						Business client.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -179,7 +187,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/fb32948/src/skype-client.ts#L10">skype-client.ts:10</a></li>
+									<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/9b5a4e5/src/skype-client.ts#L35">skype-client.ts:35</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -202,7 +210,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/fb32948/src/skype-client.ts#L18">skype-client.ts:18</a></li>
+									<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/9b5a4e5/src/skype-client.ts#L43">skype-client.ts:43</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -231,7 +239,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/fb32948/src/skype-client.ts#L27">skype-client.ts:27</a></li>
+									<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/9b5a4e5/src/skype-client.ts#L52">skype-client.ts:52</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -303,7 +311,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/fb32948/src/skype-client.ts#L33">skype-client.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/9b5a4e5/src/skype-client.ts#L58">skype-client.ts:58</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -408,16 +416,21 @@
 					<a name="on" class="tsd-anchor"></a>
 					<h3>on</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"incoming"</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"incoming"</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides EventEmitter.on</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/fb32948/src/skype-client.ts#L35">skype-client.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/acaprojects/skype-native/blob/9b5a4e5/src/skype-client.ts#L63">skype-client.ts:63</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Subsribe to incoming call events.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -428,14 +441,20 @@
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-siganture">
 											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>participant<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>inviter<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, accept<span class="tsd-signature-symbol">?: </span><a href="../modules/_skype_client_.html#action" class="tsd-signature-type">Action</a>, reject<span class="tsd-signature-symbol">?: </span><a href="../modules/_skype_client_.html#action" class="tsd-signature-type">Action</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
 													<h4 class="tsd-parameters-title">Parameters</h4>
 													<ul class="tsd-parameters">
 														<li>
-															<h5>participant: <span class="tsd-signature-type">string</span></h5>
+															<h5><span class="tsd-flag ts-flagOptional">Optional</span> inviter: <span class="tsd-signature-type">string</span></h5>
+														</li>
+														<li>
+															<h5><span class="tsd-flag ts-flagOptional">Optional</span> accept: <a href="../modules/_skype_client_.html#action" class="tsd-signature-type">Action</a></h5>
+														</li>
+														<li>
+															<h5><span class="tsd-flag ts-flagOptional">Optional</span> reject: <a href="../modules/_skype_client_.html#action" class="tsd-signature-type">Action</a></h5>
 														</li>
 													</ul>
 													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -445,7 +464,7 @@
 									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -734,6 +753,24 @@
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="../modules/_skype_client_.html#action" class="tsd-kind-icon">Action</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="../modules/_skype_client_.html#func" class="tsd-kind-icon">Func</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="../modules/_skype_client_.html#predicate" class="tsd-kind-icon">Predicate</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="../modules/_skype_client_.html#skypecallstateevent" class="tsd-kind-icon">Skype<wbr>Call<wbr>State<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="../modules/_skype_client_.html#skypeclientevent" class="tsd-kind-icon">Skype<wbr>Client<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="../modules/_skype_client_.html#skypemutestateevent" class="tsd-kind-icon">Skype<wbr>Mute<wbr>State<wbr>Event</a>
+					</li>
 				</ul>
 			</nav>
 		</div>
