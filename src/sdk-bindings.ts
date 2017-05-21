@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { SkypeClient } from './skype-client';
-import { binder } from './util/binder';
+import { createBindingEnv } from './binder';
 
 /**
  * Resolves a set of paths relative to the curent directory.
@@ -15,7 +15,7 @@ const lyncSDK = relative('../lib/native/win32', 'Microsoft.Lync.Model.dll');
 /**
  * Creates binding to our Skype CLR actions for use in Node.
  */
-const bind = binder(relative('../src/bindings'), [lyncSDK]);
+const bind = createBindingEnv(relative('../src/bindings'), [lyncSDK]);
 
 /**
  * Mappings to .NET source for the native client bindings.

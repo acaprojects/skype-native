@@ -1,5 +1,5 @@
 
-import { bindToCLR, binder, SyncBinding, AsyncBinding } from './binder';
+import { bindToCLR, createBindingEnv, SyncBinding, AsyncBinding } from './binder';
 import 'mocha';
 import { expect } from 'chai';
 
@@ -16,9 +16,9 @@ describe('bindToCLR()', () => {
     });
 });
 
-describe('binder()', () => {
+describe('createBindingEnv()', () => {
 
-    const bindToEnv = binder('src/bindings');
+    const bindToEnv = createBindingEnv('src/bindings');
 
     it('creates synchronous CLR bindings', () => {
         const identity = bindToEnv.sync('TestBinding');

@@ -40,7 +40,7 @@ export function bindToCLR<T extends Binding>(source: string,
  * Enclose around a CLR environment for simplifying the creation of individual
  * bindings.
  */
-export function binder(basePath = '', references: string[] = []) {
+export function createBindingEnv(basePath = '', references: string[] = []) {
     // Resolve the path to the relevent C# source
     const sourcePath = (name: string) => join(basePath, `${name}.cs`);
 
