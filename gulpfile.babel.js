@@ -2,6 +2,7 @@ import gulp from 'gulp';
 import ts from 'gulp-typescript';
 import tslint from 'gulp-tslint';
 import run from 'gulp-run';
+import typedoc from 'gulp-typedoc';
 import del from 'del';
 import merge from 'merge2';
 
@@ -28,7 +29,7 @@ gulp.task('clean', () =>
     del([paths.distDir])
 );
 
-gulp.task('build', ['clean'], () => {
+gulp.task('build', ['clean', 'doc'], () => {
     const tsResult = tsProject.src()
         .pipe(tsProject());
 
@@ -37,5 +38,15 @@ gulp.task('build', ['clean'], () => {
         tsResult.js.pipe(gulp.dest(paths.distDir))
     ]);
 });
+
+gulp.task('doc', () =>
+    gulp.src(paths.allSrcTs)
+        .pipe(typedoc({
+            module: "commonjs",
+            target: "es5",
+            out: "docs/",
+            name: "Skype Native"
+        }))
+);
 
 gulp.task('default', ['lint', 'build']);
