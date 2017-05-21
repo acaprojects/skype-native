@@ -1,7 +1,7 @@
 import { join } from 'path';
 import { EventEmitter } from 'events';
-import { SkypeClient } from './skype-client';
-import { createBindingEnv } from './binder';
+import { SkypeClient, SkypeClientEvent } from './skype-client';
+import { createBindingEnv, createCLRProxy, CLRProxy } from './binder';
 
 /**
  * Resolves a set of paths relative to the curent directory.
@@ -23,7 +23,8 @@ const bind = createBindingEnv(relative('../src/bindings'), [lyncSDK]);
  */
 const bindings = {
     startCall: bind.sync('StartCall'),
-    endCall: bind.sync('EndCall')
+    endCall: bind.sync('EndCall'),
+    listenIncoming: bind.sync('Incoming')
 };
 
 /**
@@ -31,12 +32,35 @@ const bindings = {
  */
 export class LiveClient extends EventEmitter implements SkypeClient {
 
+    constructor() {
+        super();
+
+        // TODO: attempt to connect with / launch client on init
+
+        this.bindEvents();
+    }
+
     public call(uri: string, fullscreen = true, display = 0): boolean {
         return bindings.startCall({uri, fullscreen, display});
     }
 
     public endCall(): boolean {
         return bindings.endCall();
+    }
+
+    private bindEvents() {
+        // Curry an event handler that we can pass to .NET.
+        const emitWithPayload = (event: SkypeClientEvent) =>
+            createCLRProxy((payload) => this.emit(event, payload));
+
+        bindings.listenIncoming(emitWithPayload('incoming'));
+
+        /*const incoming: CLRProxy = (x, cb) => {
+            this.emit('incoming', x);
+            cb();
+        };
+
+        bindings.listenIncoming(incoming);*/
     }
 
 }

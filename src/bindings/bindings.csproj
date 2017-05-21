@@ -47,8 +47,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Call.cs" />
+    <Compile Include="Incoming.cs" />
+    <Compile Include="StartCall.cs" />
     <Compile Include="EndCall.cs" />
+    <Compile Include="TestBinding.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

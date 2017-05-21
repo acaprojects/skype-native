@@ -1,5 +1,24 @@
 import { EventEmitter } from 'events';
 
+/**
+ * Events emitted due to changes in the client call state.
+ */
+export type SkypeCallStateEvent = 'incoming' | 'connected' | 'disconnected';
+
+/**
+ * Events emitted due to changes in the client audio mute state.
+ */
+export type SkypeMuteStateEvent = 'muted' | 'unmuted';
+
+/**
+ * Events emitted by the Skype client.
+ */
+export type SkypeClientEvent = SkypeCallStateEvent | SkypeMuteStateEvent;
+
+/**
+ * Comms proxy for controlling and interacting with the desktop Skype for
+ * Business client.
+ */
 export interface SkypeClient extends EventEmitter {
 
     /**
@@ -31,11 +50,11 @@ export interface SkypeClient extends EventEmitter {
      * @return {boolean} true if successfull
      */
     endCall(): boolean;
+
+    on(event: 'incoming', listener: (participant: string) => void): this;
 }
 
 /*
-endCall
-
 accept
 reject
 
