@@ -1,5 +1,6 @@
 
 import { bindToCLR, binder, SyncBinding, AsyncBinding } from './binder';
+import 'mocha';
 import { expect } from 'chai';
 
 describe('bindToCLR()', () => {
