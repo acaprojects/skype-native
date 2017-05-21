@@ -15,6 +15,12 @@ export type SkypeMuteStateEvent = 'muted' | 'unmuted';
  */
 export type SkypeClientEvent = SkypeCallStateEvent | SkypeMuteStateEvent;
 
+export type Action = (...args: any[]) => void;
+
+export type Func<T> = (...args: any[]) => T;
+
+export type Predicate = Func<boolean>;
+
 /**
  * Comms proxy for controlling and interacting with the desktop Skype for
  * Business client.
@@ -51,7 +57,10 @@ export interface SkypeClient extends EventEmitter {
      */
     endCall(): boolean;
 
-    on(event: 'incoming', listener: (participant: string) => void): this;
+    /**
+     * Subsribe to incoming call events.
+     */
+    on(event: 'incoming', listener: (inviter?: string, accept?: Action, reject?: Action) => void): this;
 }
 
 /*

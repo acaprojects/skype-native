@@ -28,9 +28,30 @@ class Incoming
         {
             AVModality av = (AVModality)e.Conversation.Modalities[ModalityTypes.AudioVideo];
 
+            // TODO: reject as busy if already in a call
+
             if (av.State == ModalityState.Notified)
             {
-                callback("Incoming Call").Start();
+                Contact inviter = (Contact)e.Conversation.Properties[ConversationProperty.Inviter];
+
+                Func <object, Task<object>> AcceptCall = (i) =>
+                {
+                    av.Accept();
+                    return null;
+                };
+
+                Func<object, Task<object>> RejectCall = (i) =>
+                {
+                    av.Reject(ModalityDisconnectReason.Decline);
+                    return null;
+                };
+
+                callback(new
+                {
+                    inviter = inviter.Uri,
+                    accept = AcceptCall,
+                    reject = RejectCall
+                }).Start();
             }
             else
             {

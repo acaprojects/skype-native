@@ -1,7 +1,7 @@
 import { join } from 'path';
 import { EventEmitter } from 'events';
 import { SkypeClient, SkypeClientEvent } from './skype-client';
-import { createBindingEnv, createCLRProxy, CLRProxy } from './binder';
+import { createBindingEnv, createCLRProxy, SyncAction } from './binder';
 
 /**
  * Resolves a set of paths relative to the curent directory.
@@ -53,14 +53,12 @@ export class LiveClient extends EventEmitter implements SkypeClient {
         const emitWithPayload = (event: SkypeClientEvent) =>
             createCLRProxy((payload) => this.emit(event, payload));
 
-        bindings.listenIncoming(emitWithPayload('incoming'));
+        // Prep an exposed .NET function for execution as a synchronous action.
+        const exec = (action: SyncAction) => () => action(null, true);
 
-        /*const incoming: CLRProxy = (x, cb) => {
-            this.emit('incoming', x);
-            cb();
-        };
-
-        bindings.listenIncoming(incoming);*/
+        bindings.listenIncoming(createCLRProxy((call: any) =>
+            this.emit('incoming', call.inviter, exec(call.accept), exec(call.reject))
+        ));
     }
 
 }
