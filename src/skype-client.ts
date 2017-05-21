@@ -64,9 +64,6 @@ export interface SkypeClient extends EventEmitter {
 }
 
 /*
-accept
-reject
-
 mute
 
 selfView

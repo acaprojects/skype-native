@@ -1,4 +1,3 @@
-
 import { bindToCLR, createBindingEnv, SyncAction, AsyncAction } from './binder';
 import 'mocha';
 import { expect } from 'chai';
