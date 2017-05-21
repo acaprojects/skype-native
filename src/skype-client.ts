@@ -1,4 +1,6 @@
-export interface SkypeClient {
+import { EventEmitter } from 'events';
+
+export interface SkypeClient extends EventEmitter {
 
     /**
      * Start a fullscreen, outbound call on the primary diplay.

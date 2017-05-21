@@ -1,4 +1,5 @@
 import { join } from 'path';
+import { EventEmitter } from 'events';
 import { SkypeClient } from './skype-client';
 import { createBindingEnv } from './binder';
 
@@ -27,16 +28,15 @@ const bindings = {
 
 /**
  * Live bindings into the native Skype SDK.
- * @type {SkypeClient}
  */
-export const client: SkypeClient = {
+export class LiveClient extends EventEmitter implements SkypeClient {
 
-    call(uri: string, fullscreen = true, display = 0): boolean {
+    public call(uri: string, fullscreen = true, display = 0): boolean {
         return bindings.startCall({uri, fullscreen, display});
-    },
+    }
 
-    endCall(): boolean {
+    public endCall(): boolean {
         return bindings.endCall();
     }
 
-};
+}

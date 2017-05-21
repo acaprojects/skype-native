@@ -1,6 +1,8 @@
-import { client as mock } from './mock-bindings';
-import { client as live } from './sdk-bindings';
+import { MockClient } from './mock-client';
+import { LiveClient } from './live-client';
 import { SkypeClient } from './skype-client';
 import { isSupportedPlatform, useMock } from './binder/runtime-env';
 
-export const skype = useMock() || !isSupportedPlatform() ? mock : live;
+const client = useMock() || !isSupportedPlatform() ? MockClient : LiveClient;
+
+export const skype = new client();
