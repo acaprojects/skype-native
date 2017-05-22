@@ -6,6 +6,7 @@ using Microsoft.Lync.Model;
 using Microsoft.Lync.Model.Conversation;
 using Microsoft.Lync.Model.Conversation.AudioVideo;
 using Microsoft.Lync.Model.Extensibility;
+using System.Threading;
 
 class Incoming
 {
@@ -52,6 +53,36 @@ class Incoming
 
                 Func <object, Task<object>> AcceptCall = (dynamic options) =>
                 {
+                    // Start our video on connect
+                    av.ModalityStateChanged += (o, args) =>
+                    {
+                        if (args.NewState == ModalityState.Connected)
+                        {
+                            VideoChannel channelStream = av.VideoChannel;
+
+                            while (!channelStream.CanInvoke(ChannelAction.Start))
+                            {
+                            }
+
+                            channelStream.BeginStart(ar => { }, channelStream);
+                            var retries = 5;
+                            while ((channelStream.State != ChannelState.SendReceive) && (retries > 0))
+                            {
+                                Thread.Sleep(1000);
+
+                                try
+                                {
+                                    channelStream.BeginStart(ar => { }, channelStream);
+                                }
+                                catch (NotSupportedException)
+                                {
+                                    //This is normal...
+                                }
+                                retries--;
+                            }
+                        }
+                    };
+
                     av.Accept();
 
                     // TODO: support choosing display to open on as well as fullscreen as optional
