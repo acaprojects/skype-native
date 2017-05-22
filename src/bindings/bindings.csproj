@@ -47,6 +47,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connected.cs" />
     <Compile Include="Incoming.cs" />
     <Compile Include="StartCall.cs" />
     <Compile Include="EndCall.cs" />

@@ -24,7 +24,8 @@ const bind = createBindingEnv(relative('../src/bindings'), [lyncSDK]);
 const bindings = {
     startCall: bind.sync('StartCall'),
     endCall: bind.sync('EndCall'),
-    listenIncoming: bind.sync('Incoming')
+    listenIncoming: bind.sync('Incoming'),
+    listenConnected: bind.sync('Connected')
 };
 
 /**
@@ -58,6 +59,10 @@ export class LiveClient extends EventEmitter implements SkypeClient {
 
         bindings.listenIncoming(createCLRProxy((call: any) =>
             this.emit('incoming', call.inviter, exec(call.accept), exec(call.reject))
+        ));
+
+        bindings.listenConnected(createCLRProxy((participants: string[]) =>
+            this.emit('connected', participants)
         ));
     }
 
