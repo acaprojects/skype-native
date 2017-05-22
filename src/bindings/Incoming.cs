@@ -24,7 +24,9 @@ class Incoming
         return SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
     }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     public async Task<object> Invoke(dynamic callback)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
         return SubscribeToIncoming(callback);
     }
@@ -51,7 +53,8 @@ class Incoming
             {
                 Contact inviter = (Contact)e.Conversation.Properties[ConversationProperty.Inviter];
 
-                Func <object, Task<object>> AcceptCall = (dynamic options) =>
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+                Func <object, Task<object>> AcceptCall = async (dynamic options) =>
                 {
                     // Start our video on connect
                     av.ModalityStateChanged += (o, args) =>
@@ -94,12 +97,15 @@ class Incoming
 
                     return null;
                 };
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
-                Func<object, Task<object>> RejectCall = (dynamic options) =>
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+                Func<object, Task<object>> RejectCall = async (dynamic options) =>
                 {
                     av.Reject(ModalityDisconnectReason.Decline);
                     return null;
                 };
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
                 callback(new
                 {
