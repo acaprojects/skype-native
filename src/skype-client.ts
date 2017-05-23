@@ -58,6 +58,15 @@ export interface SkypeClient extends EventEmitter {
     endCall(): boolean;
 
     /**
+     * Set the privacy mute state of any calls currently in progress.
+     * @param  {boolean} state true if the mute should be activated
+     * @return {boolean}       true if successful
+     */
+    mute(state: boolean): boolean;
+
+    // getUser(): string;
+
+    /**
      * Subsribe to incoming call events.
      */
     on(event: 'incoming', listener: (inviter?: string, accept?: Action, reject?: Action) => void): this;
@@ -66,11 +75,18 @@ export interface SkypeClient extends EventEmitter {
      * Subscribe to call connected events.
      */
     on(event: 'connected', listener: (participants: string[]) => void): this;
+
+    /**
+     * Subscribe to call disconnected events.
+     */
+    on(event: 'disconnected', listener: () => void): this;
+
+    on(event: 'muted', listener: () => void): this;
+
+    on(event: 'unmuted', listener: () => void): this;
 }
 
 /*
-mute
-
 selfView
 
 callInfo

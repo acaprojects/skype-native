@@ -1,11 +1,10 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 using Microsoft.Lync.Model;
 using Microsoft.Lync.Model.Conversation;
 using Microsoft.Lync.Model.Conversation.AudioVideo;
 
-class Connected
+class Disconnected
 {
 #pragma warning disable CS1998 // Method needs to be async for execution by Edge.js
     public async Task<object> Invoke(dynamic callback)
@@ -20,23 +19,22 @@ class Connected
         {
             return false;
         }
-
+ 
         client.ConversationManager.ConversationAdded += (sender, e) =>
         {
+            callback().Start();
             AVModality av = (AVModality)e.Conversation.Modalities[ModalityTypes.AudioVideo];
-            
-            if (av.State == ModalityState.Connected)
+
+            if (av.State == ModalityState.Disconnected)
             {
-                var participants = e.Conversation.Participants.Select(p => (string)p.Properties[ParticipantProperty.Name]);
-                callback(participants.Cast<string>().ToArray()).Start();
+                callback().Start();
             }
 
             av.ModalityStateChanged += (o, args) =>
             {
-                if (args.NewState == ModalityState.Connected)
+                if (args.NewState == ModalityState.Disconnected)
                 {
-                    var participants = e.Conversation.Participants.Select(p => (string)p.Properties[ParticipantProperty.Name]);
-                    callback(participants.Cast<string>().ToArray()).Start();
+                    callback().Start();
                 }
             };
         };

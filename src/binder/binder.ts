@@ -15,17 +15,17 @@ export type CLRCallback = (error?: any | null, result?: any | null) => void;
 /**
  * Binding to an asynchronous native action.
  */
-export type AsyncAction = (input?: any | null, callback?: CLRCallback) => void;
+export type AsyncBinding = (input?: any | null, callback?: CLRCallback) => void;
 
 /**
  * Binding to a synchronous native action.
  */
-export type SyncAction = (input: any | null, syncronous: true) => any;
+export type SyncBinding = (input: any | null, syncronous: true) => any;
 
 /**
  * Union type of native action bindings.
  */
-export type Binding = AsyncAction | SyncAction;
+export type Binding = AsyncBinding | SyncBinding;
 
 /**
  * A Node function that can be exposed to CLR for async execution. This will be
@@ -56,14 +56,14 @@ export function createBindingEnv(basePath = '', references: string[] = []) {
          * Create a binding to an asynchronous native action.
          */
         async: (action: string) =>
-            bindToCLR<AsyncAction>(sourcePath(action), references, action),
+            bindToCLR<AsyncBinding>(sourcePath(action), references, action),
 
         /**
          * Create a binding to a synchronous native action.
          */
         sync: (action: string) =>
             (input?: any) =>
-                bindToCLR<SyncAction>(sourcePath(action), references, action)(input, true)
+                bindToCLR<SyncBinding>(sourcePath(action), references, action)(input, true)
     };
 }
 

@@ -1,11 +1,11 @@
-import { bindToCLR, createBindingEnv, SyncAction, AsyncAction } from './binder';
+import { bindToCLR, createBindingEnv, SyncBinding, AsyncBinding } from './binder';
 import 'mocha';
 import { expect } from 'chai';
 
 describe('bindToCLR()', () => {
     it('support binding to CLR actions', () => {
         // TestBinding contains a simple identity function
-        const identity = bindToCLR<SyncAction>('src/bindings/TestBinding.cs', [], 'TestBinding');
+        const identity = bindToCLR<SyncBinding>('src/bindings/TestBinding.cs', [], 'TestBinding');
 
         const input = Math.random();
 

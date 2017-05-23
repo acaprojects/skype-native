@@ -1,7 +1,7 @@
 import { join } from 'path';
 import { EventEmitter } from 'events';
 import { SkypeClient, SkypeClientEvent } from './skype-client';
-import { createBindingEnv, createCLRProxy, SyncAction } from './binder';
+import { createBindingEnv, createCLRProxy, SyncBinding } from './binder';
 
 /**
  * Resolves a set of paths relative to the curent directory.
@@ -25,7 +25,8 @@ const bindings = {
     startCall: bind.sync('StartCall'),
     endCall: bind.sync('EndCall'),
     listenIncoming: bind.sync('Incoming'),
-    listenConnected: bind.sync('Connected')
+    listenConnected: bind.sync('Connected'),
+    listenDisconnected: bind.sync('Disconnected')
 };
 
 /**
@@ -49,21 +50,25 @@ export class LiveClient extends EventEmitter implements SkypeClient {
         return bindings.endCall();
     }
 
+    public mute(state = true): boolean {
+        return true;
+    }
+
     private bindEvents() {
         // Curry an event handler that we can pass to .NET.
         const emitWithPayload = (event: SkypeClientEvent) =>
             createCLRProxy((payload) => this.emit(event, payload));
 
         // Prep an exposed .NET function for execution as a synchronous action.
-        const exec = (action: SyncAction) => () => action(null, true);
+        const createAction = (action: SyncBinding) => () => action(null, true);
 
         bindings.listenIncoming(createCLRProxy((call: any) =>
-            this.emit('incoming', call.inviter, exec(call.accept), exec(call.reject))
+            this.emit('incoming', call.inviter, createAction(call.accept), createAction(call.reject))
         ));
 
-        bindings.listenConnected(createCLRProxy((participants: string[]) =>
-            this.emit('connected', participants)
-        ));
+        bindings.listenConnected(emitWithPayload('connected'));
+
+        bindings.listenDisconnected(emitWithPayload('disconnected'));
     }
 
 }
