@@ -61,6 +61,11 @@ export interface SkypeClient extends EventEmitter {
      * Subsribe to incoming call events.
      */
     on(event: 'incoming', listener: (inviter?: string, accept?: Action, reject?: Action) => void): this;
+
+    /**
+     * Subscribe to call connected events.
+     */
+    on(event: 'connected', listener: (participants: string[]) => void): this;
 }
 
 /*

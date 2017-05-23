@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
@@ -6,7 +7,6 @@ using Microsoft.Lync.Model;
 using Microsoft.Lync.Model.Conversation;
 using Microsoft.Lync.Model.Conversation.AudioVideo;
 using Microsoft.Lync.Model.Extensibility;
-using System.Threading;
 
 class Incoming
 {
@@ -28,11 +28,6 @@ class Incoming
     public async Task<object> Invoke(dynamic callback)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
-        return SubscribeToIncoming(callback);
-    }
-
-    private static bool SubscribeToIncoming(Func<object, Task<object>> callback)
-    {
         LyncClient client;
         try
         {
@@ -53,7 +48,7 @@ class Incoming
             {
                 Contact inviter = (Contact)e.Conversation.Properties[ConversationProperty.Inviter];
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+#pragma warning disable CS1998
                 Func <object, Task<object>> AcceptCall = async (dynamic options) =>
                 {
                     // Start our video on connect
@@ -97,15 +92,15 @@ class Incoming
 
                     return null;
                 };
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+#pragma warning restore CS1998
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+#pragma warning disable CS1998
                 Func<object, Task<object>> RejectCall = async (dynamic options) =>
                 {
                     av.Reject(ModalityDisconnectReason.Decline);
                     return null;
                 };
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+#pragma warning restore CS1998
 
                 callback(new
                 {
@@ -113,11 +108,6 @@ class Incoming
                     accept = AcceptCall,
                     reject = RejectCall
                 }).Start();
-            }
-            else
-            {
-                // Ignore chat
-                e.Conversation.End();
             }
         };
 

@@ -8,14 +8,9 @@ using Microsoft.Lync.Model.Conversation.AudioVideo;
 
 class Connected
 {
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+#pragma warning disable CS1998 // Method needs to be async for execution by Edge.js
     public async Task<object> Invoke(dynamic callback)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-    {
-        return SubscribeToConnected(callback);
-    }
-
-    private static bool SubscribeToConnected(Func<object, Task<object>> callback)
+#pragma warning restore CS1998
     {
         LyncClient client;
         try
