@@ -1,6 +1,7 @@
 import gulp from 'gulp';
 import gulpLoadPlugins from 'gulp-load-plugins';
 import runSequence from 'run-sequence';
+import path from 'path';
 import del from 'del';
 import merge from 'merge2';
 import tsconfig from './tsconfig.json';
@@ -21,7 +22,8 @@ const paths = {
 /**
  * Output a highlighted message.
  */
-const warn = (message) => plugins.util.log(plugins.util.colors.yellow(message));
+const warn = (message) =>
+    plugins.util.log(plugins.util.colors.black.bgYellow('WARNING'), message);
 
 /**
  * Pipe a set of streams out to our dist directory and merge the result.
@@ -79,18 +81,22 @@ gulp.task('build:native', () => {
         gulp.src(vsProject)
             .pipe(plugins.msbuild({
                 targets: ['Clean', 'Build'],
+                toolsVersion: 4.0,
+                properties: {
+                    OutDir: path.join(__dirname, paths.dist)
+                },
                 errorOnFail: true,
-                toolsVersion: 4.0
+                emitEndEvent: true
             }));
 
-    const skip = () =>
-        warn('Unsupported build platform for native libs. Skipping...');
+    const skip = () => {
+        warn('Unsupported build platform for native libs. Using prebuilt.');
+        return pipeToDist([
+            gulp.src(paths.nativeLibs)
+        ]);
+    }
 
-    process.platform === 'win32' ? build() : skip();
-
-    return pipeToDist([
-        gulp.src(paths.nativeLibs)
-    ]);
+    return process.platform === 'win32' ? build() : skip();
 });
 
 /**
