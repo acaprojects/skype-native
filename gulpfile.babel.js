@@ -5,16 +5,18 @@ import run from 'gulp-run';
 import typedoc from 'gulp-typedoc';
 import del from 'del';
 import merge from 'merge2';
+import { compilerOptions } from './tsconfig.json';
+import { name } from './package.json';
 
 const tsProject = ts.createProject('tsconfig.json');
 
-const paths = {
-    allSrcTs: 'src/**/*.ts',
-    distDir: 'dist/'
+const buildPaths = {
+    dist: 'dist/',
+    docs: 'docs/'
 }
 
 gulp.task('lint', () =>
-    gulp.src(paths.allSrcTs)
+    tsProject.src()
         .pipe(tslint({
             formatter: 'verbose'
         }))
@@ -26,26 +28,30 @@ gulp.task('test', () =>
 );
 
 gulp.task('clean', () =>
-    del([paths.distDir])
+    del(Object.values(buildPaths))
 );
 
 gulp.task('build', ['clean', 'doc'], () => {
-    const tsResult = tsProject.src()
-        .pipe(tsProject());
+    const tsc = tsProject.src().pipe(tsProject());
 
-    return merge([
-        tsResult.dts.pipe(gulp.dest(paths.distDir)),
-        tsResult.js.pipe(gulp.dest(paths.distDir))
-    ]);
+    const toDist = stream => stream.pipe(gulp.dest(buildPaths.dist));
+
+    const components = [
+        tsc.js,
+        tsc.dts
+        // TODO move native dll's here too
+    ]
+
+    return merge(components.map(toDist));
 });
 
 gulp.task('doc', () =>
-    gulp.src(paths.allSrcTs)
+    tsProject.src()
         .pipe(typedoc({
-            module: "commonjs",
-            target: "es5",
-            out: "docs/",
-            name: "Skype Native"
+            module: compilerOptions.module,
+            target: compilerOptions.target,
+            out: buildPaths.docs,
+            name: name
         }))
 );
 
