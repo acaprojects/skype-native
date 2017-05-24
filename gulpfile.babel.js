@@ -1,16 +1,14 @@
 import gulp from 'gulp';
-import util from 'gulp-util'
-import ts from 'gulp-typescript';
-import tslint from 'gulp-tslint';
-import run from 'gulp-run';
-import typedoc from 'gulp-typedoc';
-import msbuild from 'gulp-msbuild';
+import gulpLoadPlugins from 'gulp-load-plugins';
+import runSequence from 'run-sequence';
 import del from 'del';
 import merge from 'merge2';
-import { compilerOptions } from './tsconfig.json';
-import { name } from './package.json';
+import tsconfig from './tsconfig.json';
+import npmconfig from './package.json';
 
-const tsProject = ts.createProject('tsconfig.json');
+const plugins = gulpLoadPlugins();
+
+const tsProject = plugins.typescript.createProject('./tsconfig.json');
 
 const vsProject = './skype-native.sln';
 
@@ -23,7 +21,7 @@ const paths = {
 /**
  * Output a highlighted message.
  */
-const warn = (message) => util.log(util.colors.yellow(message));
+const warn = (message) => plugins.util.log(plugins.util.colors.yellow(message));
 
 /**
  * Pipe a set of streams out to our dist directory and merge the result.
@@ -38,17 +36,17 @@ const pipeToDist = (streams) => {
  */
 gulp.task('lint', () =>
     tsProject.src()
-        .pipe(tslint({
+        .pipe(plugins.tslint({
             formatter: 'verbose'
         }))
-        .pipe(tslint.report())
+        .pipe(plugins.tslint.report())
 );
 
 /**
  * Run project unit tests.
  */
 gulp.task('test', () =>
-    run('npm test').exec()
+    plugins.run('npm test').exec()
 );
 
 /**
@@ -64,7 +62,7 @@ gulp.task('clean', () =>
 /**
  * Transpile the Typescript project components into something Node friendly.
  */
-gulp.task('build:typescript', ['clean', 'doc'], () => {
+gulp.task('build:typescript', ['doc'], () => {
     const tsc = tsProject.src().pipe(tsProject());
 
     return pipeToDist([
@@ -79,7 +77,7 @@ gulp.task('build:typescript', ['clean', 'doc'], () => {
 gulp.task('build:native', () => {
     const build = () =>
         gulp.src(vsProject)
-            .pipe(msbuild({
+            .pipe(plugins.msbuild({
                 targets: ['Clean', 'Build'],
                 errorOnFail: true,
                 toolsVersion: 4.0
@@ -98,19 +96,25 @@ gulp.task('build:native', () => {
 /**
  * Run a full project build.
  */
-gulp.task('build', ['build:typescript', 'build:native']);
+gulp.task('build', () =>
+    runSequence(
+        'lint',
+        'clean',
+        ['build:typescript', 'build:native']
+    )
+);
 
 /**
  * Render project documentation.
  */
 gulp.task('doc', () =>
     tsProject.src()
-        .pipe(typedoc({
-            module: compilerOptions.module,
-            target: compilerOptions.target,
+        .pipe(plugins.typedoc({
+            module: tsconfig.compilerOptions.module,
+            target: tsconfig.compilerOptions.target,
             out: paths.docs,
-            name: name
+            name: npmconfig.name
         }))
 );
 
-gulp.task('default', ['lint', 'build']);
+gulp.task('default', ['build']);
