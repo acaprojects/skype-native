@@ -4,7 +4,7 @@ import { expect } from 'chai';
 
 describe('bindToCLR()', () => {
     it('support binding to CLR that\'s compiled on the fly', () => {
-        const identity = bindToCLR<SyncBinding>({
+        const identity = bindToCLR<SyncBinding<number, number>>({
             source: 'src/bindings/TestBinding.cs',
             typeName: 'Test.TestBinding',
             methodName: 'Identity'
@@ -18,7 +18,7 @@ describe('bindToCLR()', () => {
 
     it('supports binding to precompiled assemblies', () => {
         if (process.platform === 'win32') {
-            const identity = bindToCLR<SyncBinding>({
+            const identity = bindToCLR<SyncBinding<number, number>>({
                 assemblyFile: 'lib/native/win32/SkypeClient.dll',
                 typeName: 'Test.TestBinding',
                 methodName: 'Identity'
@@ -42,7 +42,7 @@ describe('createBinder()', () => {
     });
 
     it('creates synchronous CLR bindings', () => {
-        const identity = binder.sync({methodName: 'Identity'});
+        const identity = binder.sync<number, number>({methodName: 'Identity'});
 
         const input = Math.random();
         const result = identity(input);
@@ -51,7 +51,7 @@ describe('createBinder()', () => {
     });
 
     it('creates asynchronous CLR bindings', (done) => {
-        const identityAsync = binder.async({methodName: 'Identity'});
+        const identityAsync = binder.async<number, number>({methodName: 'Identity'});
 
         const input = Math.random();
 

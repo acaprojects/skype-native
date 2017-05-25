@@ -32,9 +32,9 @@ const bind = createBinder<PrecompiledTarget>({
 const bindings = {
     startCall: bind.sync<any, boolean>({typeName: 'StartCall'}),
     endCall: bind.sync<null, boolean>({typeName: 'EndCall'}),
-    listenIncoming: bind.sync<CLRProxy, void>({typeName: 'Incoming'}),
-    listenConnected: bind.sync<CLRProxy, void>({typeName: 'Connected'}),
-    listenDisconnected: bind.sync<CLRProxy, void>({typeName: 'Disconnected'})
+    listenIncoming: bind.sync<CLRProxy<any, undefined>, undefined>({typeName: 'Incoming'}),
+    listenConnected: bind.sync<CLRProxy<string[], undefined>, undefined>({typeName: 'Connected'}),
+    listenDisconnected: bind.sync<CLRProxy<undefined, undefined>, undefined>({typeName: 'Disconnected'})
 };
 
 /**
@@ -64,20 +64,19 @@ export class LiveClient extends EventEmitter implements SkypeClient {
 
     private bindEvents() {
         // Curry an event handler that we can pass to .NET.
-        const emitWithPayload = (event: SkypeClientEvent) =>
-            createCLRProxy((payload) => this.emit(event, payload));
-
-        // Prep an exposed .NET function for execution as a synchronous action.
-        const createAction = (binding: SyncBinding) =>
-            () => binding(null, true) as Action;
+        const emitWithPayload = <T>(event: SkypeClientEvent) =>
+            createCLRProxy<T, undefined>((payload) => this.emit(event, payload));
 
         bindings.listenIncoming(createCLRProxy((call: any) =>
-            this.emit('incoming', call.inviter, createAction(call.accept), createAction(call.reject))
+            this.emit('incoming',
+                      call.inviter,
+                      () => call.accept(null, true),
+                      () => call.reject(null, true))
         ));
 
-        bindings.listenConnected(emitWithPayload('connected'));
+        bindings.listenConnected(emitWithPayload<string[]>('connected'));
 
-        bindings.listenDisconnected(emitWithPayload('disconnected'));
+        bindings.listenDisconnected(emitWithPayload<undefined>('disconnected'));
     }
 
 }

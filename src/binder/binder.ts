@@ -10,28 +10,28 @@ const edge = isElectron() ? require('electron-edge') : require('edge');
 /**
  * A callback function for invokation from .NET.
  */
-export type CLRCallback = (error?: any | null, result?: any | null) => void;
+export type CLRCallback<Result> = (error?: Error, result?: Result) => void;
 
 /**
  * Binding to an asynchronous native action.
  */
-export type AsyncBinding = (input?: any | null, callback?: CLRCallback) => void;
+export type AsyncBinding<Input, Result> = (input?: Input, callback?: CLRCallback<Result>) => void;
 
 /**
  * Binding to a synchronous native action.
  */
-export type SyncBinding = (input: any | null, synchronous: true) => any;
+export type SyncBinding<Input, Result> = (input: Input | undefined, synchronous: true) => Result;
 
 /**
  * Possible .NET binding behaviours.
  */
-export type Binding = AsyncBinding | SyncBinding;
+export type Binding<Input, Result> = AsyncBinding<Input, Result> | SyncBinding<Input, Result>;
 
 /**
  * A Node function that can be exposed to CLR for async execution. This will be
  * marshelled into .NET as a Func<object, Task<object>>.
  */
-export type CLRProxy = (payload: any, callback: CLRCallback) => void;
+export type CLRProxy<Payload, Result> = (payload: Payload, callback: CLRCallback<Result>) => void;
 
 /**
  * A path to a pre-compiled CLR assembly (*.dll).
@@ -57,28 +57,17 @@ export interface BaseBindingTarget {
     references?: CLRAssembly[];
 }
 
-export type PartialCompilableBindingTarget = BaseBindingTarget & { source?: InlineCLRSource };
+export type CompilableTarget = BaseBindingTarget & { source?: InlineCLRSource };
 
-export type CompilableBindingTarget = BaseBindingTarget & { source: InlineCLRSource };
+export type PrecompiledTarget = BaseBindingTarget & { assemblyFile?: CLRAssembly };
 
-export type PartialPrecompiledBindingTarget = BaseBindingTarget & { assemblyFile?: CLRAssembly };
-
-export type PrecompiledBindingTarget = BaseBindingTarget & { assemblyFile: CLRAssembly };
-
-export type CompilableTarget = PartialCompilableBindingTarget | CompilableBindingTarget;
-
-export type PrecompiledTarget = PartialPrecompiledBindingTarget | PrecompiledBindingTarget;
-
-export type PartialBindingTarget = PartialCompilableBindingTarget | PartialPrecompiledBindingTarget;
-
-export type BindingTarget = CompilableBindingTarget | PrecompiledBindingTarget;
+export type BindingTarget = CompilableTarget | PrecompiledTarget;
 
 /**
  * Creates a CLR binding for use in Node.
  */
-export function bindToCLR<T extends Binding>(target:
-          CompilableBindingTarget
-        | PrecompiledBindingTarget
+export function bindToCLR<T>(target:
+          BindingTarget
         | CLRAssembly
         | InlineCLRSource) {
     return edge.func(target) as T;
@@ -88,38 +77,32 @@ export function bindToCLR<T extends Binding>(target:
  * Enclose around a partial binding target to simplify the creation of bindings
  * coming from the same source / with similar requirements.
  */
-export function createBinder<T extends PartialBindingTarget>(env: T) {
+export function createBinder<T extends BindingTarget>(env: T) {
 
     const merge = (target: T) => R.merge(env, target) as BindingTarget;
 
-    const bind = <InputType extends Binding>(target: T) => bindToCLR<InputType>(merge(target));
+    const bind = <BindingType>(target: T) => bindToCLR<BindingType>(merge(target));
 
     return {
         /**
          * Create a binding to a synchronous native action.
          */
-        sync: <InputType, OutputType>(target: T) => (input?: InputType) =>
-            bind<SyncBinding>(target)(input, true) as OutputType,
+        sync: <InputType, ResultType>(target: T) => (input?: InputType) =>
+            bind<SyncBinding<InputType, ResultType>>(target)(input, true),
 
         /**
          * Create a binding to an asynchronous native action.
          */
-        async: <InputType, OutputType>(target: T) => (input?: InputType) =>
-            new Promise<OutputType>((resolve, reject) =>
-                bind<AsyncBinding>(target)(input, (err, result) => {
+        async: <InputType, ResultType>(target: T) => (input?: InputType) =>
+            new Promise<ResultType>((resolve, reject) =>
+                bind<AsyncBinding<InputType, ResultType>>(target)(input, (err, result) => {
                     if (err) {
                         reject(err);
                     } else {
                         resolve(result);
                     }
                 })
-            ),
-
-        /**
-         * Retrieve the partial environment in use.
-         */
-        bindingEnv: () => env
-
+            )
     };
 }
 
@@ -131,7 +114,7 @@ export function createBinder<T extends PartialBindingTarget>(env: T) {
  * to marshall them neatly. This simply turns a Node function of arity 1 into
  * the ordaned format.
  */
-export function createCLRProxy<T>(action: (payload: T) => void): CLRProxy {
+export function createCLRProxy<Input, Result>(action: (payload: Input) => void): CLRProxy<Input, Result> {
     return (payload, callback) => {
         action(payload);
         callback();
