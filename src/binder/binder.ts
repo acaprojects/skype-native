@@ -1,4 +1,5 @@
-import { join } from 'path';
+import * as path from 'path';
+import * as R from 'ramda';
 import { isElectron } from './runtime-env';
 
 // Edge needs to be compiled against a different verion of node to support
@@ -7,8 +8,7 @@ import { isElectron } from './runtime-env';
 const edge = isElectron() ? require('electron-edge') : require('edge');
 
 /**
- * A callback function that will be invoked by .NET on completion of an async
- * action.
+ * A callback function for invokation from .NET.
  */
 export type CLRCallback = (error?: any | null, result?: any | null) => void;
 
@@ -20,10 +20,10 @@ export type AsyncBinding = (input?: any | null, callback?: CLRCallback) => void;
 /**
  * Binding to a synchronous native action.
  */
-export type SyncBinding = (input: any | null, syncronous: true) => any;
+export type SyncBinding = (input: any | null, synchronous: true) => any;
 
 /**
- * Union type of native action bindings.
+ * Possible .NET binding behaviours.
  */
 export type Binding = AsyncBinding | SyncBinding;
 
@@ -34,76 +34,92 @@ export type Binding = AsyncBinding | SyncBinding;
 export type CLRProxy = (payload: any, callback: CLRCallback) => void;
 
 /**
+ * A path to a pre-compiled CLR assembly (*.dll).
+ */
+export type CLRAssembly = string;
+
+/**
+ * A string containing compilable CLR source code.
+ */
+export type InlineCLRSource = string;
+
+/**
  * CLR object path for binding to.
  */
-export interface BindingTarget {
-    /**
-     * Typename to link to. If ommitted `StartUp` will be assumed.
-     */
+export interface BaseBindingTarget {
+    /** Typename to link to. If ommitted `StartUp` will be assumed. */
     typeName?: string;
 
-    /**
-     * Method to bind to. If ommitted `Invoke` will be assumed.
-     */
+    /** Method to bind to. If ommitted `Invoke` will be assumed. */
     methodName?: string;
 
-    /**
-     * External assembly references.
-     */
-    references?: string[];
+    /** External assembly references. */
+    references?: CLRAssembly[];
 }
 
-export interface CompilableBinding extends BindingTarget {
-    /**
-     * C# / F# etc source for runtime compilation.
-     */
-    source: string;
-}
+export type PartialCompilableBindingTarget = BaseBindingTarget & { source?: InlineCLRSource };
 
-export interface PrecompiledBinding extends BindingTarget {
-    /**
-     * Path to a pre-compilled assembly (*.dll) for binding to.
-     * @type {string}
-     */
-    assemblyFile: string;
-}
+export type CompilableBindingTarget = BaseBindingTarget & { source: InlineCLRSource };
+
+export type PartialPrecompiledBindingTarget = BaseBindingTarget & { assemblyFile?: CLRAssembly };
+
+export type PrecompiledBindingTarget = BaseBindingTarget & { assemblyFile: CLRAssembly };
+
+export type CompilableTarget = PartialCompilableBindingTarget | CompilableBindingTarget;
+
+export type PrecompiledTarget = PartialPrecompiledBindingTarget | PrecompiledBindingTarget;
+
+export type PartialBindingTarget = PartialCompilableBindingTarget | PartialPrecompiledBindingTarget;
+
+export type BindingTarget = CompilableBindingTarget | PrecompiledBindingTarget;
 
 /**
  * Creates a CLR binding for use in Node.
  */
-export function bindToCLR<T extends Binding>(target: CompilableBinding | PrecompiledBinding) {
+export function bindToCLR<T extends Binding>(target:
+          CompilableBindingTarget
+        | PrecompiledBindingTarget
+        | CLRAssembly
+        | InlineCLRSource) {
     return edge.func(target) as T;
 }
 
 /**
- * Enclose around a CLR environment for simplifying the creation of individual
- * bindings.
+ * Enclose around a partial binding target to simplify the creation of bindings
+ * coming from the same source / with similar requirements.
  */
-export function createBindingEnv(basePath = '', references: string[] = []) {
-    // Resolve the path to the relevent C# source
-    const sourcePath = (name: string) => join(basePath, `${name}.cs`);
+export function createBinder<T extends PartialBindingTarget>(env: T) {
+
+    const merge = (target: T) => R.merge(env, target) as BindingTarget;
+
+    const bind = <InputType extends Binding>(target: T) => bindToCLR<InputType>(merge(target));
 
     return {
         /**
-         * Create a binding to an asynchronous native action.
-         */
-        async: (action: string) =>
-            bindToCLR<AsyncBinding>({
-                source: sourcePath(action),
-                typeName: action,
-                references
-            }),
-
-        /**
          * Create a binding to a synchronous native action.
          */
-        sync: (action: string) =>
-            (input?: any) =>
-                bindToCLR<SyncBinding>({
-                    source: sourcePath(action),
-                    typeName: action,
-                    references
-                })(input, true)
+        sync: <InputType, OutputType>(target: T) => (input?: InputType) =>
+            bind<SyncBinding>(target)(input, true) as OutputType,
+
+        /**
+         * Create a binding to an asynchronous native action.
+         */
+        async: <InputType, OutputType>(target: T) => (input?: InputType) =>
+            new Promise<OutputType>((resolve, reject) =>
+                bind<AsyncBinding>(target)(input, (err, result) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                    }
+                })
+            ),
+
+        /**
+         * Retrieve the partial environment in use.
+         */
+        bindingEnv: () => env
+
     };
 }
 
@@ -115,7 +131,7 @@ export function createBindingEnv(basePath = '', references: string[] = []) {
  * to marshall them neatly. This simply turns a Node function of arity 1 into
  * the ordaned format.
  */
-export function createCLRProxy(action: (payload: any) => void): CLRProxy {
+export function createCLRProxy<T>(action: (payload: T) => void): CLRProxy {
     return (payload, callback) => {
         action(payload);
         callback();

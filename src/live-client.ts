@@ -1,7 +1,7 @@
 import { join } from 'path';
 import { EventEmitter } from 'events';
 import { SkypeClient, SkypeClientEvent, Action } from './skype-client';
-import { createBindingEnv, createCLRProxy, SyncBinding } from './binder';
+import { createBinder, createCLRProxy, PrecompiledTarget, SyncBinding, CLRProxy } from './binder';
 
 /**
  * Resolves a set of paths relative to the curent directory.
@@ -14,19 +14,27 @@ const relative = (...path: string[]) => join(__dirname, ...path);
 const lyncSDK = relative('../lib/native/win32', 'Microsoft.Lync.Model.dll');
 
 /**
+ * Precompiled native bindings.
+ */
+const skypeNativeLib = relative('../lib/native/win32', 'SkypeClient.dll');
+
+/**
  * Creates binding to our Skype CLR actions for use in Node.
  */
-const bind = createBindingEnv(relative('../src/bindings'), [lyncSDK]);
+const bind = createBinder<PrecompiledTarget>({
+    assemblyFile: skypeNativeLib,
+    references: [lyncSDK]
+});
 
 /**
  * Mappings to .NET source for the native client bindings.
  */
 const bindings = {
-    startCall: bind.sync('StartCall'),
-    endCall: bind.sync('EndCall'),
-    listenIncoming: bind.sync('Incoming'),
-    listenConnected: bind.sync('Connected'),
-    listenDisconnected: bind.sync('Disconnected')
+    startCall: bind.sync<any, boolean>({typeName: 'StartCall'}),
+    endCall: bind.sync<null, boolean>({typeName: 'EndCall'}),
+    listenIncoming: bind.sync<CLRProxy, void>({typeName: 'Incoming'}),
+    listenConnected: bind.sync<CLRProxy, void>({typeName: 'Connected'}),
+    listenDisconnected: bind.sync<CLRProxy, void>({typeName: 'Disconnected'})
 };
 
 /**
@@ -42,15 +50,15 @@ export class LiveClient extends EventEmitter implements SkypeClient {
         this.bindEvents();
     }
 
-    public call(uri: string, fullscreen = true, display = 0): boolean {
+    public call(uri: string, fullscreen = true, display = 0) {
         return bindings.startCall({uri, fullscreen, display});
     }
 
-    public endCall(): boolean {
+    public endCall() {
         return bindings.endCall();
     }
 
-    public mute(state = true): boolean {
+    public mute(state = true) {
         return true;
     }
 

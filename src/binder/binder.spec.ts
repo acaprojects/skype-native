@@ -1,4 +1,4 @@
-import { bindToCLR, createBindingEnv, SyncBinding, AsyncBinding } from './binder';
+import { bindToCLR, SyncBinding, AsyncBinding, createBinder, PrecompiledTarget } from './binder';
 import 'mocha';
 import { expect } from 'chai';
 
@@ -30,12 +30,15 @@ describe('bindToCLR()', () => {
     });
 });
 
-describe('createBindingEnv()', () => {
+describe('createBinder()', () => {
 
-    const bindToEnv = createBindingEnv('src/bindings');
+    const binder = createBinder<PrecompiledTarget>({
+        assemblyFile: 'lib/native/win32/SkypeClient.dll',
+        typeName: 'Test.TestBinding'
+    });
 
     it('creates synchronous CLR bindings', () => {
-        const identity = bindToEnv.sync('TestBinding');
+        const identity = binder.sync({methodName: 'Identity'});
 
         const input = Math.random();
         const result = identity(input);
@@ -44,18 +47,19 @@ describe('createBindingEnv()', () => {
     });
 
     it('creates asynchronous CLR bindings', (done) => {
-        const identity = bindToEnv.async('TestBinding');
+        const identityAsync = binder.async({methodName: 'Identity'});
 
         const input = Math.random();
 
-        identity(input, (err, result) => {
-            if (err) {
-                done(err);
-            } else if (result === input) {
-                done();
-            } else {
-                done('Unexpected result returned');
-            }
-        });
+        identityAsync(input)
+            .then((result: any) => {
+                if (result === input) {
+                    done();
+                } else {
+                    done('Unexpected result returned');
+                }
+            })
+            .catch(done);
     });
+
 });

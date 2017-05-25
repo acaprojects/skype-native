@@ -5,6 +5,10 @@
   "repository": "acaprojects/skype-native",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "lib"
+  ],
   "keywords": [
     "skype",
     "lync",
@@ -36,6 +40,7 @@
     "@types/chai": "^3.5.2",
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.18",
+    "@types/ramda": "0.0.10",
     "babel-core": "^6.24.1",
     "babel-preset-env": "^1.4.0",
     "babel-register": "^6.24.1",
@@ -62,6 +67,7 @@
   },
   "dependencies": {
     "edge": "^7.10.0",
-    "electron-edge": "^6.5.5"
+    "electron-edge": "^6.5.5",
+    "ramda": "^0.23.0"
   }
 }
