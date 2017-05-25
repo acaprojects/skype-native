@@ -4,14 +4,19 @@ node_js:
 - 'node'
 - '7'
 
+compiler:
+  - gcc
+
 env:
-  - CXX=g++-4.8
+  - CC="gcc-4.8"
+  - CXX="g++-4.8"
 
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
+      - gcc-4.8
       - g++-4.8
 
 install:
