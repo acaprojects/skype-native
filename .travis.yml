@@ -27,6 +27,10 @@ install:
  - sudo sh -c "echo 'deb http://download.mono-project.com/repo/debian wheezy-libtiff-compat main' >> /etc/apt/sources.list.d/mono-xamarin.list"
  - sudo apt-get update
  - sudo apt-get install mono-devel
+ - export CC="gcc-4.8"
+ - export CXX="g++-4.8"
+ - export LINK="gcc-4.8"
+ - export LINKXX="g++-4.8"
  - npm install
 
 script: gulp
