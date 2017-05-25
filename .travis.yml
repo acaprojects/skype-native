@@ -27,7 +27,7 @@ install:
  - export LINKXX="g++-4.8"
  - npm install
 
-script: gulp
+script: gulp build
 
 after_success:
 - npm install -g codeclimate-test-reporter
