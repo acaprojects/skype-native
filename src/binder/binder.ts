@@ -58,9 +58,15 @@ export interface BaseBindingTarget {
     references?: CLRAssembly[];
 }
 
-export type CompilableTarget = BaseBindingTarget & { source?: CLRSource };
+/**
+ * Reference to a CLR method for compilation at runtime.
+ */
+export interface CompilableTarget extends BaseBindingTarget { source?: CLRSource; }
 
-export type PrecompiledTarget = BaseBindingTarget & { assemblyFile?: CLRAssembly };
+/**
+ * Reference to a precompiled CLR method for binding.
+ */
+export interface PrecompiledTarget extends BaseBindingTarget { assemblyFile?: CLRAssembly; }
 
 export type BindingTarget = CompilableTarget | PrecompiledTarget;
 
