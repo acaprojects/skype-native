@@ -23,19 +23,20 @@ const skypeNativeLib = relative('../lib/native/win32', 'SkypeClient.dll');
  */
 const bind = createBinder<PrecompiledTarget>({
     assemblyFile: skypeNativeLib,
-    references: [lyncSDK]
+    references: [lyncSDK],
+    typeName: 'SkypeClient.Bindings'
 });
 
 /**
  * Mappings to .NET source for the native client bindings.
  */
-const bindings = {
+/*const bindings = {
     startCall: bind.sync<any, boolean>({typeName: 'StartCall'}),
     endCall: bind.sync<null, boolean>({typeName: 'EndCall'}),
     listenIncoming: bind.sync<CLRProxy<any, undefined>, undefined>({typeName: 'Incoming'}),
     listenConnected: bind.sync<CLRProxy<string[], undefined>, undefined>({typeName: 'Connected'}),
     listenDisconnected: bind.sync<CLRProxy<undefined, undefined>, undefined>({typeName: 'Disconnected'})
-};
+};*/
 
 /**
  * Live bindings into the native Skype SDK.
@@ -51,11 +52,13 @@ export class LiveClient extends EventEmitter implements SkypeClient {
     }
 
     public call(uri: string, fullscreen = true, display = 0) {
-        return bindings.startCall({uri, fullscreen, display});
+        const args = { uri, fullscreen, display };
+        const startCall = bind.sync<typeof args, void>({methodName: 'Call'});
+        return startCall(args);
     }
 
     public endCall() {
-        return bindings.endCall();
+        return true; // bindings.endCall();
     }
 
     public mute(state = true) {
@@ -64,19 +67,27 @@ export class LiveClient extends EventEmitter implements SkypeClient {
 
     private bindEvents() {
         // Curry an event handler that we can pass to .NET.
-        const emitWithPayload = <T>(event: SkypeClientEvent) =>
-            createCLRProxy<T, undefined>((payload) => this.emit(event, payload));
+        const emit = <T>(event: SkypeClientEvent) =>
+            createCLRProxy<T, null>((payload) => this.emit(event, payload));
 
-        bindings.listenIncoming(createCLRProxy((call: any) =>
+        interface IncomingArgs {
+            inviter: string;
+            accept: SyncBinding<null, void>;
+            reject: SyncBinding<null, void>;
+        }
+        const onIncoming = bind.sync<CLRProxy<IncomingArgs, any>, null>({methodName: 'OnIncoming'});
+        onIncoming(createCLRProxy((call: IncomingArgs) =>
             this.emit('incoming',
                       call.inviter,
                       () => call.accept(null, true),
                       () => call.reject(null, true))
         ));
 
-        bindings.listenConnected(emitWithPayload<string[]>('connected'));
+        const onConnect = bind.sync<CLRProxy<string[], null>, null>({methodName: 'OnConnect'});
+        onConnect(emit('connected'));
 
-        bindings.listenDisconnected(emitWithPayload<undefined>('disconnected'));
+        const ondisconnect = bind.sync<CLRProxy<string, null>, null>({methodName: 'OnDisconnect'});
+        ondisconnect(emit('disconnected'));
     }
 
 }

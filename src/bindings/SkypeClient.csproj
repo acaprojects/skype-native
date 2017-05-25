@@ -66,6 +66,8 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppController.cs" />
+    <Compile Include="Bindings.cs" />
     <Compile Include="Connected.cs" />
     <Compile Include="Disconnected.cs" />
     <Compile Include="Incoming.cs" />

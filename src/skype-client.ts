@@ -30,9 +30,8 @@ export interface SkypeClient extends EventEmitter {
     /**
      * Start a fullscreen, outbound call on the primary diplay.
      * @param  {string}  uri        the uri to dial
-     * @return {boolean}            true if the call was started
      */
-    call(uri: string): boolean;
+    call(uri: string): void;
 
     /**
      * Start an outbound call on the primary display.
@@ -40,7 +39,7 @@ export interface SkypeClient extends EventEmitter {
      * @param  {boolean} fullscreen true if the UI should be shown full screen
      * @return {boolean}            true if the call was started
      */
-    call(uri: string, fullscreen: boolean): boolean;
+    call(uri: string, fullscreen: boolean): void;
 
     /**
      * Start an outbound call.
@@ -49,27 +48,27 @@ export interface SkypeClient extends EventEmitter {
      * @param  {number}  display    the monitor to show the call UI on
      * @return {boolean}            true if the call was started
      */
-    call(uri: string, fullscreen: boolean, display: number): boolean;
+    call(uri: string, fullscreen: boolean, display: number): void;
 
     /**
      * End all currently active calls.
      * @return {boolean} true if successfull
      */
-    endCall(): boolean;
+    endCall(): void;
 
     /**
      * Set the privacy mute state of any calls currently in progress.
      * @param  {boolean} state true if the mute should be activated
      * @return {boolean}       true if successful
      */
-    mute(state: boolean): boolean;
+    mute(state: boolean): void;
 
     // getUser(): string;
 
     /**
      * Subsribe to incoming call events.
      */
-    on(event: 'incoming', listener: (inviter?: string, accept?: Action, reject?: Action) => void): this;
+    on(event: 'incoming', listener: (inviter?: string, accept?: () => void, reject?: () => void) => void): this;
 
     /**
      * Subscribe to call connected events.
