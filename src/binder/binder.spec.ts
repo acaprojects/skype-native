@@ -17,16 +17,20 @@ describe('bindToCLR()', () => {
     });
 
     it('supports binding to precompiled assemblies', () => {
-        const identity = bindToCLR<SyncBinding>({
-            assemblyFile: 'lib/native/win32/SkypeClient.dll',
-            typeName: 'Test.TestBinding',
-            methodName: 'Identity'
-        });
+        if (process.platform === 'win32') {
+            const identity = bindToCLR<SyncBinding>({
+                assemblyFile: 'lib/native/win32/SkypeClient.dll',
+                typeName: 'Test.TestBinding',
+                methodName: 'Identity'
+            });
 
-        const input = Math.random();
-        const result = identity(input, true);
+            const input = Math.random();
+            const result = identity(input, true);
 
-        expect(result).to.equal(input);
+            expect(result).to.equal(input);
+        } else {
+            this.skip();
+        }
     });
 });
 
