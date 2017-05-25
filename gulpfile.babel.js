@@ -100,8 +100,7 @@ gulp.task('build:native', () => {
  */
 gulp.task('build', () =>
     runSequence(
-        'lint',
-        'clean',
+        ['lint', 'clean'],
         ['build:typescript', 'build:native']
     )
 );
@@ -119,4 +118,9 @@ gulp.task('doc', () =>
         }))
 );
 
-gulp.task('default', ['build']);
+gulp.task('default', () =>
+    runSequence(
+        'build',
+        ['test', 'doc']
+    )
+);
