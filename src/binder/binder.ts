@@ -39,12 +39,13 @@ export type CLRProxy<Payload, Result> = (payload: Payload, callback: CLRCallback
 export type CLRAssembly = string;
 
 /**
- * A string containing compilable CLR source code.
+ * A string containing compilable CLR source code or the path to an uncompiled
+ * file.
  */
-export type InlineCLRSource = string;
+export type CLRSource = string;
 
 /**
- * CLR object path for binding to.
+ * Base CLR target reference.
  */
 export interface BaseBindingTarget {
     /** Typename to link to. If ommitted `StartUp` will be assumed. */
@@ -57,7 +58,7 @@ export interface BaseBindingTarget {
     references?: CLRAssembly[];
 }
 
-export type CompilableTarget = BaseBindingTarget & { source?: InlineCLRSource };
+export type CompilableTarget = BaseBindingTarget & { source?: CLRSource };
 
 export type PrecompiledTarget = BaseBindingTarget & { assemblyFile?: CLRAssembly };
 
@@ -69,7 +70,7 @@ export type BindingTarget = CompilableTarget | PrecompiledTarget;
 export function bindToCLR<T>(target:
           BindingTarget
         | CLRAssembly
-        | InlineCLRSource) {
+        | CLRSource) {
     return edge.func(target) as T;
 }
 
