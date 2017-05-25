@@ -101,7 +101,7 @@ gulp.task('build:native', () => {
 gulp.task('build', () =>
     runSequence(
         ['lint', 'clean'],
-        ['build:typescript', 'build:native']
+        ['build:typescript', 'build:native'],
         'doc'
     )
 );
