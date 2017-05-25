@@ -34,13 +34,45 @@ export type Binding = AsyncBinding | SyncBinding;
 export type CLRProxy = (payload: any, callback: CLRCallback) => void;
 
 /**
+ * CLR object path for binding to.
+ */
+export interface BindingTarget {
+    /**
+     * Typename to link to. If ommitted `StartUp` will be assumed.
+     */
+    typeName?: string;
+
+    /**
+     * Method to bind to. If ommitted `Invoke` will be assumed.
+     */
+    methodName?: string;
+
+    /**
+     * External assembly references.
+     */
+    references?: string[];
+}
+
+export interface CompilableBinding extends BindingTarget {
+    /**
+     * C# / F# etc source for runtime compilation.
+     */
+    source: string;
+}
+
+export interface PrecompiledBinding extends BindingTarget {
+    /**
+     * Path to a pre-compilled assembly (*.dll) for binding to.
+     * @type {string}
+     */
+    assemblyFile: string;
+}
+
+/**
  * Creates a CLR binding for use in Node.
  */
-export function bindToCLR<T extends Binding>(source: string,
-                                             references: string[] = [],
-                                             typeName = 'StartUp',
-                                             methodName = 'Invoke') {
-    return edge.func({source, references, typeName, methodName}) as T;
+export function bindToCLR<T extends Binding>(target: CompilableBinding | PrecompiledBinding) {
+    return edge.func(target) as T;
 }
 
 /**
@@ -56,14 +88,22 @@ export function createBindingEnv(basePath = '', references: string[] = []) {
          * Create a binding to an asynchronous native action.
          */
         async: (action: string) =>
-            bindToCLR<AsyncBinding>(sourcePath(action), references, action),
+            bindToCLR<AsyncBinding>({
+                source: sourcePath(action),
+                typeName: action,
+                references
+            }),
 
         /**
          * Create a binding to a synchronous native action.
          */
         sync: (action: string) =>
             (input?: any) =>
-                bindToCLR<SyncBinding>(sourcePath(action), references, action)(input, true)
+                bindToCLR<SyncBinding>({
+                    source: sourcePath(action),
+                    typeName: action,
+                    references
+                })(input, true)
     };
 }
 

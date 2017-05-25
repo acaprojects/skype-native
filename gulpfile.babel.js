@@ -16,7 +16,7 @@ const vsProject = './skype-native.sln';
 const paths = {
     dist: 'dist/',
     docs: 'docs/',
-    nativeLibs: 'lib/native/win32/*.dll'
+    nativeLibs: 'lib/native/'
 }
 
 /**
@@ -83,18 +83,14 @@ gulp.task('build:native', () => {
                 targets: ['Clean', 'Build'],
                 toolsVersion: 4.0,
                 properties: {
-                    OutDir: path.join(__dirname, paths.dist)
+                    OutDir: path.join(__dirname, paths.nativeLibs, 'win32')
                 },
                 errorOnFail: true,
                 emitEndEvent: true
             }));
 
-    const skip = () => {
+    const skip = () =>
         warn('Unsupported build platform for native libs. Using prebuilt.');
-        return pipeToDist([
-            gulp.src(paths.nativeLibs)
-        ]);
-    }
 
     return process.platform === 'win32' ? build() : skip();
 });

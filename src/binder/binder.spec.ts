@@ -3,12 +3,27 @@ import 'mocha';
 import { expect } from 'chai';
 
 describe('bindToCLR()', () => {
-    it('support binding to CLR actions', () => {
-        // TestBinding contains a simple identity function
-        const identity = bindToCLR<SyncBinding>('src/bindings/TestBinding.cs', [], 'TestBinding');
+    it('support binding to CLR that\'s compiled on the fly', () => {
+        const identity = bindToCLR<SyncBinding>({
+            source: 'src/bindings/TestBinding.cs',
+            typeName: 'Test.TestBinding',
+            methodName: 'Identity'
+        });
 
         const input = Math.random();
+        const result = identity(input, true);
 
+        expect(result).to.equal(input);
+    });
+
+    it('supports binding to precompiled assemblies', () => {
+        const identity = bindToCLR<SyncBinding>({
+            assemblyFile: 'lib/native/win32/SkypeClient.dll',
+            typeName: 'Test.TestBinding',
+            methodName: 'Identity'
+        });
+
+        const input = Math.random();
         const result = identity(input, true);
 
         expect(result).to.equal(input);
@@ -23,7 +38,6 @@ describe('createBindingEnv()', () => {
         const identity = bindToEnv.sync('TestBinding');
 
         const input = Math.random();
-
         const result = identity(input);
 
         expect(result).to.equal(input);
