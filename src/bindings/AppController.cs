@@ -16,16 +16,19 @@ namespace SkypeClient
 
         private readonly LyncClient client;
 
-        private AppController(LyncClient client)
+        private readonly Automation automate;
+
+        private AppController()
         {
-            this.client = client;
+            client = LyncClient.GetClient();
+            automate = LyncClient.GetAutomation();
         }
 
         public static AppController getInstance()
         {
             if (instance == null)
             {
-                instance = new AppController(LyncClient.GetClient());
+                instance = new AppController();
             }
 
             // TODO check we still have comms with the client / reconnect if nesessary.
@@ -37,13 +40,13 @@ namespace SkypeClient
         {
             List<string> participants = new List<string> { uri };
 
-            LyncClient.GetAutomation().BeginStartConversation(
+            automate.BeginStartConversation(
                 AutomationModalities.Video,
                 participants,
                 null,
                 (ar) =>
                 {
-                    ConversationWindow win = LyncClient.GetAutomation().EndStartConversation(ar);
+                    ConversationWindow win = automate.EndStartConversation(ar);
                     if (fullscreen)
                     {
                         win.ShowFullScreen(display);
@@ -54,23 +57,29 @@ namespace SkypeClient
 
         public void HangupAll()
         {
-            foreach (Conversation conversation in client.ConversationManager.Conversations)
+            foreach (var conversation in client.ConversationManager.Conversations)
             {
                 conversation.End();
             }
         }
 
+        public void Mute(bool state)
+        {
+
+        }
+
         public void OnIncoming(Func<object, Task<object>> callback)
         {
-            client.ConversationManager.ConversationAdded += (object sender, ConversationManagerEventArgs e) =>
+            client.ConversationManager.ConversationAdded += (c, e) =>
             {
-                AVModality av = (AVModality)e.Conversation.Modalities[ModalityTypes.AudioVideo];
+                var conversation = c as Conversation;
+                var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
 
                 // TODO: reject as busy if already in a call
 
                 if (av.State == ModalityState.Notified)
                 {
-                    Contact inviter = (Contact)e.Conversation.Properties[ConversationProperty.Inviter];
+                    var inviter = (Contact)conversation.Properties[ConversationProperty.Inviter];
 
 #pragma warning disable CS1998
                     Func<object, Task<object>> AcceptCall = async (dynamic options) =>
@@ -80,7 +89,7 @@ namespace SkypeClient
                         {
                             if (args.NewState == ModalityState.Connected)
                             {
-                                VideoChannel channelStream = av.VideoChannel;
+                                var channelStream = av.VideoChannel;
 
                                 while (!channelStream.CanInvoke(ChannelAction.Start))
                                 {
@@ -109,7 +118,7 @@ namespace SkypeClient
                         // TODO: support choosing display to open on as well as fullscreen as optional
 
                         // Fullscreen the call window
-                        ConversationWindow window = LyncClient.GetAutomation().GetConversationWindow(e.Conversation);
+                        ConversationWindow window = automate.GetConversationWindow(e.Conversation);
                         window.ShowFullScreen(0);
 
                         return null;
@@ -136,14 +145,16 @@ namespace SkypeClient
 
         public void OnConnect(Func<object, Task<object>> callback)
         {
-            client.ConversationManager.ConversationAdded += (o, e) =>
+            client.ConversationManager.ConversationAdded += (c, e) =>
             {
-                AVModality av = (AVModality)e.Conversation.Modalities[ModalityTypes.AudioVideo];
-                av.ModalityStateChanged += (sender, args) =>
+                var conversation = c as Conversation;
+                var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
+ 
+                av.ModalityStateChanged += (m, args) =>
                 {
                     if (args.NewState == ModalityState.Connected)
                     {
-                        var participants = e.Conversation.Participants.Select(p => (string)p.Properties[ParticipantProperty.Name]);
+                        var participants = conversation.Participants.Select(p => (string)p.Properties[ParticipantProperty.Name]);
                         var participantNames = participants.Cast<string>().ToArray();
 
                         callback(participants).Start();
@@ -154,10 +165,11 @@ namespace SkypeClient
 
         public void OnDisconnect(Func<object, Task<object>> callback)
         {
-            client.ConversationManager.ConversationAdded += (o, e) =>
+            client.ConversationManager.ConversationAdded += (c, e) =>
             {
-                AVModality av = (AVModality)e.Conversation.Modalities[ModalityTypes.AudioVideo];
-                av.ModalityStateChanged += (sender, args) =>
+                var conversation = c as Conversation;
+                var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
+                av.ModalityStateChanged += (m, args) =>
                 {
                     if (args.NewState == ModalityState.Disconnected)
                     {

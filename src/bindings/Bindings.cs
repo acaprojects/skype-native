@@ -6,36 +6,31 @@ namespace SkypeClient
     {
         public async Task<object> Call(dynamic options)
         {
-            AppController app = AppController.getInstance();
-            app.Call(options.uri, options.fullscreen, options.display);
+            AppController.getInstance().Call(options.uri, options.fullscreen, options.display);
             return null;
         }
 
         public async Task<object> HangupAll(dynamic options)
         {
-            AppController app = AppController.getInstance();
-            app.HangupAll();
+            AppController.getInstance().HangupAll();
             return null;
         }
 
         public async Task<object> OnIncoming(dynamic callback)
         {
-            AppController app = AppController.getInstance();
-            app.OnIncoming(callback);
+            AppController.getInstance().OnIncoming(callback);
             return null;
         }
 
         public async Task<object> OnConnect(dynamic callback)
         {
-            AppController app = AppController.getInstance();
-            app.OnConnect(callback);
+            AppController.getInstance().OnConnect(callback);
             return null;
         }
 
         public async Task<object> OnDisconnect(dynamic callback)
         {
-            AppController app = AppController.getInstance();
-            app.OnDisconnect(callback);
+            AppController.getInstance().OnDisconnect(callback);
             return null;
         }
     }
