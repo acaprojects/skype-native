@@ -64,7 +64,7 @@ gulp.task('clean', () =>
 /**
  * Transpile the Typescript project components into something Node friendly.
  */
-gulp.task('build:typescript', ['doc'], () => {
+gulp.task('build:typescript', () => {
     const tsc = tsProject.src().pipe(tsProject());
 
     return pipeToDist([
@@ -122,6 +122,6 @@ gulp.task('doc', () =>
 gulp.task('default', () =>
     runSequence(
         'build',
-        ['test', 'doc']
+        'test'
     )
 );
