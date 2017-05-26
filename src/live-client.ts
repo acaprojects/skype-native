@@ -52,7 +52,8 @@ export class LiveClient extends EventEmitter implements SkypeClient {
     }
 
     public mute(state = true) {
-        return true;
+        const mute = bind.sync<boolean, void>({methodName: 'Mute'});
+        return mute(state);
     }
 
     private bindEvents() {

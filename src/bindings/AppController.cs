@@ -65,7 +65,17 @@ namespace SkypeClient
 
         public void Mute(bool state)
         {
-
+            foreach (var conversation in client.ConversationManager.Conversations)
+            {
+                var participant = conversation.SelfParticipant;
+                participant.BeginSetMute(
+                    state,
+                    (ar) =>
+                    {
+                        participant.EndSetMute(ar);
+                    },
+                    null);
+            }
         }
 
         public void OnIncoming(Func<object, Task<object>> callback)
