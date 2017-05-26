@@ -28,17 +28,6 @@ const bind = createBinder<PrecompiledTarget>({
 });
 
 /**
- * Mappings to .NET source for the native client bindings.
- */
-/*const bindings = {
-    startCall: bind.sync<any, boolean>({typeName: 'StartCall'}),
-    endCall: bind.sync<null, boolean>({typeName: 'EndCall'}),
-    listenIncoming: bind.sync<CLRProxy<any, undefined>, undefined>({typeName: 'Incoming'}),
-    listenConnected: bind.sync<CLRProxy<string[], undefined>, undefined>({typeName: 'Connected'}),
-    listenDisconnected: bind.sync<CLRProxy<undefined, undefined>, undefined>({typeName: 'Disconnected'})
-};*/
-
-/**
  * Live bindings into the native Skype SDK.
  */
 export class LiveClient extends EventEmitter implements SkypeClient {
@@ -58,7 +47,8 @@ export class LiveClient extends EventEmitter implements SkypeClient {
     }
 
     public endCall() {
-        return true; // bindings.endCall();
+        const hangupAll = bind.sync<null, void>({methodName: 'HangupAll'});
+        return hangupAll();
     }
 
     public mute(state = true) {

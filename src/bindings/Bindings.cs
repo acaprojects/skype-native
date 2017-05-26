@@ -11,6 +11,13 @@ namespace SkypeClient
             return null;
         }
 
+        public async Task<object> HangupAll(dynamic options)
+        {
+            AppController app = AppController.getInstance();
+            app.HangupAll();
+            return null;
+        }
+
         public async Task<object> OnIncoming(dynamic callback)
         {
             AppController app = AppController.getInstance();

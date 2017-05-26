@@ -52,6 +52,14 @@ namespace SkypeClient
                 null);
         }
 
+        public void HangupAll()
+        {
+            foreach (Conversation conversation in client.ConversationManager.Conversations)
+            {
+                conversation.End();
+            }
+        }
+
         public void OnIncoming(Func<object, Task<object>> callback)
         {
             client.ConversationManager.ConversationAdded += (object sender, ConversationManagerEventArgs e) =>
