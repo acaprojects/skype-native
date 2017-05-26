@@ -1,6 +1,6 @@
 {
   "name": "skype-native",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "Node bindings for the native Skype for Business SDK",
   "repository": "acaprojects/skype-native",
   "main": "./dist/index.js",
