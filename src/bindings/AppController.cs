@@ -80,9 +80,9 @@ namespace SkypeClient
 
         public void OnIncoming(Func<object, Task<object>> callback)
         {
-            client.ConversationManager.ConversationAdded += (c, e) =>
+            client.ConversationManager.ConversationAdded += (o, e) =>
             {
-                var conversation = c as Conversation;
+                var conversation = e.Conversation;
                 var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
 
                 // TODO: reject as busy if already in a call
@@ -95,7 +95,7 @@ namespace SkypeClient
                     Func<object, Task<object>> AcceptCall = async (dynamic options) =>
                     {
                         // Start our video on connect
-                        av.ModalityStateChanged += (o, args) =>
+                        av.ModalityStateChanged += (sender, args) =>
                         {
                             if (args.NewState == ModalityState.Connected)
                             {
@@ -155,12 +155,12 @@ namespace SkypeClient
 
         public void OnConnect(Func<object, Task<object>> callback)
         {
-            client.ConversationManager.ConversationAdded += (c, e) =>
+            client.ConversationManager.ConversationAdded += (o, e) =>
             {
-                var conversation = c as Conversation;
+                var conversation = e.Conversation;
                 var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
  
-                av.ModalityStateChanged += (m, args) =>
+                av.ModalityStateChanged += (sender, args) =>
                 {
                     if (args.NewState == ModalityState.Connected)
                     {
@@ -175,11 +175,11 @@ namespace SkypeClient
 
         public void OnDisconnect(Func<object, Task<object>> callback)
         {
-            client.ConversationManager.ConversationAdded += (c, e) =>
+            client.ConversationManager.ConversationAdded += (o, e) =>
             {
-                var conversation = c as Conversation;
+                var conversation = e.Conversation;
                 var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
-                av.ModalityStateChanged += (m, args) =>
+                av.ModalityStateChanged += (sender, args) =>
                 {
                     if (args.NewState == ModalityState.Disconnected)
                     {
@@ -191,12 +191,12 @@ namespace SkypeClient
         
         public void OnMuteChange(Func<object, Task<object>> callback)
         {
-            client.ConversationManager.ConversationAdded += (c, e) =>
+            client.ConversationManager.ConversationAdded += (o, e) =>
             {
-                var conversation = c as Conversation;
+                var conversation = e.Conversation;
                 var self = conversation.SelfParticipant;
                 var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
-                av.AVModalityPropertyChanged += (m, args) =>
+                av.AVModalityPropertyChanged += (sender, args) =>
                 {
                     if (args.Property == ModalityProperty.AVModalityAudioCaptureMute)
                     {
