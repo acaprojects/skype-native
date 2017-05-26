@@ -188,5 +188,23 @@ namespace SkypeClient
                 };
             };
         }
+        
+        public void OnMuteChange(Func<object, Task<object>> callback)
+        {
+            client.ConversationManager.ConversationAdded += (c, e) =>
+            {
+                var conversation = c as Conversation;
+                var self = conversation.SelfParticipant;
+                var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
+                av.AVModalityPropertyChanged += (m, args) =>
+                {
+                    if (args.Property == ModalityProperty.AVModalityAudioCaptureMute)
+                    {
+                        var state = (bool)args.Value;
+                        callback(state).Start();
+                    }
+                };
+            };
+        }
     }
 }

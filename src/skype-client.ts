@@ -80,6 +80,8 @@ export interface SkypeClient extends EventEmitter {
      */
     on(event: 'disconnected', listener: () => void): this;
 
+    on(event: 'mute', listenter: (state: boolean) => void): this;
+
     on(event: 'muted', listener: () => void): this;
 
     on(event: 'unmuted', listener: () => void): this;

@@ -39,5 +39,11 @@ namespace SkypeClient
             AppController.getInstance().OnDisconnect(callback);
             return null;
         }
+
+        public async Task<object> OnMuteChange(dynamic callback)
+        {
+            AppController.getInstance().OnMuteChange(callback);
+            return null;
+        }
     }
 }

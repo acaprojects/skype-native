@@ -79,6 +79,12 @@ export class LiveClient extends EventEmitter implements SkypeClient {
 
         const ondisconnect = bind.sync<CLRProxy<string, null>, null>({methodName: 'OnDisconnect'});
         ondisconnect(emit('disconnected'));
+
+        const onMuteChanged = bind.sync<CLRProxy<boolean, any>, null>({methodName: 'OnMuteChange'});
+        onMuteChanged(createCLRProxy((state) => {
+            this.emit('mute', state);
+            this.emit(state ? 'muted' : 'unmuted');
+        }));
     }
 
 }
