@@ -53,6 +53,12 @@ export class LiveClient extends EventEmitter implements SkypeClient {
         return startCall(args);
     }
 
+    public join(url: string, fullscreen = true, display = 0) {
+        const args = { url, fullscreen, display };
+        const joinMeeting = bind.sync<typeof args, void>({methodName: 'Join'});
+        return joinMeeting(args);
+    }
+
     public endCall() {
         const hangupAll = bind.sync<null, void>({methodName: 'HangupAll'});
         return hangupAll();

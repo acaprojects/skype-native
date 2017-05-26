@@ -10,6 +10,12 @@ namespace SkypeClient
             return null;
         }
 
+        public async Task<object> Join(dynamic options)
+        {
+            AppController.Instance().JoinMeeting(options.url, options.fullscreen, options.display);
+            return null;
+        }
+
         public async Task<object> HangupAll(dynamic options)
         {
             AppController.Instance().HangupAll();

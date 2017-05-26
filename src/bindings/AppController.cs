@@ -62,6 +62,30 @@ namespace SkypeClient
                 null);
         }
 
+        public void JoinMeeting(string url, bool fullscreen = true, int display = 0)
+        {
+            // Convert meeting URL's in the format 'https://meet.lync.com/<company>/<user>/<conferenceId>'
+            // to the 'conf:sip:userUri;gruu;opaque=app:conf:focus:id:conferenceId?' URI structure
+            // string[] linktokens = url.Split('/');
+            // string joinUri = "conf:" + client.Self.Contact.Uri + ";gruu;opaque=app:conf:focus:id:" + linktokens.Last() + "?";
+
+            // client.ConversationManager.JoinConference(joinUri);
+
+            string joinUri = url;
+            automate.BeginStartConversation(
+                joinUri,
+                0,
+                (ar) =>
+                {
+                    ConversationWindow win = automate.EndStartConversation(ar);
+                    if (fullscreen)
+                    {
+                        win.ShowFullScreen(display);
+                    }
+                },
+                null);
+        }
+
         public void HangupAll()
         {
             foreach (var conversation in client.ConversationManager.Conversations)

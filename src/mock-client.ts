@@ -15,6 +15,11 @@ export class MockClient extends EventEmitter implements SkypeClient {
         return true;
     }
 
+    public join(url: string, fullscreen = true, display = 0) {
+        this.emit('connected', [url]);
+        return true;
+    }
+
     public endCall() {
         this.emit('disconnected');
         return true;

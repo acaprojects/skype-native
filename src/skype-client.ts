@@ -36,37 +36,41 @@ export interface SkypeClient extends EventEmitter {
 
     /**
      * Start a fullscreen, outbound call on the primary diplay.
-     * @param  {string}  uri        the uri to dial
      */
     call(uri: string): void;
 
     /**
      * Start an outbound call on the primary display.
-     * @param  {string}  uri        the uri to dial
-     * @param  {boolean} fullscreen true if the UI should be shown full screen
-     * @return {boolean}            true if the call was started
      */
     call(uri: string, fullscreen: boolean): void;
 
     /**
      * Start an outbound call.
-     * @param  {string}  uri        the uri to dial
-     * @param  {boolean} fullscreen true if the UI should be shown full screen
-     * @param  {number}  display    the monitor to show the call UI on
-     * @return {boolean}            true if the call was started
      */
     call(uri: string, fullscreen: boolean, display: number): void;
 
     /**
+     * Join a meeting by URL and open full screen on the primary display.
+     */
+    join(url: string): void;
+
+    /**
+     * Join a meeting by URL and show on the primary display.
+     */
+    join(url: string, fullscreen: boolean): void;
+
+    /**
+     * Join a meeting by URL.
+     */
+    join(url: string, fullscreen: boolean, display: number): void;
+
+    /**
      * End all currently active calls.
-     * @return {boolean} true if successfull
      */
     endCall(): void;
 
     /**
      * Set the privacy mute state of any calls currently in progress.
-     * @param  {boolean} state true if the mute should be activated
-     * @return {boolean}       true if successful
      */
     mute(state: boolean): void;
 
