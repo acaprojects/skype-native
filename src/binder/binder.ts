@@ -1,37 +1,15 @@
-import * as path from 'path';
-import * as R from 'ramda';
 import { isElectron } from './runtime-env';
 
-// Edge needs to be compiled against a different verion of node to support
+// edge needs to be compiled against a different verion of node to support
 // electron. This is still a little messy as we need to pull down both, but at
 // least it switches in the relevant version silently.
 const edge = isElectron() ? require('electron-edge') : require('edge');
 
-/**
- * A callback function for invokation from .NET.
- */
-export type CLRCallback<Result> = (error?: Error, result?: Result) => void;
+export type Binding<I, O> = AsyncBinding<I, O> & SyncBinding<I, O>;
+export type AsyncBinding<I, O> = (input?: I, callback?: Callback<O>) => void;
+export type SyncBinding<I, O> = (input: I | undefined, synchronous: true) => O;
 
-/**
- * Binding to an asynchronous native action.
- */
-export type AsyncBinding<Input, Result> = (input?: Input, callback?: CLRCallback<Result>) => void;
-
-/**
- * Binding to a synchronous native action.
- */
-export type SyncBinding<Input, Result> = (input: Input | undefined, synchronous: true) => Result;
-
-/**
- * Possible .NET binding behaviours.
- */
-export type Binding<Input, Result> = AsyncBinding<Input, Result> | SyncBinding<Input, Result>;
-
-/**
- * A Node function that can be exposed to CLR for async execution. This will be
- * marshelled into .NET as a Func<object, Task<object>>.
- */
-export type CLRProxy<Payload, Result> = (payload: Payload, callback: CLRCallback<Result>) => void;
+export type Callback<T> = (error: Error | null, result?: T) => void;
 
 /**
  * A path to a pre-compiled CLR assembly (*.dll).
@@ -61,69 +39,51 @@ export interface BaseBindingTarget {
 /**
  * Reference to a CLR method for compilation at runtime.
  */
-export interface CompilableTarget extends BaseBindingTarget { source?: CLRSource; }
+export interface CompilableTarget extends BaseBindingTarget { source: CLRSource; }
 
 /**
  * Reference to a precompiled CLR method for binding.
  */
-export interface PrecompiledTarget extends BaseBindingTarget { assemblyFile?: CLRAssembly; }
-
-export type BindingTarget = CompilableTarget | PrecompiledTarget;
+export interface PrecompiledTarget extends BaseBindingTarget { assemblyFile: CLRAssembly; }
+export interface PartialPrecompiledTarget extends BaseBindingTarget { assemblyFile?: CLRAssembly; }
 
 /**
- * Creates a CLR binding for use in Node.
+ * Valid target that can be used to instantiate a binding for CLR interop.
  */
-export function bindToCLR<T>(target:
-          BindingTarget
-        | CLRAssembly
-        | CLRSource) {
-    return edge.func(target) as T;
+export type BindingTarget = CompilableTarget | PrecompiledTarget | CLRAssembly | CLRSource;
+
+function bindToCLR<I, O>(target: BindingTarget) {
+    return edge.func(target) as Binding<I, O>;
 }
 
 /**
- * Enclose around a partial binding target to simplify the creation of bindings
- * coming from the same source / with similar requirements.
- */
-export function createBinder<T extends BindingTarget>(env: T) {
-
-    const merge = (target: T) => R.merge(env, target) as BindingTarget;
-
-    const bind = <BindingType>(target: T) => bindToCLR<BindingType>(merge(target));
-
-    return {
-        /**
-         * Create a binding to a synchronous native action.
-         */
-        sync: <InputType, ResultType>(target: T) => (input?: InputType) =>
-            bind<SyncBinding<InputType, ResultType>>(target)(input, true),
-
-        /**
-         * Create a binding to an asynchronous native action.
-         */
-        async: <InputType, ResultType>(target: T) => (input?: InputType) =>
-            new Promise<ResultType>((resolve, reject) =>
-                bind<AsyncBinding<InputType, ResultType>>(target)(input, (err, result) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(result);
-                    }
-                })
-            )
-    };
-}
-
-/**
- * Wrap a function into a form that can be marshalled into .NET for execution
- * there.
+ * Create a binding to an asynchronous CLR task.
  *
- * Functions passed to .NET must be of a prescriptive async pattern for edge
- * to marshall them neatly. This simply turns a Node function of arity 1 into
- * the ordaned format.
+ * The returned binding allows for invokation with either the Node callback
+ * pattern, or returns a promise too.
  */
-export function createCLRProxy<Input, Result>(action: (payload: Input) => void): CLRProxy<Input, Result> {
-    return (payload, callback) => {
-        action(payload);
-        callback();
+export function async<I, O>(target: BindingTarget) {
+    const binding = bindToCLR<I, O>(target) as AsyncBinding<I, O>;
+
+    return (input: I, callback?: Callback<O>) => {
+        const promise = new Promise<O>((resolve, reject) =>
+            binding(input, (err, result) => err ? reject(err) : resolve(result)));
+
+        if (callback && typeof callback === 'function') {
+            promise
+                .then((result) => callback(null, result))
+                .catch(callback);
+        }
+
+        return promise;
     };
+}
+
+/**
+ * Create a binding to a synchronous CLR task.
+ *
+ * If the taks cannot be run synchonously an Error will be raised.
+ */
+export function sync<I, O>(target: BindingTarget) {
+    return (input?: I) => bindToCLR<I, O>(target)(input, true);
 }

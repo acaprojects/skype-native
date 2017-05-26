@@ -1,7 +1,8 @@
 import { join } from 'path';
 import { EventEmitter } from 'events';
+import * as R from 'ramda';
 import { SkypeClient, SkypeClientEvent, Action } from './skype-client';
-import { createBinder, createCLRProxy, PrecompiledTarget, SyncBinding, CLRProxy } from './binder';
+import { sync, async, PartialPrecompiledTarget } from './binder';
 
 /**
  * Resolves a set of paths relative to the curent directory.
@@ -9,23 +10,19 @@ import { createBinder, createCLRProxy, PrecompiledTarget, SyncBinding, CLRProxy 
 const relative = (...path: string[]) => join(__dirname, ...path);
 
 /**
- * Lync SDK redist assembly.
+ * Binding environmnt for our native libs.
  */
-const lyncSDK = relative('../lib/native/win32', 'Microsoft.Lync.Model.dll');
-
-/**
- * Precompiled native bindings.
- */
-const skypeNativeLib = relative('../lib/native/win32', 'SkypeClient.dll');
-
-/**
- * Creates binding to our Skype CLR actions for use in Node.
- */
-const bind = createBinder<PrecompiledTarget>({
-    assemblyFile: skypeNativeLib,
-    references: [lyncSDK],
+const bindings = {
+    assemblyFile: relative('../lib/native/win32', 'SkypeClient.dll'),
+    references: [relative('../lib/native/win32', 'Microsoft.Lync.Model.dll')],
     typeName: 'SkypeClient.Bindings'
-});
+};
+
+const merge = (partial: PartialPrecompiledTarget) => R.merge(bindings, partial);
+
+const method = (name: string) => merge({methodName: name});
+
+const bindSync = <I, O>(methodName: string) => sync<I, O>(method(methodName));
 
 /**
  * Live bindings into the native Skype SDK.
@@ -42,34 +39,36 @@ export class LiveClient extends EventEmitter implements SkypeClient {
         this.bindEvents();
 
         // Super hacky quick test
-        const getUser = bind.sync<CLRProxy<undefined, any>, any>({methodName: 'GetActiveUser'});
-        const user = getUser();
-        this.user = {uri: user.uri};
+        interface UserDetails {
+            uri: string;
+        }
+        const getUser = bindSync<undefined, UserDetails>('GetActiveUser');
+        this.user = getUser();
     }
 
     public call(uri: string, fullscreen = true, display = 0) {
         const args = { uri, fullscreen, display };
-        const startCall = bind.sync<typeof args, void>({methodName: 'Call'});
+        const startCall = bindSync<typeof args, void>('Call');
         return startCall(args);
     }
 
     public join(url: string, fullscreen = true, display = 0) {
         const args = { url, fullscreen, display };
-        const joinMeeting = bind.sync<typeof args, void>({methodName: 'Join'});
+        const joinMeeting = bindSync<typeof args, void>('Join');
         return joinMeeting(args);
     }
 
     public endCall() {
-        const hangupAll = bind.sync<null, void>({methodName: 'HangupAll'});
+        const hangupAll = bindSync<null, void>('HangupAll');
         return hangupAll();
     }
 
     public mute(state = true) {
-        const mute = bind.sync<boolean, void>({methodName: 'Mute'});
+        const mute = bindSync<boolean, void>('Mute');
         return mute(state);
     }
 
-    private bindEvents() {
+    private bindEvents() {/*
         // Curry an event handler that we can pass to .NET.
         const emit = <T>(event: SkypeClientEvent) =>
             createCLRProxy<T, null>((payload) => this.emit(event, payload));
@@ -79,7 +78,7 @@ export class LiveClient extends EventEmitter implements SkypeClient {
             accept: SyncBinding<null, void>;
             reject: SyncBinding<null, void>;
         }
-        const onIncoming = bind.sync<CLRProxy<IncomingArgs, any>, null>({methodName: 'OnIncoming'});
+        const onIncoming = bindSync<>('OnIncoming');
         onIncoming(createCLRProxy((call: IncomingArgs) =>
             this.emit('incoming',
                       call.inviter,
@@ -98,6 +97,6 @@ export class LiveClient extends EventEmitter implements SkypeClient {
             this.emit('mute', state);
             this.emit(state ? 'muted' : 'unmuted');
         }));
-    }
+    */}
 
 }
