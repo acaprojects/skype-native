@@ -24,7 +24,7 @@ namespace SkypeClient
             automate = LyncClient.GetAutomation();
         }
 
-        public static AppController getInstance()
+        public static AppController Instance()
         {
             if (instance == null)
             {
@@ -34,6 +34,13 @@ namespace SkypeClient
             // TODO check we still have comms with the client / reconnect if nesessary.
 
             return instance;
+        }
+
+        public object GetActiveUser()
+        {
+            return new {
+                uri = client.Self.Contact.Uri
+            };
         }
 
         public void Call(string uri, bool fullscreen = true, int display = 0)

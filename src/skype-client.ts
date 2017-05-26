@@ -28,6 +28,13 @@ export type Predicate = Func<boolean>;
 export interface SkypeClient extends EventEmitter {
 
     /**
+     * Information about the currently logged in user.
+     */
+    readonly user: {
+        uri: string
+    };
+
+    /**
      * Start a fullscreen, outbound call on the primary diplay.
      * @param  {string}  uri        the uri to dial
      */
@@ -62,8 +69,6 @@ export interface SkypeClient extends EventEmitter {
      * @return {boolean}       true if successful
      */
     mute(state: boolean): void;
-
-    // getUser(): string;
 
     /**
      * Subsribe to incoming call events.

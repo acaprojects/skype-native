@@ -32,12 +32,19 @@ const bind = createBinder<PrecompiledTarget>({
  */
 export class LiveClient extends EventEmitter implements SkypeClient {
 
+    public readonly user: {uri: string};
+
     constructor() {
         super();
 
         // TODO: attempt to connect with / launch client on init
 
         this.bindEvents();
+
+        // Super hacky quick test
+        const getUser = bind.sync<CLRProxy<undefined, any>, any>({methodName: 'GetActiveUser'});
+        const user = getUser();
+        this.user = {uri: user.uri};
     }
 
     public call(uri: string, fullscreen = true, display = 0) {

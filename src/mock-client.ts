@@ -6,6 +6,10 @@ import { SkypeClient } from './skype-client';
  */
 export class MockClient extends EventEmitter implements SkypeClient {
 
+    public readonly user = {
+        uri: 'sip:foo@bar.com'
+    };
+
     public call(uri: string, fullscreen = true, display = 0) {
         this.emit('connected', [uri]);
         return true;
