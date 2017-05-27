@@ -59,24 +59,17 @@ function bindToCLR<I, O>(target: BindingTarget) {
 /**
  * Create a binding to an asynchronous CLR task.
  *
- * The returned binding allows for invokation with either the Node callback
- * pattern, or returns a promise too.
+ * The returned binding allows for invokation and response handling with either
+ * the Node callback pattern, or the returned promise.
  */
 export function async<I, O>(target: BindingTarget) {
     const binding = bindToCLR<I, O>(target) as AsyncBinding<I, O>;
 
-    return (input: I, callback?: Callback<O>) => {
-        const promise = new Promise<O>((resolve, reject) =>
-            binding(input, (err, result) => err ? reject(err) : resolve(result)));
-
-        if (callback && typeof callback === 'function') {
-            promise
-                .then((result) => callback(null, result))
-                .catch(callback);
-        }
-
-        return promise;
-    };
+    // wrap the async binding in a promise if no callback is supplied.
+    return (input: I, callback?: Callback<O>) =>
+        callback
+            ? binding(input, callback)
+            : new Promise<O>((y, n) => binding(input, (e, r) => e ? n(e) : y(r)));
 }
 
 /**
