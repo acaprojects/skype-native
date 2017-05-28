@@ -45,7 +45,6 @@ export interface CompilableTarget extends BaseBindingTarget { source: CLRSource;
  * Reference to a precompiled CLR method for binding.
  */
 export interface PrecompiledTarget extends BaseBindingTarget { assemblyFile: CLRAssembly; }
-export interface PartialPrecompiledTarget extends BaseBindingTarget { assemblyFile?: CLRAssembly; }
 
 /**
  * Valid target that can be used to instantiate a binding for CLR interop.
@@ -59,8 +58,9 @@ function bindToCLR<I, O>(target: BindingTarget) {
 /**
  * Create a binding to an asynchronous CLR task.
  *
- * The returned binding allows for invokation and response handling with either
- * the Node callback pattern, or the returned promise.
+ * A Node style callback may be provided for handling the outcome of the task.
+ * If no callback is provided, a promise will be returned that will resolve on
+ * completion.
  */
 export function async<I, O>(target: BindingTarget) {
     const binding = bindToCLR<I, O>(target) as AsyncBinding<I, O>;
@@ -79,4 +79,18 @@ export function async<I, O>(target: BindingTarget) {
  */
 export function sync<I, O>(target: BindingTarget) {
     return (input?: I) => bindToCLR<I, O>(target)(input, true);
+}
+
+/**
+ * Wrap a function into the format expected by Edge for execution from CLR.
+ */
+export function proxy<I, O>(func: (input?: I) => O) {
+    return (input: I, callback: Callback<O>) =>  {
+        try {
+            callback(null, func(input));
+        }
+        catch (e) {
+            callback(e);
+        }
+    };
 }

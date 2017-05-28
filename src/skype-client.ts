@@ -8,7 +8,7 @@ export type SkypeCallStateEvent = 'incoming' | 'connected' | 'disconnected';
 /**
  * Events emitted due to changes in the client audio mute state.
  */
-export type SkypeMuteStateEvent = 'muted' | 'unmuted';
+export type SkypeMuteStateEvent = 'mute'| 'muted' | 'unmuted';
 
 /**
  * Events emitted by the Skype client.
@@ -95,18 +95,3 @@ export interface SkypeClient extends EventEmitter {
 
     on(event: 'unmuted', listener: () => void): this;
 }
-
-/*
-selfView
-
-callInfo
-
-addParticipant
-removeParticipant
-
-addIncomingCallListener
-
-isSignedIn
-? event listener for auth ?
-
-*/

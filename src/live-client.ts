@@ -1,8 +1,8 @@
 import { join } from 'path';
 import { EventEmitter } from 'events';
 import * as R from 'ramda';
-import { SkypeClient, SkypeClientEvent, Action } from './skype-client';
-import { sync, async, PartialPrecompiledTarget } from './binder';
+import { SkypeClient, SkypeClientEvent } from './skype-client';
+import { sync, async, proxy } from './binder';
 
 /**
  * Resolves a set of paths relative to the curent directory.
@@ -18,9 +18,7 @@ const bindings = {
     typeName: 'SkypeClient.Bindings'
 };
 
-const merge = (partial: PartialPrecompiledTarget) => R.merge(bindings, partial);
-
-const method = (name: string) => merge({methodName: name});
+const method = (name: string) => R.merge(bindings, {methodName: name});
 
 const bindSync = <I, O>(methodName: string) => sync<I, O>(method(methodName));
 
@@ -59,7 +57,7 @@ export class LiveClient extends EventEmitter implements SkypeClient {
     }
 
     public endCall() {
-        const hangupAll = bindSync<null, void>('HangupAll');
+        const hangupAll = bindSync<undefined, void>('HangupAll');
         return hangupAll();
     }
 
@@ -68,35 +66,29 @@ export class LiveClient extends EventEmitter implements SkypeClient {
         return mute(state);
     }
 
-    private bindEvents() {/*
-        // Curry an event handler that we can pass to .NET.
+    private bindEvents() {
         const emit = <T>(event: SkypeClientEvent) =>
-            createCLRProxy<T, null>((payload) => this.emit(event, payload));
+            proxy<T, void>((payload) => this.emit(event, payload));
 
         interface IncomingArgs {
             inviter: string;
-            accept: SyncBinding<null, void>;
-            reject: SyncBinding<null, void>;
+            accept: () => void;
+            reject: () => void;
         }
-        const onIncoming = bindSync<>('OnIncoming');
-        onIncoming(createCLRProxy((call: IncomingArgs) =>
-            this.emit('incoming',
-                      call.inviter,
-                      () => call.accept(null, true),
-                      () => call.reject(null, true))
+        const onIncoming = bindSync('OnIncoming');
+        onIncoming(proxy((call: IncomingArgs) =>
+            this.emit('incoming', call.inviter, call.accept, call.reject)
         ));
 
-        const onConnect = bind.sync<CLRProxy<string[], null>, null>({methodName: 'OnConnect'});
+        const onConnect = bindSync('OnConnect');
         onConnect(emit('connected'));
 
-        const ondisconnect = bind.sync<CLRProxy<string, null>, null>({methodName: 'OnDisconnect'});
-        ondisconnect(emit('disconnected'));
+        const onDisconnect = bindSync('OnDisconnect');
+        onDisconnect(emit('disconnected'));
 
-        const onMuteChanged = bind.sync<CLRProxy<boolean, any>, null>({methodName: 'OnMuteChange'});
-        onMuteChanged(createCLRProxy((state) => {
-            this.emit('mute', state);
-            this.emit(state ? 'muted' : 'unmuted');
-        }));
-    */}
+        const onMuteChanged = bindSync('OnMuteChange');
+        onMuteChanged(emit('mute'));
+        onMuteChanged((state: boolean) => this.emit(state ? 'muted' : 'unmuted'));
+    }
 
 }
