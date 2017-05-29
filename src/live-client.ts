@@ -45,9 +45,9 @@ export class LiveClient extends EventEmitter implements SkypeClient {
     }
 
     public call(uri: string, fullscreen = true, display = 0) {
-        const args = { uri, fullscreen, display };
-        const startCall = bindSync<typeof args, void>('Call');
-        return startCall(args);
+        const kwargs = { uri, fullscreen, display };
+        const startCall = bindSync<typeof kwargs, void>('Call');
+        return startCall(kwargs);
     }
 
     public join(url: string, fullscreen = true, display = 0) {
@@ -67,18 +67,24 @@ export class LiveClient extends EventEmitter implements SkypeClient {
     }
 
     private bindEvents() {
-        const emit = <T>(event: SkypeClientEvent) =>
-            proxy<T, void>((payload) => this.emit(event, payload));
-
-        interface IncomingArgs {
-            inviter: string;
-            accept: () => void;
-            reject: () => void;
+        interface EventSubscription {
+            callback: (input: any, callback: any) => void;
         }
-        const onIncoming = bindSync('OnIncoming');
-        onIncoming(proxy((call: IncomingArgs) =>
-            this.emit('incoming', call.inviter, call.accept, call.reject)
-        ));
+
+        // Wrap an event handler up into the structure expected by the native
+        // bindings.
+        const callback = <T>(handler: (input: T) => void) => {
+            return {
+                callback: proxy(handler)
+            };
+        };
+
+        // Utility to emit an event with whatever payload we recieve.
+        const emit = <T>(event: SkypeClientEvent) =>
+            callback<T>((payload) => this.emit(event, payload));
+
+        const onIncoming = bindSync<EventSubscription, void>('OnIncoming');
+        onIncoming(emit('incoming'));
 
         const onConnect = bindSync('OnConnect');
         onConnect(emit('connected'));

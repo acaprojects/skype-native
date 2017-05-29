@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 
 namespace SkypeClient
 {
+    using Proxy = Func<object, Task<object>>;
+
     class AppController
     {
         private static AppController instance;
@@ -109,10 +111,12 @@ namespace SkypeClient
             }
         }
 
-        public void OnIncoming(Func<object, Task<object>> callback)
+        public void OnIncoming(Proxy callback)
         {
             client.ConversationManager.ConversationAdded += (o, e) =>
             {
+                callback(null);
+
                 var conversation = e.Conversation;
                 var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
 
@@ -123,7 +127,7 @@ namespace SkypeClient
                     var inviter = (Contact)conversation.Properties[ConversationProperty.Inviter];
 
 #pragma warning disable CS1998
-                    Func<object, Task<object>> AcceptCall = async (dynamic options) =>
+                    Proxy AcceptCall = async (dynamic options) =>
                     {
                         // Start our video on connect
                         av.ModalityStateChanged += (sender, args) =>
@@ -167,7 +171,7 @@ namespace SkypeClient
 #pragma warning restore CS1998
 
 #pragma warning disable CS1998
-                    Func<object, Task<object>> RejectCall = async (dynamic options) =>
+                    Proxy RejectCall = async (dynamic options) =>
                     {
                         av.Reject(ModalityDisconnectReason.Decline);
                         return null;
@@ -184,7 +188,7 @@ namespace SkypeClient
             };
         }
 
-        public void OnConnect(Func<object, Task<object>> callback)
+        public void OnConnect(Proxy callback)
         {
             client.ConversationManager.ConversationAdded += (o, e) =>
             {
@@ -204,7 +208,7 @@ namespace SkypeClient
             };
         }
 
-        public void OnDisconnect(Func<object, Task<object>> callback)
+        public void OnDisconnect(Proxy callback)
         {
             client.ConversationManager.ConversationAdded += (o, e) =>
             {
@@ -220,7 +224,7 @@ namespace SkypeClient
             };
         }
         
-        public void OnMuteChange(Func<object, Task<object>> callback)
+        public void OnMuteChange(Proxy callback)
         {
             client.ConversationManager.ConversationAdded += (o, e) =>
             {

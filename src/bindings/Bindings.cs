@@ -1,58 +1,61 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace SkypeClient
 {
     class Bindings
     {
-        public async Task<object> Call(dynamic options)
+        public delegate Task<object> Proxy(object kwargs);
+
+        public async Task<object> Call(dynamic kwargs)
         {
-            AppController.Instance().Call(options.uri, options.fullscreen, options.display);
+            AppController.Instance().Call(kwargs.uri, kwargs.fullscreen, kwargs.display);
             return null;
         }
 
-        public async Task<object> Join(dynamic options)
+        public async Task<object> Join(dynamic kwargs)
         {
-            AppController.Instance().JoinMeeting(options.url, options.fullscreen, options.display);
+            AppController.Instance().JoinMeeting(kwargs.uri, kwargs.fullscreen, kwargs.display);
             return null;
         }
 
-        public async Task<object> HangupAll(dynamic options)
+        public async Task<object> HangupAll(dynamic kwargs)
         {
             AppController.Instance().HangupAll();
             return null;
         }
 
-        public async Task<object> Mute(dynamic state)
+        public async Task<object> Mute(dynamic kwargs)
         {
-            AppController.Instance().Mute(state);
+            AppController.Instance().Mute(kwargs.state);
             return null;
         }
 
-        public async Task<object> OnIncoming(dynamic callback)
+        public async Task<object> OnIncoming(dynamic kwargs)
         {
-            AppController.Instance().OnIncoming(callback);
+            AppController.Instance().OnIncoming(kwargs.callback);
             return null;
         }
 
-        public async Task<object> OnConnect(dynamic callback)
+        public async Task<object> OnConnect(dynamic kwargs)
         {
-            AppController.Instance().OnConnect(callback);
+            AppController.Instance().OnConnect(kwargs.callback);
             return null;
         }
 
-        public async Task<object> OnDisconnect(dynamic callback)
+        public async Task<object> OnDisconnect(dynamic kwargs)
         {
-            AppController.Instance().OnDisconnect(callback);
+            AppController.Instance().OnDisconnect(kwargs.callback);
             return null;
         }
 
-        public async Task<object> OnMuteChange(dynamic callback)
+        public async Task<object> OnMuteChange(dynamic kwargs)
         {
-            AppController.Instance().OnMuteChange(callback);
+            AppController.Instance().OnMuteChange(kwargs.callback);
             return null;
         }
 
-        public async Task<object> GetActiveUser(dynamic options)
+        public async Task<object> GetActiveUser(dynamic kwargs)
         {
             var user = AppController.Instance().GetActiveUser();
             return user;
