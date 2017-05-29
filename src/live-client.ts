@@ -3,6 +3,7 @@ import { EventEmitter } from 'events';
 import * as R from 'ramda';
 import { SkypeClient, SkypeClientEvent } from './skype-client';
 import { sync, async, proxy, Callback } from './binder';
+import { resolveJoinUrl } from './meeting';
 
 /**
  * Resolves a set of paths relative to the curent directory.
@@ -21,6 +22,8 @@ const bindings = {
 const method = (name: string) => R.merge(bindings, {methodName: name});
 
 const bindSync = <I, O>(methodName: string) => sync<I, O>(method(methodName));
+
+const bindAsync = <I, O>(methodName: string) => async<I, O>(method(methodName));
 
 /**
  * Live bindings into the native Skype SDK.
@@ -50,10 +53,12 @@ export class LiveClient extends EventEmitter implements SkypeClient {
         return startCall(kwargs);
     }
 
-    public join(url: string, fullscreen = true, display = 0) {
-        const args = { url, fullscreen, display };
-        const joinMeeting = bindSync<typeof args, void>('Join');
-        return joinMeeting(args);
+    public join(meetingUrl: string, fullscreen = true, display = 0) {
+        resolveJoinUrl(meetingUrl, (url) => {
+            const args = { url, fullscreen, display };
+            const joinMeeting = bindSync<typeof args, void>('Join');
+            joinMeeting(args);
+        });
     }
 
     public endCall() {

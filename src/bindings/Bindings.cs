@@ -14,7 +14,7 @@ namespace SkypeClient
 
         public async Task<object> Join(dynamic kwargs)
         {
-            AppController.Instance().JoinMeeting(kwargs.uri, kwargs.fullscreen, kwargs.display);
+            AppController.Instance().JoinMeeting(kwargs.url, kwargs.fullscreen, kwargs.display);
             return null;
         }
 

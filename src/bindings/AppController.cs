@@ -66,16 +66,8 @@ namespace SkypeClient
 
         public void JoinMeeting(string url, bool fullscreen = true, int display = 0)
         {
-            // Convert meeting URL's in the format 'https://meet.lync.com/<company>/<user>/<conferenceId>'
-            // to the 'conf:sip:userUri;gruu;opaque=app:conf:focus:id:conferenceId?' URI structure
-            // string[] linktokens = url.Split('/');
-            // string joinUri = "conf:" + client.Self.Contact.Uri + ";gruu;opaque=app:conf:focus:id:" + linktokens.Last() + "?";
-
-            // client.ConversationManager.JoinConference(joinUri);
-
-            string joinUri = url;
             automate.BeginStartConversation(
-                joinUri,
+                url,
                 0,
                 (ar) =>
                 {
