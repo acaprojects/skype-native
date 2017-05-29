@@ -94,7 +94,7 @@ export class LiveClient extends EventEmitter implements SkypeClient {
 
         const onMuteChanged = bindSync('OnMuteChange');
         onMuteChanged(emit('mute'));
-        onMuteChanged((state: boolean) => this.emit(state ? 'muted' : 'unmuted'));
+        onMuteChanged(callback((state: boolean) => this.emit(state ? 'muted' : 'unmuted')));
     }
 
 }
