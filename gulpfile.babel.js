@@ -86,7 +86,9 @@ gulp.task('build:native', () => {
                     OutDir: path.join(__dirname, paths.nativeLibs, 'win32')
                 },
                 errorOnFail: true,
-                emitEndEvent: true
+                emitEndEvent: true,
+                stdout: true,
+                verbosity: 'minimal'
             }));
 
     const skip = () =>
