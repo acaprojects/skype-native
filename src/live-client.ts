@@ -62,8 +62,15 @@ export class LiveClient extends EventEmitter implements SkypeClient {
     }
 
     public mute(state = true) {
-        const mute = bindSync<boolean, void>('Mute');
-        return mute(state);
+        const kwargs = { state };
+        const mute = bindSync<typeof kwargs, void>('Mute');
+        return mute(kwargs);
+    }
+
+    public fullscreen(display = 0) {
+        const kwargs = { display };
+        const fullscreen = bindSync<typeof kwargs, void>('Fullscreen');
+        return fullscreen(kwargs);
     }
 
     private bindEvents() {

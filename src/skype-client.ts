@@ -70,6 +70,13 @@ export interface SkypeClient extends EventEmitter {
     endCall(): void;
 
     /**
+     * Make any currently active calls fullscreen
+     *
+     * TODO: remove this, included as test only
+     */
+    fullscreen(): void;
+
+    /**
      * Set the privacy mute state of any calls currently in progress.
      */
     mute(state: boolean): void;
@@ -79,7 +86,8 @@ export interface SkypeClient extends EventEmitter {
      */
     on(event: 'incoming', listener: (inviter?: string,
                                      accept?: (fullscreen?: boolean, display?: number) => void,
-                                     reject?: () => void) => void): this;
+                                     reject?: () => void,
+                                     fullscreen?: () => void) => void): this;
 
     /**
      * Subscribe to call connected events.

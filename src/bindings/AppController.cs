@@ -96,6 +96,15 @@ namespace SkypeClient
             }
         }
 
+        public void Fullscreen(int display = 0)
+        {
+            foreach (var conversation in client.ConversationManager.Conversations)
+            {
+                ConversationWindow window = automate.GetConversationWindow(conversation);
+                window.ShowFullScreen(display);
+            }
+        }
+
         public void Mute(bool state)
         {
             foreach (var conversation in client.ConversationManager.Conversations)

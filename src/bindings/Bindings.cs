@@ -24,6 +24,12 @@ namespace SkypeClient
             return null;
         }
 
+        public async Task<object> Fullscreen(dynamic kwargs)
+        {
+            AppController.Instance().Fullscreen(kwargs.display);
+            return null;
+        }
+
         public async Task<object> Mute(dynamic kwargs)
         {
             AppController.Instance().Mute(kwargs.state);

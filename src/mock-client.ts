@@ -30,4 +30,8 @@ export class MockClient extends EventEmitter implements SkypeClient {
         return true;
     }
 
+    public fullscreen() {
+        this.emit('fullscreen');
+    }
+
 }
