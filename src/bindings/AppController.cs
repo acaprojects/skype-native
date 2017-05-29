@@ -127,51 +127,15 @@ namespace SkypeClient
                     var inviter = (Contact)conversation.Properties[ConversationProperty.Inviter];
 
 #pragma warning disable CS1998
-                    Proxy AcceptCall = async (dynamic options) =>
+                    Proxy AcceptCall = async (dynamic kwargs) =>
                     {
-                        // Start our video on connect
-                        av.ModalityStateChanged += (sender, args) =>
-                        {
-                            if (args.NewState == ModalityState.Connected)
-                            {
-                                var channelStream = av.VideoChannel;
-
-                                while (!channelStream.CanInvoke(ChannelAction.Start))
-                                {
-                                }
-
-                                channelStream.BeginStart(ar => { }, channelStream);
-                                var retries = 5;
-                                while ((channelStream.State != ChannelState.SendReceive) && (retries > 0))
-                                {
-                                    Thread.Sleep(1000);
-                                    try
-                                    {
-                                        channelStream.BeginStart(ar => { }, channelStream);
-                                    }
-                                    catch (NotSupportedException)
-                                    {
-                                        //This is normal...
-                                    }
-                                    retries--;
-                                }
-                            }
-                        };
-
-                        av.Accept();
-
-                        // TODO: support choosing display to open on as well as fullscreen as optional
-
-                        // Fullscreen the call window
-                        ConversationWindow window = automate.GetConversationWindow(e.Conversation);
-                        window.ShowFullScreen(0);
-
+                        AcceptIncomingCall(conversation, kwargs.fullscreen, kwargs.display);
                         return null;
                     };
 #pragma warning restore CS1998
 
 #pragma warning disable CS1998
-                    Proxy RejectCall = async (dynamic options) =>
+                    Proxy RejectCall = async (dynamic kwargs) =>
                     {
                         av.Reject(ModalityDisconnectReason.Decline);
                         return null;
@@ -186,6 +150,48 @@ namespace SkypeClient
                     }).Start();
                 }
             };
+        }
+
+        public void AcceptIncomingCall(Conversation conversation, bool fullscreen = true, int display = 0)
+        {
+            var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
+
+            // Start our video on connect
+            av.ModalityStateChanged += (sender, args) =>
+            {
+                if (args.NewState == ModalityState.Connected)
+                {
+                    var channelStream = av.VideoChannel;
+
+                    while (!channelStream.CanInvoke(ChannelAction.Start))
+                    {
+                    }
+
+                    channelStream.BeginStart(ar => { }, channelStream);
+                    var retries = 5;
+                    while ((channelStream.State != ChannelState.SendReceive) && (retries > 0))
+                    {
+                        Thread.Sleep(1000);
+                        try
+                        {
+                            channelStream.BeginStart(ar => { }, channelStream);
+                        }
+                        catch (NotSupportedException)
+                        {
+                            //This is normal...
+                        }
+                        retries--;
+                    }
+                }
+            };
+
+            av.Accept();
+
+            if (fullscreen)
+            {
+                ConversationWindow window = automate.GetConversationWindow(conversation);
+                window.ShowFullScreen(display);
+            }
         }
 
         public void OnConnect(Proxy callback)

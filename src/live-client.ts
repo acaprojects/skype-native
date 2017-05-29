@@ -2,7 +2,7 @@ import { join } from 'path';
 import { EventEmitter } from 'events';
 import * as R from 'ramda';
 import { SkypeClient, SkypeClientEvent } from './skype-client';
-import { sync, async, proxy } from './binder';
+import { sync, async, proxy, Callback } from './binder';
 
 /**
  * Resolves a set of paths relative to the curent directory.
@@ -67,8 +67,8 @@ export class LiveClient extends EventEmitter implements SkypeClient {
     }
 
     private bindEvents() {
-        interface EventSubscription {
-            callback: (input: any, callback: any) => void;
+        interface EventSubscription<I> {
+            callback: (input: I, callback: Callback<void>) => void;
         }
 
         // Wrap an event handler up into the structure expected by the native
@@ -83,8 +83,21 @@ export class LiveClient extends EventEmitter implements SkypeClient {
         const emit = <T>(event: SkypeClientEvent) =>
             callback<T>((payload) => this.emit(event, payload));
 
-        const onIncoming = bindSync<EventSubscription, void>('OnIncoming');
-        onIncoming(emit('incoming'));
+        interface IncomingArgs {
+            inviter: string;
+            accept: (kwargs: {fullscreen?: boolean, display?: number}) => void;
+            reject: () => void;
+        }
+        const onIncoming = bindSync<EventSubscription<IncomingArgs>, void>('OnIncoming');
+        onIncoming(callback((call: IncomingArgs) => {
+            this.emit(
+                'incoming',
+                call.inviter,
+                // TODO create a neat abstraction to turn args into kwargs
+                (fullscreen = true, display = 0) => call.accept({fullscreen, display}),
+                call.reject
+            );
+        }));
 
         const onConnect = bindSync('OnConnect');
         onConnect(emit('connected'));
