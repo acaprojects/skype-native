@@ -31,8 +31,17 @@ namespace SkypeClient
             ExecuteAction.InState(av, ModalityState.Connected, modality =>
             {
                 var video = modality.VideoChannel;
-                while (!video.CanInvoke(ChannelAction.Start)) { }
-                StartMediaChannel(video);
+
+                Predicate<Channel> active = channel =>
+                       channel.State == ChannelState.Connecting
+                    || channel.State == ChannelState.Send
+                    || channel.State == ChannelState.SendReceive;
+                
+                if (!active(video))
+                {
+                    while (!video.CanInvoke(ChannelAction.Start)) { }
+                    StartMediaChannel(video);
+                }
             });
         }
     }

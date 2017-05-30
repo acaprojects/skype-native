@@ -24,6 +24,12 @@ namespace SkypeClient
         {
             this.client = client;
             this.automation = automation;
+
+            // Autostart video on all calls
+            ExecuteAction.InState<AVModality>(ModalityTypes.AudioVideo, ModalityState.Connected, (conversation, modality) =>
+            {
+                CallMedia.StartVideo(modality);
+            });
         }
 
         public static AppController Instance()
@@ -35,7 +41,7 @@ namespace SkypeClient
                 instance = new AppController(client, automation);
             }
 
-            // TODO check we still have comms with the client / reconnect if nesessary.
+            // TODO: check we still have comms with the client / reconnect if nesessary.
 
             return instance;
         }
@@ -125,7 +131,6 @@ namespace SkypeClient
 #pragma warning disable 1998
                 Proxy AcceptCall = async (dynamic kwargs) =>
                 {
-                    CallMedia.StartVideo(modality); // FIXME: this can probably be attached to every call
                     if (kwargs.fullscreen) CallWindow.ShowFullscreen(conversation, kwargs.display);
                     modality.Accept();
                     return null;
