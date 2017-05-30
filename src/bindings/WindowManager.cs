@@ -24,7 +24,7 @@ namespace SkypeClient
             ShowFullscreen(GetWindow(conversation), display);
         }
 
-        public static void FullscreenOnConnect(Conversation conversation, int display = 0)
+        public static void FullscreenOnConnect(Conversation conversation, int display)
         {
             var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
 

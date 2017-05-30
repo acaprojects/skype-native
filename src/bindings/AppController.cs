@@ -185,7 +185,7 @@ namespace SkypeClient
                 }
             };
 
-            if (fullscreen) WindowManager.FullscreenOnConnect(conversation);
+            if (fullscreen) WindowManager.FullscreenOnConnect(conversation, display);
 
             av.Accept();
         }
