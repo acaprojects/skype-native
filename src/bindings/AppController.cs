@@ -99,10 +99,19 @@ namespace SkypeClient
 
         public void HangupAll()
         {
-            foreach (var conversation in client.ConversationManager.Conversations)
+            Action<Conversation> endConversation = conversation =>
             {
-                conversation.End();
-            }
+                var av = conversation.Modalities[ModalityTypes.AudioVideo];
+                av.BeginDisconnect(ModalityDisconnectReason.None,
+                    ar =>
+                    {
+                        av.EndDisconnect(ar);
+                        conversation.End();
+                    },
+                    null);
+            };
+
+            Util.ForEach(client.ConversationManager.Conversations, endConversation);
         }
 
         public void Mute(bool state)
