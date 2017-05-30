@@ -81,6 +81,7 @@ gulp.task('build:native', () => {
         gulp.src(vsProject)
             .pipe(plugins.msbuild({
                 targets: ['Clean', 'Build'],
+                configuration: 'Release',
                 toolsVersion: 4.0,
                 properties: {
                     OutDir: path.join(__dirname, paths.nativeLibs, 'win32')
