@@ -122,20 +122,22 @@ namespace SkypeClient
             {
                 var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
 
-                ExecuteAction.InState(av, ModalityState.Notified, () =>
+                ExecuteAction.InState(av, ModalityState.Notified, modality =>
                 {
                     var inviter = (Contact)conversation.Properties[ConversationProperty.Inviter];
 
 #pragma warning disable 1998
                     Proxy AcceptCall = async (dynamic kwargs) =>
                     {
-                        AcceptIncomingCall(conversation, kwargs.fullscreen, kwargs.display);
+                        CallMedia.StartVideo(modality); // FIXME: this can probably be attached to every call
+                        if (kwargs.fullscreen) CallWindow.ShowFullscreen(conversation, kwargs.display);
+                        modality.Accept();
                         return null;
                     };
 
                     Proxy RejectCall = async (dynamic kwargs) =>
                     {
-                        av.Reject(ModalityDisconnectReason.Decline);
+                        modality.Reject(ModalityDisconnectReason.Decline);
                         return null;
                     };
 #pragma warning restore 1998
@@ -148,45 +150,6 @@ namespace SkypeClient
                     }).Start();
                 });
             });
-        }
-
-        public void AcceptIncomingCall(Conversation conversation, bool fullscreen = true, int display = 0)
-        {
-            var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
-
-            // Start our video on connect
-            // TODO shift this out into a helper class
-            av.ModalityStateChanged += (sender, args) =>
-            {
-                if (args.NewState == ModalityState.Connected)
-                {
-                    var channelStream = av.VideoChannel;
-
-                    while (!channelStream.CanInvoke(ChannelAction.Start))
-                    {
-                    }
-
-                    channelStream.BeginStart(ar => { }, channelStream);
-                    var retries = 5;
-                    while ((channelStream.State != ChannelState.SendReceive) && (retries > 0))
-                    {
-                        Thread.Sleep(1000);
-                        try
-                        {
-                            channelStream.BeginStart(ar => { }, channelStream);
-                        }
-                        catch (NotSupportedException)
-                        {
-                            //This is normal...
-                        }
-                        retries--;
-                    }
-                }
-            };
-
-            if (fullscreen) CallWindow.ShowFullscreen(conversation, display);
-
-            av.Accept();
         }
 
         public void OnConnect(Proxy callback)

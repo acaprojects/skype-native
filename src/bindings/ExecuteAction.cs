@@ -1,5 +1,6 @@
 ﻿using Microsoft.Lync.Model;
 using Microsoft.Lync.Model.Conversation;
+using Microsoft.Lync.Model.Conversation.AudioVideo;
 using System;
 
 namespace SkypeClient
@@ -15,13 +16,29 @@ namespace SkypeClient
         /// <param name="modality">the Modality to monitor</param>
         /// <param name="state">the state to execute in</param>
         /// <param name="action">an action delegate to run</param>
-        public static void InState(Modality modality, ModalityState state, Action action)
+        public static void InState<T>(T modality, ModalityState state, Action<T> action) where T : Modality
         {
-            if (modality.State == state) action();
+            if (modality.State == state) action(modality);
 
             modality.ModalityStateChanged += (o, e) =>
             {
-                if (e.NewState == state) action();
+                if (e.NewState == state) action(modality);
+            };
+        }
+
+        /// <summary>
+        /// Execute an action on a media channel in a specific state.
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="state"></param>
+        /// <param name="action"></param>
+        public static void InState<T>(T channel, ChannelState state, Action<T> action) where T : Channel
+        {
+            if (channel.State == state) action(channel);
+
+            channel.StateChanged += (o, e) =>
+            {
+                if (e.NewState == state) action(channel);
             };
         }
 

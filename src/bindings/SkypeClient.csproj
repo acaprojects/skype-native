@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="AppController.cs" />
     <Compile Include="Bindings.cs" />
+    <Compile Include="CallMedia.cs" />
     <Compile Include="ExecuteAction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestBinding.cs" />

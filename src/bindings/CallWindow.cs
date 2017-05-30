@@ -21,7 +21,7 @@ namespace SkypeClient
 
             Action<Conversation> fullscreen = c => ShowFullscreen(window(c), display);
 
-            ExecuteAction.InState(av, ModalityState.Connected, () => ShowFullscreen(conversation, display));
+            ExecuteAction.InState(av, ModalityState.Connected, modality => ShowFullscreen(conversation, display));
         }
 
     }
