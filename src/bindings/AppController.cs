@@ -80,7 +80,7 @@ namespace SkypeClient
             automation.BeginStartConversation(
                 url,
                 0,
-                (ar) =>
+                ar =>
                 {
                     ConversationWindow window = automation.EndStartConversation(ar);
 
@@ -120,7 +120,7 @@ namespace SkypeClient
                 var participant = conversation.SelfParticipant;
                 participant.BeginSetMute(
                     state,
-                    (ar) =>
+                    ar =>
                     {
                         participant.EndSetMute(ar);
                     },
@@ -190,12 +190,17 @@ namespace SkypeClient
             {
                 var self = conversation.SelfParticipant;
                 var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
-                av.AVModalityPropertyChanged += (sender, args) =>
+
+                // The client raises multiple property changed events during call setup. Squash these so we one raise events on change. 
+                var previousState = (bool)av.Properties[ModalityProperty.AVModalityAudioCaptureMute];
+
+                av.AVModalityPropertyChanged += (o, e) =>
                 {
-                    if (args.Property == ModalityProperty.AVModalityAudioCaptureMute)
+                    if (e.Property == ModalityProperty.AVModalityAudioCaptureMute)
                     {
-                        var state = (bool)args.Value;
-                        callback(state);
+                        var newState = (bool)e.Value;
+                        if (newState != previousState) callback(newState);
+                        previousState = newState;
                     }
                 };
             });
