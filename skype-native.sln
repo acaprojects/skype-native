@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkypeClient", "src\bindings\SkypeClient.csproj", "{88A2EF84-E167-4240-8AE1-B895E8CC5CC3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventMonitor", "EventMonitor\EventMonitor.csproj", "{0A158C92-50EA-442D-B1DB-2353F30A9929}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{88A2EF84-E167-4240-8AE1-B895E8CC5CC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88A2EF84-E167-4240-8AE1-B895E8CC5CC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88A2EF84-E167-4240-8AE1-B895E8CC5CC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A158C92-50EA-442D-B1DB-2353F30A9929}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A158C92-50EA-442D-B1DB-2353F30A9929}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A158C92-50EA-442D-B1DB-2353F30A9929}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A158C92-50EA-442D-B1DB-2353F30A9929}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
