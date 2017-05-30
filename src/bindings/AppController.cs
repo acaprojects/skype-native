@@ -18,19 +18,21 @@ namespace SkypeClient
 
         private readonly LyncClient client;
 
-        private readonly Automation automate;
+        private readonly Automation automation;
 
-        private AppController()
+        private AppController(LyncClient client, Automation automation)
         {
-            client = LyncClient.GetClient();
-            automate = LyncClient.GetAutomation();
+            this.client = client;
+            this.automation = automation;
         }
 
         public static AppController Instance()
         {
             if (instance == null)
             {
-                instance = new AppController();
+                var client = LyncClient.GetClient();
+                var automation = LyncClient.GetAutomation();
+                instance = new AppController(client, automation);
             }
 
             // TODO check we still have comms with the client / reconnect if nesessary.
@@ -49,16 +51,16 @@ namespace SkypeClient
         {
             List<string> participants = new List<string> { uri };
 
-            automate.BeginStartConversation(
+            automation.BeginStartConversation(
                 AutomationModalities.Video,
                 participants,
                 null,
                 (ar) =>
                 {
-                    ConversationWindow win = automate.EndStartConversation(ar);
+                    ConversationWindow window = automation.EndStartConversation(ar);
                     if (fullscreen)
                     {
-                        win.ShowFullScreen(display);
+                        WindowManager.ShowFullscreen(window, display);
                     }
                 },
                 null);
@@ -66,15 +68,15 @@ namespace SkypeClient
 
         public void JoinMeeting(string url, bool fullscreen = true, int display = 0)
         {
-            automate.BeginStartConversation(
+            automation.BeginStartConversation(
                 url,
                 0,
                 (ar) =>
                 {
-                    ConversationWindow win = automate.EndStartConversation(ar);
+                    ConversationWindow window = automation.EndStartConversation(ar);
                     if (fullscreen)
                     {
-                        win.ShowFullScreen(display);
+                        WindowManager.ShowFullscreen(window, display);
                     }
                 },
                 null);
@@ -85,15 +87,6 @@ namespace SkypeClient
             foreach (var conversation in client.ConversationManager.Conversations)
             {
                 conversation.End();
-            }
-        }
-
-        public void Fullscreen(int display = 0)
-        {
-            foreach (var conversation in client.ConversationManager.Conversations)
-            {
-                ConversationWindow window = automate.GetConversationWindow(conversation);
-                window.ShowFullScreen(display);
             }
         }
 
@@ -112,6 +105,14 @@ namespace SkypeClient
             }
         }
 
+        public void Fullscreen(int display = 0)
+        {
+            foreach(var conversation in client.ConversationManager.Conversations)
+            {
+                WindowManager.ShowFullscreen(conversation, display);
+            }
+        }
+
         public void OnIncoming(Proxy callback)
         {
             client.ConversationManager.ConversationAdded += (o, e) =>
@@ -127,21 +128,19 @@ namespace SkypeClient
                 {
                     var inviter = (Contact)conversation.Properties[ConversationProperty.Inviter];
 
-#pragma warning disable CS1998
+#pragma warning disable 1998
                     Proxy AcceptCall = async (dynamic kwargs) =>
                     {
                         AcceptIncomingCall(conversation, kwargs.fullscreen, kwargs.display);
                         return null;
                     };
-#pragma warning restore CS1998
 
-#pragma warning disable CS1998
                     Proxy RejectCall = async (dynamic kwargs) =>
                     {
                         av.Reject(ModalityDisconnectReason.Decline);
                         return null;
                     };
-#pragma warning restore CS1998
+#pragma warning restore 1998
 
                     callback(new
                     {
@@ -186,13 +185,9 @@ namespace SkypeClient
                 }
             };
 
-            av.Accept();
+            if (fullscreen) WindowManager.FullscreenOnConnect(conversation);
 
-            if (fullscreen)
-            {
-                ConversationWindow window = automate.GetConversationWindow(conversation);
-                window.ShowFullScreen(display);
-            }
+            av.Accept();
         }
 
         public void OnConnect(Proxy callback)

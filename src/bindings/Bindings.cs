@@ -2,6 +2,7 @@
 
 namespace SkypeClient
 {
+#pragma warning disable 1998 // all bindings need to be exposed as async for Edge integration
     class Bindings
     {
         public delegate Task<object> Proxy(object kwargs);
@@ -66,4 +67,5 @@ namespace SkypeClient
             return user;
         }
     }
+#pragma warning restore 1998
 }
