@@ -46,11 +46,15 @@ namespace SkypeClient
                 uri = client.Self.Contact.Uri
             };
         }
-
+        
         public void Call(string uri, bool fullscreen = true, int display = 0)
         {
             List<string> participants = new List<string> { uri };
+            Call(participants, fullscreen, display);
+        }
 
+        public void Call(List<string> participants, bool fullscreen = true, int display = 0)
+        {
             automation.BeginStartConversation(
                 AutomationModalities.Video,
                 participants,
@@ -115,16 +119,11 @@ namespace SkypeClient
 
         public void OnIncoming(Proxy callback)
         {
-            client.ConversationManager.ConversationAdded += (o, e) =>
+            EventWatcher.ExecuteOnConversations(conversation =>
             {
-                callback(null);
-
-                var conversation = e.Conversation;
                 var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
 
-                // TODO: reject as busy if already in a call
-
-                if (av.State == ModalityState.Notified)
+                EventWatcher.ExecuteInState(av, ModalityState.Notified, () =>
                 {
                     var inviter = (Contact)conversation.Properties[ConversationProperty.Inviter];
 
@@ -148,8 +147,8 @@ namespace SkypeClient
                         accept = AcceptCall,
                         reject = RejectCall
                     }).Start();
-                }
-            };
+                });
+            });
         }
 
         public void AcceptIncomingCall(Conversation conversation, bool fullscreen = true, int display = 0)
@@ -157,6 +156,7 @@ namespace SkypeClient
             var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
 
             // Start our video on connect
+            // TODO shift this out into a helper class
             av.ModalityStateChanged += (sender, args) =>
             {
                 if (args.NewState == ModalityState.Connected)
