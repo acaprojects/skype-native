@@ -117,7 +117,7 @@ namespace SkypeClient
 
         public void Fullscreen(int display = 0)
         {
-            Action<Conversation> fullscreenOnDisplay = c => CallWindow.ShowFullscreen(c, display);
+            Action<Conversation> fullscreenOnDisplay = c => CallWindow.ShowFullscreen(automation, c, display);
 
             Util.ForEach(client.ConversationManager.Conversations, fullscreenOnDisplay);
         }
@@ -131,8 +131,8 @@ namespace SkypeClient
 #pragma warning disable 1998
                 Proxy AcceptCall = async (dynamic kwargs) =>
                 {
-                    if (kwargs.fullscreen) CallWindow.ShowFullscreen(conversation, kwargs.display);
                     modality.Accept();
+                    if (kwargs.fullscreen) CallWindow.ShowFullscreen(automation, conversation, kwargs.display);
                     return null;
                 };
 

@@ -1,8 +1,5 @@
-﻿using Microsoft.Lync.Model;
-using Microsoft.Lync.Model.Conversation;
-using Microsoft.Lync.Model.Conversation.AudioVideo;
+﻿using Microsoft.Lync.Model.Conversation;
 using Microsoft.Lync.Model.Extensibility;
-using System;
 
 namespace SkypeClient
 {
@@ -13,16 +10,10 @@ namespace SkypeClient
             window.ShowFullScreen(display);
         }
 
-        public static void ShowFullscreen(Conversation conversation, int display)
+        public static void ShowFullscreen(Automation automation, Conversation conversation, int display)
         {
-            var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
-
-            Func<Conversation, ConversationWindow> window = c => LyncClient.GetAutomation().GetConversationWindow(c);
-
-            Action<Conversation> fullscreen = c => ShowFullscreen(window(c), display);
-
-            ExecuteAction.InState(av, ModalityState.Connected, modality => ShowFullscreen(conversation, display));
+            var window = automation.GetConversationWindow(conversation);
+            ShowFullscreen(window, display);
         }
-
     }
 }
