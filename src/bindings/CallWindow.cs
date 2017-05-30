@@ -6,14 +6,8 @@ using System;
 
 namespace SkypeClient
 {
-    class WindowManager
+    static class CallWindow
     {
-        private static ConversationWindow GetWindow(Conversation conversation)
-        {
-            var client = LyncClient.GetAutomation();
-            return client.GetConversationWindow(conversation);
-        }
-
         public static void ShowFullscreen(ConversationWindow window, int display)
         {
             window.ShowFullScreen(display);
@@ -21,14 +15,13 @@ namespace SkypeClient
 
         public static void ShowFullscreen(Conversation conversation, int display)
         {
-            ShowFullscreen(GetWindow(conversation), display);
-        }
-
-        public static void FullscreenOnConnect(Conversation conversation, int display)
-        {
             var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
 
-            EventWatcher.ExecuteInState(av, ModalityState.Connected, () => ShowFullscreen(conversation, display));
+            Func<Conversation, ConversationWindow> window = c => LyncClient.GetAutomation().GetConversationWindow(c);
+
+            Action<Conversation> fullscreen = c => ShowFullscreen(window(c), display);
+
+            ExecuteAction.InState(av, ModalityState.Connected, () => ShowFullscreen(conversation, display));
         }
 
     }

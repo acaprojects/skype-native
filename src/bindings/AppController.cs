@@ -64,7 +64,7 @@ namespace SkypeClient
                     ConversationWindow window = automation.EndStartConversation(ar);
                     if (fullscreen)
                     {
-                        WindowManager.ShowFullscreen(window, display);
+                        CallWindow.ShowFullscreen(window, display);
                     }
                 },
                 null);
@@ -80,7 +80,7 @@ namespace SkypeClient
                     ConversationWindow window = automation.EndStartConversation(ar);
                     if (fullscreen)
                     {
-                        WindowManager.ShowFullscreen(window, display);
+                        CallWindow.ShowFullscreen(window, display);
                     }
                 },
                 null);
@@ -111,19 +111,18 @@ namespace SkypeClient
 
         public void Fullscreen(int display = 0)
         {
-            foreach(var conversation in client.ConversationManager.Conversations)
-            {
-                WindowManager.ShowFullscreen(conversation, display);
-            }
+            Action<Conversation> fullscreenOnDisplay = c => CallWindow.ShowFullscreen(c, display);
+
+            Util.ForEach(client.ConversationManager.Conversations, fullscreenOnDisplay);
         }
 
         public void OnIncoming(Proxy callback)
         {
-            EventWatcher.ExecuteOnConversations(conversation =>
+            ExecuteAction.OnAllConversations(conversation =>
             {
                 var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
 
-                EventWatcher.ExecuteInState(av, ModalityState.Notified, () =>
+                ExecuteAction.InState(av, ModalityState.Notified, () =>
                 {
                     var inviter = (Contact)conversation.Properties[ConversationProperty.Inviter];
 
@@ -185,7 +184,7 @@ namespace SkypeClient
                 }
             };
 
-            if (fullscreen) WindowManager.FullscreenOnConnect(conversation, display);
+            if (fullscreen) CallWindow.ShowFullscreen(conversation, display);
 
             av.Accept();
         }
