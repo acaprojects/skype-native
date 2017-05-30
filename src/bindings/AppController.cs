@@ -84,9 +84,14 @@ namespace SkypeClient
                 (ar) =>
                 {
                     ConversationWindow window = automation.EndStartConversation(ar);
+
                     if (fullscreen)
                     {
-                        CallWindow.ShowFullscreen(window, display);
+                        var av = window.Conversation.Modalities[ModalityTypes.AudioVideo];
+                        ExecuteAction.InState(av, ModalityState.Connected, (modality) =>
+                        {
+                            CallWindow.ShowFullscreen(automation, modality.Conversation, display);
+                        });
                     }
                 },
                 null);
