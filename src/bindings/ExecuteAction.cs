@@ -11,7 +11,23 @@ namespace SkypeClient
     static class ExecuteAction
     {
         /// <summary>
-        /// Execute an action on a conversation Modality when it is in a specific state.
+        /// Execute an action on all current conversations as well as any future ones.
+        /// </summary>
+        /// <param name="action">an Action delegate to run on each conversation</param>
+        public static void OnAllConversations(Action<Conversation> action)
+        {
+            var client = LyncClient.GetClient();
+
+            Util.ForEach(client.ConversationManager.Conversations, action);
+
+            client.ConversationManager.ConversationAdded += (o, e) =>
+            {
+                action(e.Conversation);
+            };
+        }
+
+        /// <summary>
+        /// Execute an action on a specific conversation's modality in a specific state.
         /// </summary>
         /// <param name="modality">the Modality to monitor</param>
         /// <param name="state">the state to execute in</param>
@@ -43,19 +59,20 @@ namespace SkypeClient
         }
 
         /// <summary>
-        /// Execute an action on all current conversations as well as any future ones.
+        /// Execute an action on a modality state within all current and future conversations.
         /// </summary>
-        /// <param name="action">an Action delegate to run on each conversation</param>
-        public static void OnAllConversations(Action<Conversation> action)
+        /// <typeparam name="T"></typeparam>
+        /// <param name="modalityType"></param>
+        /// <param name="state"></param>
+        /// <param name="action"></param>
+        public static void InState<T>(ModalityTypes modalityType, ModalityState state, Action<Conversation, T> action) where T : Modality
         {
-            var client = LyncClient.GetClient();
 
-            Util.ForEach(client.ConversationManager.Conversations, action);
-
-            client.ConversationManager.ConversationAdded += (o, e) =>
+            OnAllConversations(conversation =>
             {
-                action(e.Conversation);
-            };
+                var modality = (T)conversation.Modalities[modalityType];
+                InState(modality, state, (T m) => action(conversation, m));
+            });
         }
     }
 }

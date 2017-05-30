@@ -118,81 +118,58 @@ namespace SkypeClient
 
         public void OnIncoming(Proxy callback)
         {
-            ExecuteAction.OnAllConversations(conversation =>
+            ExecuteAction.InState<AVModality>(ModalityTypes.AudioVideo, ModalityState.Notified, (conversation, modality) =>
             {
-                var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
-
-                ExecuteAction.InState(av, ModalityState.Notified, modality =>
-                {
-                    var inviter = (Contact)conversation.Properties[ConversationProperty.Inviter];
+                var inviter = (Contact)conversation.Properties[ConversationProperty.Inviter];
 
 #pragma warning disable 1998
-                    Proxy AcceptCall = async (dynamic kwargs) =>
-                    {
-                        CallMedia.StartVideo(modality); // FIXME: this can probably be attached to every call
-                        if (kwargs.fullscreen) CallWindow.ShowFullscreen(conversation, kwargs.display);
-                        modality.Accept();
-                        return null;
-                    };
+                Proxy AcceptCall = async (dynamic kwargs) =>
+                {
+                    CallMedia.StartVideo(modality); // FIXME: this can probably be attached to every call
+                    if (kwargs.fullscreen) CallWindow.ShowFullscreen(conversation, kwargs.display);
+                    modality.Accept();
+                    return null;
+                };
 
-                    Proxy RejectCall = async (dynamic kwargs) =>
-                    {
-                        modality.Reject(ModalityDisconnectReason.Decline);
-                        return null;
-                    };
+                Proxy RejectCall = async (dynamic kwargs) =>
+                {
+                    modality.Reject(ModalityDisconnectReason.Decline);
+                    return null;
+                };
 #pragma warning restore 1998
 
-                    callback(new
-                    {
-                        inviter = inviter.Uri,
-                        accept = AcceptCall,
-                        reject = RejectCall
-                    }).Start();
-                });
+                callback(new
+                {
+                    inviter = inviter.Uri,
+                    accept = AcceptCall,
+                    reject = RejectCall
+                }).Start();
             });
         }
 
         public void OnConnect(Proxy callback)
         {
-            client.ConversationManager.ConversationAdded += (o, e) =>
+            ExecuteAction.InState<AVModality>(ModalityTypes.AudioVideo, ModalityState.Connected, (conversation, modality) =>
             {
-                var conversation = e.Conversation;
-                var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
- 
-                av.ModalityStateChanged += (sender, args) =>
-                {
-                    if (args.NewState == ModalityState.Connected)
-                    {
-                        var participants = conversation.Participants.Select(p => (string)p.Properties[ParticipantProperty.Name]);
-                        var participantNames = participants.Cast<string>().ToArray();
+                var participants = conversation.Participants.Select(p => (string)p.Properties[ParticipantProperty.Name]);
+                var participantNames = participants.Cast<string>().ToArray();
 
-                        callback(participants).Start();
-                    }
-                };
-            };
+                callback(participants).Start();
+            });
         }
 
         public void OnDisconnect(Proxy callback)
         {
-            client.ConversationManager.ConversationAdded += (o, e) =>
+            ExecuteAction.InState<AVModality>(ModalityTypes.AudioVideo, ModalityState.Disconnected, (conversation, modality) =>
             {
-                var conversation = e.Conversation;
-                var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
-                av.ModalityStateChanged += (sender, args) =>
-                {
-                    if (args.NewState == ModalityState.Disconnected)
-                    {
-                        callback(null).Start();
-                    }
-                };
-            };
+                callback(null).Start();
+            });
         }
-        
+
         public void OnMuteChange(Proxy callback)
         {
-            client.ConversationManager.ConversationAdded += (o, e) =>
+            ExecuteAction.OnAllConversations(conversation =>
             {
-                var conversation = e.Conversation;
                 var self = conversation.SelfParticipant;
                 var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
                 av.AVModalityPropertyChanged += (sender, args) =>
@@ -203,7 +180,7 @@ namespace SkypeClient
                         callback(state).Start();
                     }
                 };
-            };
+            });
         }
     }
 }
