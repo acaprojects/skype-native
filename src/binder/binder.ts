@@ -6,8 +6,8 @@ import { isElectron } from './runtime-env';
 const edge = isElectron() ? require('electron-edge') : require('edge');
 
 export type Binding<I, O> = AsyncBinding<I, O> & SyncBinding<I, O>;
-export type AsyncBinding<I, O> = (input?: I, callback?: Callback<O>) => void;
-export type SyncBinding<I, O> = (input: I | undefined, synchronous: true) => O;
+export type AsyncBinding<I, O> = (input: I, callback?: Callback<O>) => void;
+export type SyncBinding<I, O> = (input: I, synchronous: true) => O;
 
 export type Callback<T> = (error: Error | null, result?: T) => void;
 
@@ -78,7 +78,7 @@ export function async<I, O>(target: BindingTarget) {
  * If the taks cannot be run synchonously an Error will be raised.
  */
 export function sync<I, O>(target: BindingTarget) {
-    return (input?: I) => bindToCLR<I, O>(target)(input, true);
+    return (input: I) => bindToCLR<I, O>(target)(input, true);
 }
 
 /**
