@@ -1,5 +1,6 @@
 ﻿using Microsoft.Lync.Model;
 using Microsoft.Lync.Model.Conversation;
+using Microsoft.Lync.Model.Conversation.AudioVideo;
 using System;
 
 namespace EventMonitor
@@ -20,6 +21,16 @@ namespace EventMonitor
 
             client.ConversationManager.ConversationRemoved +=
                 PrintEvent<ConversationManagerEventArgs>("Conversation removed");
+
+            client.ConversationManager.ConversationAdded += (o, e) =>
+            {
+                var av = (AVModality)e.Conversation.Modalities[ModalityTypes.AudioVideo];
+
+                av.ModalityStateChanged += (sender, args) =>
+                {
+                    Console.WriteLine("AV modality " + args.OldState + " --> " + args.NewState);
+                };
+            };
         }
 
         static void Main(string[] args)
