@@ -5,7 +5,6 @@ using Microsoft.Lync.Model.Extensibility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace SkypeClient
@@ -162,7 +161,7 @@ namespace SkypeClient
                     inviter = inviter.Uri,
                     accept = AcceptCall,
                     reject = RejectCall
-                }).Start();
+                });
             });
         }
 
@@ -173,7 +172,7 @@ namespace SkypeClient
                 var participants = conversation.Participants.Select(p => (string)p.Properties[ParticipantProperty.Name]);
                 var participantNames = participants.Cast<string>().ToArray();
 
-                callback(participants).Start();
+                callback(participants);
             });
         }
 
@@ -181,7 +180,7 @@ namespace SkypeClient
         {
             ExecuteAction.InState<AVModality>(ModalityTypes.AudioVideo, ModalityState.Disconnected, (conversation, modality) =>
             {
-                callback(null).Start();
+                callback(null);
             });
         }
 
@@ -196,7 +195,7 @@ namespace SkypeClient
                     if (args.Property == ModalityProperty.AVModalityAudioCaptureMute)
                     {
                         var state = (bool)args.Value;
-                        callback(state).Start();
+                        callback(state);
                     }
                 };
             });
