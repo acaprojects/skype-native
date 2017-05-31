@@ -48,6 +48,8 @@ export class LiveClient extends EventEmitter implements SkypeClient {
         const emit = <T>(event: SkypeClientEvent) =>
             bindings.callback<T>((payload) => this.emit(event, payload));
 
+        // TODO: create typed emitter so structure of this is enforced against the client intrerface
+
         bindings.onIncoming(callback((call: bindings.EventIncomingArgs) => {
             this.emit('incoming',
                 call.inviter,

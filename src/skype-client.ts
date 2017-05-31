@@ -15,12 +15,6 @@ export type SkypeMuteStateEvent = 'mute'| 'muted' | 'unmuted';
  */
 export type SkypeClientEvent = SkypeCallStateEvent | SkypeMuteStateEvent;
 
-export type Action = (...args: any[]) => void;
-
-export type Func<T> = (...args: any[]) => T;
-
-export type Predicate = Func<boolean>;
-
 /**
  * Comms proxy for controlling and interacting with the desktop Skype for
  * Business client.
@@ -84,15 +78,12 @@ export interface SkypeClient extends EventEmitter {
     /**
      * Subsribe to incoming call events.
      */
-    on(event: 'incoming', listener: (inviter?: string,
-                                     accept?: (fullscreen?: boolean, display?: number) => void,
-                                     reject?: () => void,
-                                     fullscreen?: () => void) => void): this;
+    on(event: 'incoming', listener: (inviter: string, actions: IncomingCallActions) => void): this;
 
     /**
      * Subscribe to call connected events.
      */
-    on(event: 'connected', listener: (participants: string[]) => void): this;
+    on(event: 'connected', listener: (participants: string[], actions: ConnectedCallActions) => void): this;
 
     /**
      * Subscribe to call disconnected events.
@@ -104,4 +95,59 @@ export interface SkypeClient extends EventEmitter {
     on(event: 'muted', listener: () => void): this;
 
     on(event: 'unmuted', listener: () => void): this;
+}
+
+/**
+ * Actions returned as part of the incoming call event.
+ */
+export interface IncomingCallActions {
+    /**
+     * Accept the call as full screen on the primary display.
+     */
+    accept(): void;
+
+    /**
+     * Accept the call on the primary display.
+     */
+    accept(fullscreen: boolean): void;
+
+    /**
+     * Accept the call.
+     */
+    accept(fullscreen: boolean, display: number): void;
+
+    /**
+     * Reject the call.
+     */
+    reject(): void;
+}
+
+/**
+ * Actions returned as part of the call connect event.
+ */
+export interface ConnectedCallActions {
+    /**
+     * Make the conversation fullscreen and position above all other window.
+     */
+    fullscreen(display: number): void;
+
+    /**
+     * Show the conversation window.
+     */
+    show(): void;
+
+    /**
+     * Hide the conversation window.
+     */
+    hide(): void;
+
+    /**
+     * Set the conversation's privacy mute state.
+     */
+    mute(state: boolean): void;
+
+    /**
+     * End the conversation and disconnect the call.
+     */
+    end(): void;
 }
