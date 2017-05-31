@@ -64,6 +64,8 @@ export class LiveClient extends EventEmitter implements SkypeClient {
                 conversation.participants,
                 {
                     fullscreen: (display = 0) => conversation.actions.fullscreen({display}),
+                    show: conversation.actions.show,
+                    hide: conversation.actions.hide,
                     mute: (state: boolean) => conversation.actions.mute({state}),
                     end: conversation.actions.end
                 }

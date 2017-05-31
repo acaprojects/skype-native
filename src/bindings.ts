@@ -79,6 +79,8 @@ export interface EventIncomingArgs {
 export const onConnect = bindSync<EventSubscription<EventConnectedArgs>, void>('OnConnect');
 export interface ConnectedCallActions {
     fullscreen: ActionWithArgs<{display: number}>;
+    show: Action;
+    hide: Action;
     mute: ActionWithArgs<{state: boolean}>;
     end: Action;
 }

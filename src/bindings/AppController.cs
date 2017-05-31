@@ -183,6 +183,18 @@ namespace SkypeClient
                     return null;
                 };
 
+                Proxy Show = async (dynamic kwargs) =>
+                {
+                    CallWindow.Show(automation, conversation);
+                    return null;
+                };
+
+                Proxy Hide = async (dynamic kwargs) =>
+                {
+                    CallWindow.Hide(automation, conversation);
+                    return null;
+                };
+
                 Proxy Mute = async (dynamic kwargs) =>
                 {
                     SetMute(conversation, kwargs.state);
@@ -190,7 +202,7 @@ namespace SkypeClient
                 };
 
                 Proxy End = async (dynamic kwargs) =>
-                {
+                { 
                     EndConversation(conversation);
                     return null;
                 };
@@ -202,6 +214,8 @@ namespace SkypeClient
                     actions = new
                     {
                         fullscreen = Fullscreen,
+                        show = Show,
+                        hide = Hide,
                         mute = Mute,
                         end = End
                     }
