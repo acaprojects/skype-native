@@ -28,6 +28,9 @@ export const callback = <T>(handler: (input: T) => void): EventSubscription<T> =
     };
 };
 
+export type Action = () => void;
+export type ActionWithArgs<T> = (input: T) => void;
+
 export const startCall = bindSync<CallArgs, void>('Call');
 export interface CallArgs {
     uri: string;
@@ -64,15 +67,24 @@ export interface EventSubscription<T> {
 }
 
 export const onIncoming = bindSync<EventSubscription<EventIncomingArgs>, void>('OnIncoming');
+export interface IncomingCallActions {
+    accept: ActionWithArgs<{fullscreen: boolean, display: number}>;
+    reject: Action;
+}
 export interface EventIncomingArgs {
     inviter: string;
-    accept: (kwargs: {fullscreen: boolean, display: number}) => void;
-    reject: () => void;
+    actions: IncomingCallActions;
 }
 
 export const onConnect = bindSync<EventSubscription<EventConnectedArgs>, void>('OnConnect');
+export interface ConnectedCallActions {
+    fullscreen: ActionWithArgs<{display: number}>;
+    mute: ActionWithArgs<{state: boolean}>;
+    end: Action;
+}
 export interface EventConnectedArgs {
     participants: string[];
+    actions: ConnectedCallActions;
 }
 
 export const onDisconnect = bindSync<EventSubscription<any>, void>('OnDisconnect');

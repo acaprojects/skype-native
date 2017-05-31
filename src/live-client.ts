@@ -45,21 +45,30 @@ export class LiveClient extends EventEmitter implements SkypeClient {
     private bindEvents() {
         const callback = bindings.callback;
 
-        // Utility to emit an event with whatever payload we recieve.
         const emit = <T>(event: SkypeClientEvent) =>
             bindings.callback<T>((payload) => this.emit(event, payload));
 
         bindings.onIncoming(callback((call: bindings.EventIncomingArgs) => {
-            this.emit(
-                'incoming',
+            this.emit('incoming',
                 call.inviter,
-                // TODO create a neat abstraction to turn args into kwargs
-                (fullscreen = true, display = 0) => call.accept({fullscreen, display}),
-                call.reject
+                {
+                    // TODO create a neat abstraction to turn args into kwargs
+                    accept: (fullscreen = true, display = 0) => call.actions.accept({fullscreen, display}),
+                    reject: call.actions.reject
+                }
             );
         }));
 
-        bindings.onConnect(emit('connected'));
+        bindings.onConnect(callback((conversation: bindings.EventConnectedArgs) => {
+            this.emit('connected',
+                conversation.participants,
+                {
+                    fullscreen: (display = 0) => conversation.actions.fullscreen({display}),
+                    mute: (state: boolean) => conversation.actions.mute({state}),
+                    end: conversation.actions.end
+                }
+            );
+        }));
 
         bindings.onDisconnect(emit('disconnected'));
 

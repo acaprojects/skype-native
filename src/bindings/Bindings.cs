@@ -33,7 +33,7 @@ namespace SkypeClient
 
         public async Task<object> Mute(dynamic kwargs)
         {
-            AppController.Instance().Mute(kwargs.state);
+            AppController.Instance().MuteAll(kwargs.state);
             return null;
         }
 

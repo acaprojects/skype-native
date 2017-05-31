@@ -96,42 +96,44 @@ namespace SkypeClient
                 null);
         }
 
-        public void HangupAll()
+        public void EndConversation(Conversation conversation)
         {
-            Action<Conversation> endConversation = conversation =>
-            {
-                var av = conversation.Modalities[ModalityTypes.AudioVideo];
-                av.BeginDisconnect(ModalityDisconnectReason.None,
-                    ar =>
-                    {
-                        av.EndDisconnect(ar);
-                        conversation.End();
-                    },
-                    null);
-            };
-
-            Util.ForEach(client.ConversationManager.Conversations, endConversation);
+            var av = conversation.Modalities[ModalityTypes.AudioVideo];
+            av.BeginDisconnect(ModalityDisconnectReason.None,
+                ar =>
+                {
+                    av.EndDisconnect(ar);
+                    conversation.End();
+                },
+                null);
         }
 
-        public void Mute(bool state)
+        public void HangupAll()
         {
-            foreach (var conversation in client.ConversationManager.Conversations)
-            {
-                var participant = conversation.SelfParticipant;
-                participant.BeginSetMute(
-                    state,
-                    ar =>
-                    {
-                        participant.EndSetMute(ar);
-                    },
-                    null);
-            }
+            Util.ForEach(client.ConversationManager.Conversations, EndConversation);
+        }
+
+        public void SetMute(Conversation conversation, bool state)
+        {
+            var participant = conversation.SelfParticipant;
+            participant.BeginSetMute(
+                state,
+                ar =>
+                {
+                    participant.EndSetMute(ar);
+                },
+                null);
+        }
+
+        public void MuteAll(bool state)
+        {
+            Action<Conversation> mute = c => SetMute(c, state);
+            Util.ForEach(client.ConversationManager.Conversations, mute);
         }
 
         public void Fullscreen(int display = 0)
         {
             Action<Conversation> fullscreenOnDisplay = c => CallWindow.ShowFullscreen(automation, c, display);
-
             Util.ForEach(client.ConversationManager.Conversations, fullscreenOnDisplay);
         }
 
@@ -159,8 +161,11 @@ namespace SkypeClient
                 callback(new
                 {
                     inviter = inviter.Uri,
-                    accept = AcceptCall,
-                    reject = RejectCall
+                    actions = new
+                    {
+                        accept = AcceptCall,
+                        reject = RejectCall
+                    }
                 });
             });
         }
@@ -170,9 +175,37 @@ namespace SkypeClient
             ExecuteAction.InState<AVModality>(ModalityTypes.AudioVideo, ModalityState.Connected, (conversation, modality) =>
             {
                 var participants = conversation.Participants.Select(p => (string)p.Properties[ParticipantProperty.Name]);
-                var participantNames = participants.Cast<string>().ToArray();
 
-                callback(participants);
+#pragma warning disable 1998
+                Proxy Fullscreen = async (dynamic kwargs) =>
+                {
+                    CallWindow.ShowFullscreen(automation, conversation, kwargs.display);
+                    return null;
+                };
+
+                Proxy Mute = async (dynamic kwargs) =>
+                {
+                    SetMute(conversation, kwargs.state);
+                    return null;
+                };
+
+                Proxy End = async (dynamic kwargs) =>
+                {
+                    EndConversation(conversation);
+                    return null;
+                };
+#pragma warning restore 1998
+
+                callback(new
+                {
+                    participants = participants,
+                    actions = new
+                    {
+                        fullscreen = Fullscreen,
+                        mute = Mute,
+                        end = End
+                    }
+                });
             });
         }
 
