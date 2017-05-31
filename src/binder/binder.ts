@@ -51,8 +51,20 @@ export interface PrecompiledTarget extends BaseBindingTarget { assemblyFile: CLR
  */
 export type BindingTarget = CompilableTarget | PrecompiledTarget | CLRAssembly | CLRSource;
 
+/**
+ * Create a Node function binding to a CLR method.
+ */
 function bindToCLR<I, O>(target: BindingTarget) {
     return edge.func(target) as Binding<I, O>;
+}
+
+/**
+ * Transform an AsyncBinding, which uses the Node callback pattern, into a
+ * function that returns a promise.
+ */
+function wrapInPromise<I, O>(binding: AsyncBinding<I, O>) {
+    return (input: I) =>
+        new Promise<O>((y, n) => binding(input, (e, r) => e ? n(e) : y(r)));
 }
 
 /**
@@ -65,11 +77,20 @@ function bindToCLR<I, O>(target: BindingTarget) {
 export function async<I, O>(target: BindingTarget) {
     const binding = bindToCLR<I, O>(target) as AsyncBinding<I, O>;
 
-    // wrap the async binding in a promise if no callback is supplied.
-    return (input: I, callback?: Callback<O>) =>
-        callback
-            ? binding(input, callback)
-            : new Promise<O>((y, n) => binding(input, (e, r) => e ? n(e) : y(r)));
+    const bindingAsPromise = wrapInPromise(binding);
+
+    return (input: I, callback?: Callback<O>) => {
+        if (callback) {
+            const success = (result: O) => {
+                callback(null, result);
+                return result;
+            };
+            const error = (err: Error) => callback(err);
+            return bindingAsPromise(input).then(success).catch(error);
+        } else {
+            return bindingAsPromise(input);
+        }
+    };
 }
 
 /**
