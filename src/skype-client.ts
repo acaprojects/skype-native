@@ -151,3 +151,5 @@ export interface ConnectedCallActions {
      */
     end(): void;
 }
+
+export type SkypeClientCallActions = IncomingCallActions | ConnectedCallActions;

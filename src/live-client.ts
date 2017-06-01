@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { SkypeClient, SkypeClientEvent } from './skype-client';
+import { SkypeClient, SkypeClientEvent, IncomingCallActions, ConnectedCallActions } from './skype-client';
 import * as bindings from './bindings';
 import { resolveJoinUrl } from './meeting';
 
@@ -45,24 +45,47 @@ export class LiveClient extends EventEmitter implements SkypeClient {
     private bindEvents() {
         const callback = bindings.callback;
 
-        const emit = <T>(event: SkypeClientEvent) =>
-            bindings.callback<T>((payload) => this.emit(event, payload));
+        /**
+         * Type safe container around the vanilla emit function.
+         */
+        const emit = <T, U>(event: SkypeClientEvent, eventInfo?: T, actions?: U) =>
+            this.emit(event, eventInfo, actions);
 
-        // TODO: create typed emitter so structure of this is enforced against the client intrerface
+        type EventPayload<T, U> = [T, U];
 
-        bindings.onIncoming(callback((call: bindings.EventIncomingArgs) => {
-            this.emit('incoming',
+        type IdentityTransform<T> = (payload: T) => EventPayload<T, undefined>;
+        type InfoTransform<T, U> = (payload: T) => EventPayload<U, undefined>;
+        type ActionTransform<T, U, V> = (payload: T) => EventPayload<U, V>;
+
+        type CallbackTransform<T, U, V> = IdentityTransform<T> | InfoTransform<T, U> | ActionTransform<T, U, V>;
+
+        const emitter = <T, U, V>(event: SkypeClientEvent, transform: CallbackTransform<T, U, V>) =>
+            callback<T>((payload) => {
+                const [eventInfo, actions] = transform(payload);
+                emit(event, eventInfo, actions);
+            });
+
+        const simpleEmitter = (event: SkypeClientEvent) =>
+            emitter<undefined, undefined, undefined>(event, (payload) => [payload, undefined]);
+
+        const identityEmitter = <T>(event: SkypeClientEvent) =>
+            emitter<T, undefined, undefined>(event, (payload) => [payload, undefined]);
+
+        bindings.onIncoming(emitter<bindings.EventIncomingArgs, string, IncomingCallActions>(
+            'incoming',
+            (call) => [
                 call.inviter,
                 {
                     // TODO create a neat abstraction to turn args into kwargs
                     accept: (fullscreen = true, display = 0) => call.actions.accept({fullscreen, display}),
                     reject: call.actions.reject
                 }
-            );
-        }));
+            ]
+        ));
 
-        bindings.onConnect(callback((conversation: bindings.EventConnectedArgs) => {
-            this.emit('connected',
+        bindings.onConnect(emitter<bindings.EventConnectedArgs, string[], ConnectedCallActions>(
+            'connected',
+            (conversation) => [
                 conversation.participants,
                 {
                     fullscreen: (display = 0) => conversation.actions.fullscreen({display}),
@@ -71,12 +94,14 @@ export class LiveClient extends EventEmitter implements SkypeClient {
                     mute: (state: boolean) => conversation.actions.mute({state}),
                     end: conversation.actions.end
                 }
-            );
-        }));
+            ]
+        ));
 
-        bindings.onDisconnect(emit('disconnected'));
+        bindings.onDisconnect(simpleEmitter('disconnected'));
 
-        bindings.onMuteChange(emit<boolean>('mute'));
+        bindings.onMuteChange(identityEmitter<boolean>('mute'));
+
+        // TODO add ability to include a predicate in the emitter
         bindings.onMuteChange(callback((state: boolean) => this.emit(state ? 'muted' : 'unmuted')));
     }
 
