@@ -45,12 +45,6 @@ export class LiveClient extends EventEmitter implements SkypeClient {
     private bindEvents() {
         const callback = bindings.callback;
 
-        /**
-         * Type safe container around the vanilla emit function.
-         */
-        const emit = <T, U>(event: SkypeClientEvent, eventInfo?: T, actions?: U) =>
-            this.emit(event, eventInfo, actions);
-
         type EventPayload<T, U> = [T, U];
 
         type IdentityTransform<T> = (payload: T) => EventPayload<T, undefined>;
@@ -62,16 +56,18 @@ export class LiveClient extends EventEmitter implements SkypeClient {
         const emitter = <T, U, V>(event: SkypeClientEvent, transform: CallbackTransform<T, U, V>) =>
             callback<T>((payload) => {
                 const [eventInfo, actions] = transform(payload);
-                emit(event, eventInfo, actions);
+                this.emit(event, eventInfo, actions);
             });
 
-        const simpleEmitter = (event: SkypeClientEvent) =>
+        const emit = (event: SkypeClientEvent) =>
             emitter<undefined, undefined, undefined>(event, (payload) => [payload, undefined]);
 
-        const identityEmitter = <T>(event: SkypeClientEvent) =>
+        const emitWithInfo = <T>(event: SkypeClientEvent) =>
             emitter<T, undefined, undefined>(event, (payload) => [payload, undefined]);
 
-        bindings.onIncoming(emitter<bindings.EventIncomingArgs, string, IncomingCallActions>(
+        const emitWithActions = emitter;
+
+        bindings.onIncoming(emitWithActions<bindings.EventIncomingArgs, string, IncomingCallActions>(
             'incoming',
             (call) => [
                 call.inviter,
@@ -83,7 +79,7 @@ export class LiveClient extends EventEmitter implements SkypeClient {
             ]
         ));
 
-        bindings.onConnect(emitter<bindings.EventConnectedArgs, string[], ConnectedCallActions>(
+        bindings.onConnect(emitWithActions<bindings.EventConnectedArgs, string[], ConnectedCallActions>(
             'connected',
             (conversation) => [
                 conversation.participants,
@@ -97,9 +93,9 @@ export class LiveClient extends EventEmitter implements SkypeClient {
             ]
         ));
 
-        bindings.onDisconnect(simpleEmitter('disconnected'));
+        bindings.onDisconnect(emit('disconnected'));
 
-        bindings.onMuteChange(identityEmitter<boolean>('mute'));
+        bindings.onMuteChange(emitWithInfo<boolean>('mute'));
 
         // TODO add ability to include a predicate in the emitter
         bindings.onMuteChange(callback((state: boolean) => this.emit(state ? 'muted' : 'unmuted')));
