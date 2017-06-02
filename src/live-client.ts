@@ -57,7 +57,7 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
                 }
             });
 
-        bindings.onIncoming(emit<bindings.EventIncomingArgs, client.IncomingCallInfo, client.IncomingCallActions>(
+        bindings.onIncoming(emit<bindings.EventIncomingArgs, client.InviterInfo, client.IncomingCallActions>(
             'incoming',
             (call) => [
                 call.inviter,

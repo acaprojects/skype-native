@@ -71,7 +71,7 @@ export interface SkypeClient extends EventEmitter {
     /**
      * Subsribe to incoming call events.
      */
-    on(event: 'incoming', listener: (inviter: IncomingCallInfo, actions: IncomingCallActions) => void): this;
+    on(event: 'incoming', listener: (inviter: InviterInfo, actions: IncomingCallActions) => void): this;
 
     /**
      * Subscribe to call connected events.
@@ -103,7 +103,10 @@ export interface SkypeClient extends EventEmitter {
     on(event: 'videoStopped', listener: () => void): this;
 }
 
-export type IncomingCallInfo = string;
+export interface InviterInfo {
+    name: string;
+    uri: string;
+}
 
 export type ConnectedCallInfo = string[];
 

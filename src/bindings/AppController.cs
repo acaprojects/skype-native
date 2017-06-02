@@ -148,6 +148,7 @@ namespace SkypeClient
             ExecuteAction.InState<AVModality>(ModalityTypes.AudioVideo, ModalityState.Notified, (conversation, modality) =>
             {
                 var inviter = (Contact)conversation.Properties[ConversationProperty.Inviter];
+                var inviterName = inviter.GetContactInformation(ContactInformationType.DisplayName);
 
 #pragma warning disable 1998
                 Proxy AcceptCall = Bindings.CreateAction((dynamic kwargs) =>
@@ -161,7 +162,11 @@ namespace SkypeClient
 
                 callback(new
                 {
-                    inviter = inviter.Uri,
+                    inviter = new
+                    {
+                        name = inviterName,
+                        uri = inviter.Uri
+                    },
                     actions = new
                     {
                         accept = AcceptCall,
@@ -175,7 +180,7 @@ namespace SkypeClient
         {
             ExecuteAction.InState<AVModality>(ModalityTypes.AudioVideo, ModalityState.Connected, (conversation, modality) =>
             {
-                var participants = conversation.Participants.Select(p => (string)p.Properties[ParticipantProperty.Name]);
+                var participants = conversation.Participants.Where(p => !p.IsSelf).Select(p => (string)p.Properties[ParticipantProperty.Name]);
 
 #pragma warning disable 1998
                 Proxy Fullscreen = Bindings.CreateAction((dynamic kwargs) => CallWindow.ShowFullscreen(automation, conversation, kwargs.display));

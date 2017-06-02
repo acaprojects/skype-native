@@ -62,12 +62,16 @@ export interface EventSubscription<T> {
 }
 
 export const onIncoming = bindSync<EventSubscription<EventIncomingArgs>, void>('OnIncoming');
+export interface IncomingCallInfo {
+    name: string;
+    uri: string;
+}
 export interface IncomingCallActions {
     accept: ActionWithArgs<{fullscreen: boolean, display: number}>;
     reject: Action;
 }
 export interface EventIncomingArgs {
-    inviter: string;
+    inviter: IncomingCallInfo;
     actions: IncomingCallActions;
 }
 
