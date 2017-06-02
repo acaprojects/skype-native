@@ -82,6 +82,8 @@ export interface ConnectedCallActions {
     show: Action;
     hide: Action;
     mute: ActionWithArgs<{state: boolean}>;
+    startVideo: Action;
+    stopVideo: Action;
     end: Action;
 }
 export interface EventConnectedArgs {

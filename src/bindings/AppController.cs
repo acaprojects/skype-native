@@ -113,6 +113,18 @@ namespace SkypeClient
             Util.ForEach(client.ConversationManager.Conversations, EndConversation);
         }
 
+        public void StartVideo(Conversation conversation)
+        {
+            var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
+            CallMedia.StartVideo(av);
+        }
+
+        public void StopVideo(Conversation conversation)
+        {
+            var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
+            CallMedia.StopVideo(av);
+        }
+
         public void SetMute(Conversation conversation, bool state)
         {
             var participant = conversation.SelfParticipant;
@@ -201,6 +213,18 @@ namespace SkypeClient
                     return null;
                 };
 
+                Proxy StartVideo = async (dynamic kwargs) =>
+                {
+                    this.StartVideo(conversation);
+                    return null;
+                };
+
+                Proxy StopVideo = async (dynamic kwargs) =>
+                {
+                    this.StopVideo(conversation);
+                    return null;
+                };
+
                 Proxy End = async (dynamic kwargs) =>
                 { 
                     EndConversation(conversation);
@@ -217,6 +241,8 @@ namespace SkypeClient
                         show = Show,
                         hide = Hide,
                         mute = Mute,
+                        startVideo = StartVideo,
+                        stopVideo = StopVideo,
                         end = End
                     }
                 });

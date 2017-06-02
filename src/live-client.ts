@@ -81,6 +81,8 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
                     show: conversation.actions.show,
                     hide: conversation.actions.hide,
                     mute: (state) => conversation.actions.mute({state}),
+                    startVideo: conversation.actions.startVideo,
+                    stopVideo: conversation.actions.stopVideo,
                     end: conversation.actions.end
                 }
             ]

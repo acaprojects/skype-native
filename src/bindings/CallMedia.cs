@@ -9,14 +9,16 @@ namespace SkypeClient
     {
         private static void StartMediaChannel(Channel stream, int retries = 5)
         {
-            stream.BeginStart(ar => stream.EndStart(ar), stream);
+            Action AttemptStart = () => stream.BeginStart(ar => stream.EndStart(ar), stream);
+
+            AttemptStart();
 
             while ((stream.State != ChannelState.SendReceive) && (retries > 0))
             {
                 Thread.Sleep(1000);
                 try
                 {
-                    stream.BeginStart(ar => stream.EndStart(ar), stream);
+                    AttemptStart();
                 }
                 catch (NotSupportedException)
                 {
@@ -24,6 +26,11 @@ namespace SkypeClient
                 }
                 retries--;
             }
+        }
+
+        private static void StopMediaChannel(Channel stream)
+        {
+            stream.BeginStop(ar => stream.EndStop(ar), stream);
         }
 
         public static void StartVideo(AVModality av)
@@ -43,6 +50,12 @@ namespace SkypeClient
                     StartMediaChannel(video);
                 }
             });
+        }
+
+        public static void StopVideo(AVModality av)
+        {
+            var video = av.VideoChannel;
+            StopMediaChannel(video);
         }
     }
 }

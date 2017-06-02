@@ -104,6 +104,10 @@ export interface SkypeClient extends EventEmitter {
      * Subscribe to provide mute deactivations.
      */
     on(event: 'unmuted', listener: () => void): this;
+
+    on(event: 'videoStarted', listener: () => void): this;
+
+    on(event: 'videoStopped', listener: () => void): this;
 }
 
 export type IncomingCallInfo = string;
@@ -160,6 +164,16 @@ export interface ConnectedCallActions {
      * Set the conversation's privacy mute state.
      */
     mute(state: boolean): void;
+
+    /**
+     * Start sending local video.
+     */
+    startVideo(): void;
+
+    /**
+     * Stop sending local video.
+     */
+    stopVideo(): void;
 
     /**
      * End the conversation and disconnect the call.
