@@ -52,11 +52,6 @@ export interface MuteArgs {
     state: boolean;
 }
 
-export const fullscreen = bindSync<FullscreenArgs, void>('Fullscreen');
-export interface FullscreenArgs {
-    display: number;
-}
-
 export const getActiveUser = bindSync<null, UserDetails>('GetActiveUser');
 export interface UserDetails {
     uri: string;

@@ -143,12 +143,6 @@ namespace SkypeClient
             Util.ForEach(client.ConversationManager.Conversations, mute);
         }
 
-        public void Fullscreen(int display = 0)
-        {
-            Action<Conversation> fullscreenOnDisplay = c => CallWindow.ShowFullscreen(automation, c, display);
-            Util.ForEach(client.ConversationManager.Conversations, fullscreenOnDisplay);
-        }
-
         public void OnIncoming(Proxy callback)
         {
             ExecuteAction.InState<AVModality>(ModalityTypes.AudioVideo, ModalityState.Notified, (conversation, modality) =>

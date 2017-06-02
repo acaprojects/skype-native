@@ -38,10 +38,6 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
         return bindings.mute({state});
     }
 
-    public fullscreen(display = 0) {
-        return bindings.fullscreen({display});
-    }
-
     private bindEvents() {
         // Event subscriptions that are passed to CLR components provide
         // a single object payload when they are activated. The below creates
