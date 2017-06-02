@@ -156,18 +156,13 @@ namespace SkypeClient
                 var inviter = (Contact)conversation.Properties[ConversationProperty.Inviter];
 
 #pragma warning disable 1998
-                Proxy AcceptCall = async (dynamic kwargs) =>
+                Proxy AcceptCall = Bindings.CreateAction((dynamic kwargs) =>
                 {
                     modality.Accept();
                     if (kwargs.fullscreen) CallWindow.ShowFullscreen(automation, conversation, kwargs.display);
-                    return null;
-                };
+                });
 
-                Proxy RejectCall = async (dynamic kwargs) =>
-                {
-                    modality.Reject(ModalityDisconnectReason.Decline);
-                    return null;
-                };
+                Proxy RejectCall = Bindings.CreateAction((dynamic kwargs) => modality.Reject(ModalityDisconnectReason.Decline));
 #pragma warning restore 1998
 
                 callback(new
@@ -189,47 +184,19 @@ namespace SkypeClient
                 var participants = conversation.Participants.Select(p => (string)p.Properties[ParticipantProperty.Name]);
 
 #pragma warning disable 1998
-                Proxy Fullscreen = async (dynamic kwargs) =>
-                {
-                    CallWindow.ShowFullscreen(automation, conversation, kwargs.display);
-                    return null;
-                };
+                Proxy Fullscreen = Bindings.CreateAction((dynamic kwargs) => CallWindow.ShowFullscreen(automation, conversation, kwargs.display));
 
-                Proxy Show = async (dynamic kwargs) =>
-                {
-                    CallWindow.Show(automation, conversation);
-                    return null;
-                };
+                Proxy Show = Bindings.CreateAction((dynamic kwargs) => CallWindow.Show(automation, conversation));
 
-                Proxy Hide = async (dynamic kwargs) =>
-                {
-                    CallWindow.Hide(automation, conversation);
-                    return null;
-                };
+                Proxy Hide = Bindings.CreateAction((dynamic kwargs) => CallWindow.Hide(automation, conversation));
 
-                Proxy Mute = async (dynamic kwargs) =>
-                {
-                    SetMute(conversation, kwargs.state);
-                    return null;
-                };
+                Proxy Mute = Bindings.CreateAction((dynamic kwargs) => SetMute(conversation, kwargs.state));
 
-                Proxy StartVideo = async (dynamic kwargs) =>
-                {
-                    this.StartVideo(conversation);
-                    return null;
-                };
+                Proxy StartVideo = Bindings.CreateAction((dynamic kwargs) => this.StartVideo(conversation));
 
-                Proxy StopVideo = async (dynamic kwargs) =>
-                {
-                    this.StopVideo(conversation);
-                    return null;
-                };
+                Proxy StopVideo = Bindings.CreateAction((dynamic kwargs) => this.StopVideo(conversation));
 
-                Proxy End = async (dynamic kwargs) =>
-                { 
-                    EndConversation(conversation);
-                    return null;
-                };
+                Proxy End = Bindings.CreateAction((dynamic kwargs) => EndConversation(conversation));
 #pragma warning restore 1998
 
                 callback(new

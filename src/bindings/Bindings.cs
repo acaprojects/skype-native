@@ -1,11 +1,19 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace SkypeClient
 {
 #pragma warning disable 1998 // all bindings need to be exposed as async for Edge integration
     class Bindings
     {
-        public delegate Task<object> Proxy(object kwargs);
+        public static Func<object, Task<object>> CreateAction(Action<dynamic> action)
+        {
+            return async (dynamic kwargs) =>
+            {
+                action(kwargs);
+                return null;
+            };
+        }
 
         public async Task<object> Call(dynamic kwargs)
         {
