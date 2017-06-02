@@ -1,12 +1,12 @@
 import { EventEmitter } from 'events';
-import { SkypeClient, SkypeClientEvent, IncomingCallActions, ConnectedCallActions } from './skype-client';
+import * as client from './skype-client';
 import * as bindings from './bindings';
 import { resolveJoinUrl } from './meeting';
 
 /**
  * Live bindings into the native Skype SDK.
  */
-export class LiveClient extends EventEmitter implements SkypeClient {
+export class LiveClient extends EventEmitter implements client.SkypeClient {
 
     public readonly user: {uri: string};
 
@@ -45,29 +45,21 @@ export class LiveClient extends EventEmitter implements SkypeClient {
     private bindEvents() {
         const callback = bindings.callback;
 
-        type EventPayload<T, U> = [T, U];
+        type CallbackTransform<T, U, V> = (payload: T) => [U, V];
 
-        type IdentityTransform<T> = (payload: T) => EventPayload<T, undefined>;
-        type InfoTransform<T, U> = (payload: T) => EventPayload<U, undefined>;
-        type ActionTransform<T, U, V> = (payload: T) => EventPayload<U, V>;
+        type Predicate<T> = (input: T) => boolean;
 
-        type CallbackTransform<T, U, V> = IdentityTransform<T> | InfoTransform<T, U> | ActionTransform<T, U, V>;
-
-        const emitter = <T, U, V>(event: SkypeClientEvent, transform: CallbackTransform<T, U, V>) =>
+        const emit = <T, U, V>(event: client.SkypeClientEvent,
+                               transform?: CallbackTransform<T, U, V>,
+                               condition: Predicate<T> = (p) => true) =>
             callback<T>((payload) => {
-                const [eventInfo, actions] = transform(payload);
-                this.emit(event, eventInfo, actions);
+                if (condition(payload)) {
+                    const t = transform || ((p) => [p, undefined]);
+                    this.emit(event, ...t(payload));
+                }
             });
 
-        const emit = (event: SkypeClientEvent) =>
-            emitter<undefined, undefined, undefined>(event, (payload) => [payload, undefined]);
-
-        const emitWithInfo = <T>(event: SkypeClientEvent) =>
-            emitter<T, undefined, undefined>(event, (payload) => [payload, undefined]);
-
-        const emitWithActions = emitter;
-
-        bindings.onIncoming(emitWithActions<bindings.EventIncomingArgs, string, IncomingCallActions>(
+        bindings.onIncoming(emit<bindings.EventIncomingArgs, client.IncomingCallInfo, client.IncomingCallActions>(
             'incoming',
             (call) => [
                 call.inviter,
@@ -76,10 +68,10 @@ export class LiveClient extends EventEmitter implements SkypeClient {
                     accept: (fullscreen = true, display = 0) => call.actions.accept({fullscreen, display}),
                     reject: call.actions.reject
                 }
-            ]
+             ]
         ));
 
-        bindings.onConnect(emitWithActions<bindings.EventConnectedArgs, string[], ConnectedCallActions>(
+        bindings.onConnect(emit<bindings.EventConnectedArgs, client.ConnectedCallInfo, client.ConnectedCallActions>(
             'connected',
             (conversation) => [
                 conversation.participants,
@@ -87,18 +79,27 @@ export class LiveClient extends EventEmitter implements SkypeClient {
                     fullscreen: (display = 0) => conversation.actions.fullscreen({display}),
                     show: conversation.actions.show,
                     hide: conversation.actions.hide,
-                    mute: (state: boolean) => conversation.actions.mute({state}),
+                    mute: (state) => conversation.actions.mute({state}),
                     end: conversation.actions.end
                 }
             ]
         ));
 
-        bindings.onDisconnect(emit('disconnected'));
+        bindings.onDisconnect(emit<undefined, undefined, undefined>('disconnected'));
 
-        bindings.onMuteChange(emitWithInfo<boolean>('mute'));
+        bindings.onMuteChange(emit<boolean, client.MuteInfo, undefined>('mute'));
 
-        // TODO add ability to include a predicate in the emitter
-        bindings.onMuteChange(callback((state: boolean) => this.emit(state ? 'muted' : 'unmuted')));
+        bindings.onMuteChange(emit<boolean, undefined, undefined>(
+            'muted',
+            (isMuted) => [undefined, undefined],
+            (isMuted) => isMuted
+        ));
+
+        bindings.onMuteChange(emit<boolean, undefined, undefined>(
+            'unmuted',
+            (isMuted) => [undefined, undefined],
+            (isMuted) => !isMuted
+        ));
     }
 
 }

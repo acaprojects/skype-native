@@ -78,24 +78,30 @@ export interface SkypeClient extends EventEmitter {
     /**
      * Subsribe to incoming call events.
      */
-    on(event: 'incoming', listener: (inviter: string, actions: IncomingCallActions) => void): this;
+    on(event: 'incoming', listener: (inviter: IncomingCallInfo, actions: IncomingCallActions) => void): this;
 
     /**
      * Subscribe to call connected events.
      */
-    on(event: 'connected', listener: (participants: string[], actions: ConnectedCallActions) => void): this;
+    on(event: 'connected', listener: (participants: ConnectedCallInfo, actions: ConnectedCallActions) => void): this;
 
     /**
      * Subscribe to call disconnected events.
      */
     on(event: 'disconnected', listener: () => void): this;
 
-    on(event: 'mute', listenter: (state: boolean) => void): this;
+    on(event: 'mute', listenter: (isMuted: MuteInfo) => void): this;
 
     on(event: 'muted', listener: () => void): this;
 
     on(event: 'unmuted', listener: () => void): this;
 }
+
+export type IncomingCallInfo = string;
+
+export type ConnectedCallInfo = string[];
+
+export type MuteInfo = boolean;
 
 /**
  * Actions returned as part of the incoming call event.
@@ -151,5 +157,3 @@ export interface ConnectedCallActions {
      */
     end(): void;
 }
-
-export type SkypeClientCallActions = IncomingCallActions | ConnectedCallActions;

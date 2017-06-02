@@ -22,11 +22,11 @@ const bindSync = <I, O>(methodName: string) => sync<I, O>(method(methodName));
 
 const bindAsync = <I, O>(methodName: string) => async<I, O>(method(methodName));
 
-export const callback = <T>(handler: (input: T) => void): EventSubscription<T> => {
+export function callback<T>(handler: (input: T) => void): EventSubscription<T> {
     return {
         callback: proxy(handler)
     };
-};
+}
 
 export type Action = () => void;
 export type ActionWithArgs<T> = (input: T) => void;
