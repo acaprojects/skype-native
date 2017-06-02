@@ -43,8 +43,10 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
     }
 
     private bindEvents() {
-        const callback = bindings.callback;
-
+        // Event subscriptions that are passed to CLR components provide
+        // a single object payload when they are activated. The below creates
+        // a bit of middlewhere that ingests this, optionally applying a
+        // transform so we can emit a Node event with a common signature.
         type CallbackTransform<T, U, V> = (payload: T) => [U, V];
 
         type Predicate<T> = (input: T) => boolean;
@@ -52,7 +54,7 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
         const emit = <T, U, V>(event: client.SkypeClientEvent,
                                transform?: CallbackTransform<T, U, V>,
                                condition: Predicate<T> = (p) => true) =>
-            callback<T>((payload) => {
+            bindings.callback<T>((payload) => {
                 if (condition(payload)) {
                     const t = transform || ((p) => [p, undefined]);
                     this.emit(event, ...t(payload));
@@ -64,7 +66,6 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
             (call) => [
                 call.inviter,
                 {
-                    // TODO create a neat abstraction to turn args into kwargs
                     accept: (fullscreen = true, display = 0) => call.actions.accept({fullscreen, display}),
                     reject: call.actions.reject
                 }

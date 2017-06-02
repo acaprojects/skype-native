@@ -90,10 +90,19 @@ export interface SkypeClient extends EventEmitter {
      */
     on(event: 'disconnected', listener: () => void): this;
 
+    /**
+     * Subscribe to mute state change events.
+     */
     on(event: 'mute', listenter: (isMuted: MuteInfo) => void): this;
 
+    /**
+     * Subscribe to privacy mute activations.
+     */
     on(event: 'muted', listener: () => void): this;
 
+    /**
+     * Subscribe to provide mute deactivations.
+     */
     on(event: 'unmuted', listener: () => void): this;
 }
 
