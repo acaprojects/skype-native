@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { merge } from 'ramda';
+import * as R from 'ramda';
 import { sync, async, proxy, Callback } from './binder';
 
 /**
@@ -16,20 +16,23 @@ const bindingTarget = {
     typeName: 'SkypeClient.Bindings'
 };
 
-const method = (name: string) => merge(bindingTarget, {methodName: name});
+const method = (name: string) => R.merge(bindingTarget, {methodName: name});
 
 const bindSync = <I, O>(methodName: string) => sync<I, O>(method(methodName));
 
 const bindAsync = <I, O>(methodName: string) => async<I, O>(method(methodName));
 
-export function callback<T>(handler: (input: T) => void): EventSubscription<T> {
-    return {
-        callback: proxy(handler)
-    };
-}
-
 export type Action = () => void;
-export type ActionWithArgs<T> = (input: T) => void;
+export type ActionWithArgs<T> = (x: T) => void;
+export type Predicate<T> = (x: T) => boolean;
+
+export function callback<T>(handler: ActionWithArgs<T>,
+                            when?: Predicate<T>): EventSubscription<T> {
+    const action: ActionWithArgs<T> = when
+        ? (x) => when(x) ? handler(x) : undefined
+        : handler;
+    return { callback: proxy<T, void>(action) };
+}
 
 export const startCall = bindSync<CallArgs, void>('Call');
 export interface CallArgs {

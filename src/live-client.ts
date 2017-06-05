@@ -25,9 +25,10 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
     }
 
     public join(meetingUrl: string, fullscreen = true, display = 0) {
-        resolveJoinUrl(meetingUrl, (url) =>
-            bindings.joinMeeting({url, fullscreen, display})
-        );
+        const join = (url: string) =>
+            bindings.joinMeeting({url, fullscreen, display});
+
+        resolveJoinUrl(meetingUrl, join);
     }
 
     public endCall() {
@@ -41,21 +42,21 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
     private bindEvents() {
         // Event subscriptions that are passed to CLR components provide
         // a single object payload when they are activated. The below creates
-        // a bit of middlewhere that ingests this, optionally applying a
+        // a bit of middleware that ingests this, optionally applying a
         // transform so we can emit a Node event with a common signature.
-        type CallbackTransform<T, U, V> = (payload: T) => [U, V];
+        type EventPayload<InfoType, ActionsType> = [InfoType, ActionsType];
 
-        type Predicate<T> = (input: T) => boolean;
+        type Transform<T, U, V> = (payload: T) => EventPayload<U, V>;
+
+        type Predicate<T> = (payload: T) => boolean;
 
         const emit = <T, U, V>(event: client.SkypeClientEvent,
-                               transform?: CallbackTransform<T, U, V>,
-                               condition: Predicate<T> = (p) => true) =>
-            bindings.callback<T>((payload) => {
-                if (condition(payload)) {
-                    const t = transform || ((p) => [p, undefined]);
-                    this.emit(event, ...t(payload));
-                }
-            });
+                               transform?: Transform<T, U, V>,
+                               when?: Predicate<T>) => {
+            const t = transform || ((p) => [p]);
+            const c = when || ((p) => true);
+            return bindings.callback<T>((p) => this.emit(event, ...t(p)), c);
+        };
 
         bindings.onIncoming(emit<bindings.EventIncomingArgs, client.InviterInfo, client.IncomingCallActions>(
             'incoming',

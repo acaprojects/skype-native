@@ -105,7 +105,7 @@ export function sync<I, O>(target: BindingTarget) {
 /**
  * Wrap a function into the format expected by Edge for execution from CLR.
  */
-export function proxy<I, O>(func: (input?: I) => O) {
+export function proxy<I, O>(func: (input: I) => O) {
     return (input: I, callback: Callback<O>) =>  {
         try {
             callback(null, func(input));
