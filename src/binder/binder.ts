@@ -99,7 +99,8 @@ export function async<I, O>(target: BindingTarget) {
  * If the taks cannot be run synchonously an Error will be raised.
  */
 export function sync<I, O>(target: BindingTarget) {
-    return (input: I) => bindToCLR<I, O>(target)(input, true);
+    const binding = bindToCLR<I, O>(target) as SyncBinding<I, O>;
+    return (input: I) => binding(input, true);
 }
 
 /**
