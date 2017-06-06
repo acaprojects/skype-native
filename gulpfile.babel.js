@@ -20,12 +20,6 @@ const paths = {
 }
 
 /**
- * Output a highlighted message.
- */
-const warn = (message) =>
-    plugins.util.log(plugins.util.colors.black.bgYellow('WARNING'), message);
-
-/**
  * Pipe a set of streams out to our dist directory and merge the result.
  */
 const pipeToDist = (streams) => {
@@ -93,7 +87,7 @@ gulp.task('build:native', () => {
             }));
 
     const skip = () =>
-        warn('Unsupported build platform for native libs. Using prebuilt.');
+        plugins.message.warn('Unsupported build platform. Using prebuilt dll.');
 
     return process.platform === 'win32' ? build() : skip();
 });
