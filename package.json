@@ -70,7 +70,7 @@
   "dependencies": {
     "edge": "^7.10.0",
     "electron-edge": "^6.5.5",
-    "ramda": "^0.23.0",
+    "ramda": "^0.24.0",
     "request": "^2.81.0"
   }
 }
