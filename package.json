@@ -37,7 +37,7 @@
     ]
   },
   "devDependencies": {
-    "@types/chai": "^3.5.2",
+    "@types/chai": "^4.0.0",
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.18",
     "@types/ramda": "0.0.10",
@@ -45,7 +45,7 @@
     "babel-core": "^6.24.1",
     "babel-preset-env": "^1.4.0",
     "babel-register": "^6.24.1",
-    "chai": "^3.5.0",
+    "chai": "^4.0.2",
     "del": "^2.2.2",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
@@ -59,7 +59,7 @@
     "gulp-util": "^3.0.8",
     "merge2": "^1.0.3",
     "mocha": "^3.4.1",
-    "nyc": "^10.3.2",
+    "nyc": "^11.0.2",
     "run-sequence": "^1.2.2",
     "source-map-support": "^0.4.15",
     "ts-node": "^3.0.4",
