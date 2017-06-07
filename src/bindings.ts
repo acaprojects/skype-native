@@ -1,6 +1,6 @@
 import { join } from 'path';
 import * as R from 'ramda';
-import { sync, async, proxy, Callback } from './binder';
+import { sync, async, proxy, Callback } from 'edge-ts';
 
 /**
  * Resolves a set of paths relative to the curent directory.
