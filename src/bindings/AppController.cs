@@ -25,7 +25,7 @@ namespace SkypeClient
             this.automation = automation;
 
             // Autostart video on all calls
-            ExecuteAction.InState<AVModality>(ModalityTypes.AudioVideo, ModalityState.Connected, (conversation, modality) =>
+            ExecuteAction.InState<AVModality>(client, ModalityTypes.AudioVideo, ModalityState.Connected, (conversation, modality) =>
             {
                 CallMedia.StartVideo(modality);
             });
@@ -145,7 +145,7 @@ namespace SkypeClient
 
         public void OnIncoming(Proxy callback)
         {
-            ExecuteAction.InState<AVModality>(ModalityTypes.AudioVideo, ModalityState.Notified, (conversation, modality) =>
+            ExecuteAction.InState<AVModality>(client, ModalityTypes.AudioVideo, ModalityState.Notified, (conversation, modality) =>
             {
                 var inviter = (Contact)conversation.Properties[ConversationProperty.Inviter];
                 var inviterName = inviter.GetContactInformation(ContactInformationType.DisplayName);
@@ -178,7 +178,7 @@ namespace SkypeClient
 
         public void OnConnect(Proxy callback)
         {
-            ExecuteAction.InState<AVModality>(ModalityTypes.AudioVideo, ModalityState.Connected, (conversation, modality) =>
+            ExecuteAction.InState<AVModality>(client, ModalityTypes.AudioVideo, ModalityState.Connected, (conversation, modality) =>
             {
                 var participants = conversation.Participants.Where(p => !p.IsSelf).Select(p => (string)p.Properties[ParticipantProperty.Name]);
 
@@ -217,7 +217,7 @@ namespace SkypeClient
 
         public void OnDisconnect(Proxy callback)
         {
-            ExecuteAction.InState<AVModality>(ModalityTypes.AudioVideo, ModalityState.Disconnected, (conversation, modality) =>
+            ExecuteAction.InState<AVModality>(client, ModalityTypes.AudioVideo, ModalityState.Disconnected, (conversation, modality) =>
             {
                 callback(null);
             });
@@ -225,7 +225,7 @@ namespace SkypeClient
 
         public void OnMuteChange(Proxy callback)
         {
-            ExecuteAction.OnAllConversations(conversation =>
+            ExecuteAction.OnAllConversations(client, conversation =>
             {
                 var self = conversation.SelfParticipant;
                 var av = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
