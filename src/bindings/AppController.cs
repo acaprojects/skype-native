@@ -27,16 +27,44 @@ namespace SkypeClient
             CallMedia.AlwaysStartVideo(client);
         }
 
-        public static AppController Instance()
+        private static void BindNewInstance()
         {
-            if (instance == null)
+            try
             {
                 var client = LyncClient.GetClient();
                 var automation = LyncClient.GetAutomation();
                 instance = new AppController(client, automation);
             }
+            catch (ClientNotFoundException)
+            {
+                throw new InvalidStateException("No Skype / Lync app running");
+            }
+        }
 
-            // TODO: check we still have comms with the client / reconnect if nesessary.
+        public static AppController Instance(bool requireAuthed = true)
+        {
+            if (instance == null)
+            {
+                BindNewInstance();
+            }
+            else
+            {
+                // This will trigger a NullReferenceException if our client reference
+                // is no longer valid (e.g. the app was restarted) and we need to rebind.
+                try
+                {
+                    var canary = instance.client.ConversationManager.Conversations.ToArray();
+                }
+                catch (NullReferenceException)
+                {
+                    BindNewInstance();
+                }
+            }
+
+            if (instance.client.State != ClientState.SignedIn && requireAuthed)
+            {
+                throw new InvalidStateException("Skype / Lync client is not signed in");
+            }
 
             return instance;
         }
@@ -141,7 +169,6 @@ namespace SkypeClient
 
         public void OnIncoming(Proxy callback)
         {
-            // FIXME registered events will be dropped if the Lync / Skype client restarts
             ExecuteAction.InState<AVModality>(client, ModalityTypes.AudioVideo, ModalityState.Notified, (conversation, modality) =>
             {
                 var inviter = (Contact)conversation.Properties[ConversationProperty.Inviter];

@@ -31,6 +31,11 @@ namespace EventMonitor
                     Console.WriteLine("AV modality " + args.OldState + " --> " + args.NewState);
                 };
             };
+
+            client.StateChanged += (o, e) =>
+            {
+                Console.WriteLine("Client state " + e.OldState + " --> " + e.NewState);
+            };
         }
 
         static void Main(string[] args)
