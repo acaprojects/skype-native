@@ -18,7 +18,7 @@ export type SkypeClientEvent = SkypeCallStateEvent | SkypeMuteStateEvent;
 /**
  * Events emitted in reponse to client application lifecycle events.
  */
-export type SkypeLifecycleEvent = 'clientStarted' | 'clientClosed';
+export type SkypeLifecycleEvent = 'clientStarted' | 'clientExited';
 
 /**
  * Comms proxy for controlling and interacting with the desktop Skype for
@@ -82,6 +82,11 @@ export interface SkypeClient extends EventEmitter {
      * Subscribe to Skype client app launch events.
      */
     on(event: 'clientStarted', listener: () => void): this;
+
+    /**
+     * Subscribe to Skype client app exit events.
+     */
+    on(event: 'clientExited', listener: () => void): this;
 
     /**
      * Subsribe to incoming call events.

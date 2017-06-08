@@ -9,7 +9,8 @@ namespace EventMonitor
 {
     class Program
     {
-        private static ProcessWatcher lyncWatcher;
+        private static ProcessWatcher startupWatcher;
+        private static ProcessWatcher quitWatcher;
 
         static EventHandler<T> PrintEvent<T>(string message)
         {
@@ -51,7 +52,7 @@ namespace EventMonitor
             }
         }
 
-        static void WatchProcessStart()
+        static void WatchProcess()
         {
             Action delayedSubscribe = async () =>
             {
@@ -60,7 +61,9 @@ namespace EventMonitor
                 SubscribeToEvents();
             };
 
-            lyncWatcher = new ProcessWatcher("lync.exe", delayedSubscribe);
+            startupWatcher = ProcessWatcher.OnCreate("lync.exe", delayedSubscribe);
+
+            quitWatcher = ProcessWatcher.OnDelete("lync.exe", () => Console.WriteLine("Lync proess exited"));
         }
 
         static void Main(string[] args)
@@ -73,7 +76,7 @@ namespace EventMonitor
 
             SubscribeToEvents();
 
-            WatchProcessStart();
+            WatchProcess();
 
             Console.ReadKey();
         }

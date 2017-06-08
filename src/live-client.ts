@@ -55,6 +55,8 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
             });
 
         bindings.onClientStart(emit('clientStarted', this.attachClientEvents));
+
+        bindings.onClientExit(emit('clientExited'));
     }
 
     private attachClientEvents() {

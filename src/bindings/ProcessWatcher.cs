@@ -5,30 +5,43 @@ namespace SkypeClient
 {
     public class ProcessWatcher : IDisposable
     {
-        private readonly Action onProcessStart;
+        private readonly Action action;
 
         private ManagementEventWatcher managementEventWatcher;
 
-        public ProcessWatcher(string targetName, Action onStart)
+        private static string scope = @"\\.\root\CIMV2";
+
+        public static ProcessWatcher OnCreate(string targetName, Action action)
         {
-            onProcessStart = onStart;
+            return new ProcessWatcher(buildQuery("__InstanceCreationEvent", targetName), action);
+        }
+ 
+        public static ProcessWatcher OnDelete(string targetName, Action action)
+        {
+            return new ProcessWatcher(buildQuery("__InstanceDeletionEvent", targetName), action);
+        }
 
-            string queryString = "SELECT TargetInstance " +
-                                 "FROM __InstanceCreationEvent " +
-                                 "WITHIN  10 " +
-                                 "WHERE TargetInstance ISA 'Win32_Process' " +
-                                 "AND TargetInstance.Name = '" + targetName + "'";
+        private static string buildQuery(string source, string target)
+        {
+            return "SELECT TargetInstance " +
+                   "FROM " + source + " " +
+                   "WITHIN  10 " +
+                   "WHERE TargetInstance ISA 'Win32_Process' " +
+                   "AND TargetInstance.Name = '" + target + "'";
+        }
 
-            const string scope = @"\\.\root\CIMV2";
+        private ProcessWatcher(string query, Action action)
+        {
+            this.action = action;
 
-            managementEventWatcher = new ManagementEventWatcher(scope, queryString);
+            managementEventWatcher = new ManagementEventWatcher(scope, query);
             managementEventWatcher.EventArrived += WatcherEventArrived;
             managementEventWatcher.Start();
         }
 
         private void WatcherEventArrived(object sender, EventArrivedEventArgs e)
         {
-            onProcessStart();
+            action();
         }
 
         public void Dispose()

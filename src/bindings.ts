@@ -71,6 +71,8 @@ export interface EventSubscription<T> {
 
 export const onClientStart = bindSync<EventSubscription<any>, void>('OnClientStart');
 
+export const onClientExit = bindSync<EventSubscription<any>, void>('OnClientExit');
+
 export const onIncoming = bindSync<EventSubscription<EventIncomingArgs>, void>('OnIncoming');
 export interface IncomingCallInfo {
     name: string;

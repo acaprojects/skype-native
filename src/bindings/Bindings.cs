@@ -6,7 +6,8 @@ namespace SkypeClient
 #pragma warning disable 1998 // all bindings need to be exposed as async for Edge integration
     class Bindings
     {
-        private ProcessWatcher lyncWatcher;
+        private ProcessWatcher processStart;
+        private ProcessWatcher processExit;
 
         public static Func<object, Task<object>> CreateAction(Action<dynamic> action)
         {
@@ -15,6 +16,24 @@ namespace SkypeClient
                 action(kwargs);
                 return null;
             };
+        }
+
+        public async Task<object> StartClient(dynamic kwargs)
+        {
+            AppLauncher.StartClient();
+            return null;
+        }
+
+        public async Task<object> OnClientStart(dynamic kwargs)
+        {
+            processStart = ProcessWatcher.OnCreate("lync.exe", () => kwargs.callback(null));
+            return null;
+        }
+
+        public async Task<object> OnClientExit(dynamic kwargs)
+        {
+            processExit = ProcessWatcher.OnDelete("lync.exe", () => kwargs.callback(null));
+            return null;
         }
 
         public async Task<object> Call(dynamic kwargs)
@@ -64,20 +83,6 @@ namespace SkypeClient
             AppController.Instance().OnMuteChange(kwargs.callback);
             return null;
         }
-
-        public async Task<object> OnClientStart(dynamic kwargs)
-        {
-            lyncWatcher = new ProcessWatcher("lync.exe", () => kwargs.callback(null));
-            return null;
-        }
-
-        public async Task<object> StartClient(dynamic kwargs)
-        {
-            AppLauncher.StartClient();
-            return null;
-        }
-
-        // OnQuit
 
         // OnSignIn
 
