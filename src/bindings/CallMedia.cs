@@ -1,4 +1,5 @@
-﻿using Microsoft.Lync.Model.Conversation;
+﻿using Microsoft.Lync.Model;
+using Microsoft.Lync.Model.Conversation;
 using Microsoft.Lync.Model.Conversation.AudioVideo;
 using System;
 using System.Threading;
@@ -56,6 +57,14 @@ namespace SkypeClient
         {
             var video = av.VideoChannel;
             StopMediaChannel(video);
+        }
+
+        public static void AlwaysStartVideo(LyncClient client)
+        {
+            ExecuteAction.InState<AVModality>(client, ModalityTypes.AudioVideo, ModalityState.Connected, (conversation, modality) =>
+            {
+                StartVideo(modality);
+            });
         }
     }
 }

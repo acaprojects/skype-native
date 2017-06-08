@@ -24,11 +24,7 @@ namespace SkypeClient
             this.client = client;
             this.automation = automation;
 
-            // Autostart video on all calls
-            ExecuteAction.InState<AVModality>(client, ModalityTypes.AudioVideo, ModalityState.Connected, (conversation, modality) =>
-            {
-                CallMedia.StartVideo(modality);
-            });
+            CallMedia.AlwaysStartVideo(client);
         }
 
         public static AppController Instance()
@@ -145,6 +141,7 @@ namespace SkypeClient
 
         public void OnIncoming(Proxy callback)
         {
+            // FIXME registered events will be dropped if the Lync / Skype client restarts
             ExecuteAction.InState<AVModality>(client, ModalityTypes.AudioVideo, ModalityState.Notified, (conversation, modality) =>
             {
                 var inviter = (Contact)conversation.Properties[ConversationProperty.Inviter];
