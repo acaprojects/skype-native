@@ -37,6 +37,8 @@ export function callback<T>(handler: ActionWithArgs<T>,
     return { callback: proxy<T, void>(action) };
 }
 
+export const startClient = bindSync<null, void>('StartClient');
+
 export const startCall = bindSync<CallArgs, void>('Call');
 export interface CallArgs {
     uri: string;

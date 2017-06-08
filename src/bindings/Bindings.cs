@@ -71,9 +71,11 @@ namespace SkypeClient
             return null;
         }
 
-        // Launch
-
-        // OnStart
+        public async Task<object> StartClient(dynamic kwargs)
+        {
+            AppLauncher.StartClient();
+            return null;
+        }
 
         // OnQuit
 

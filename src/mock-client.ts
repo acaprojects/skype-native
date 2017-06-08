@@ -10,6 +10,10 @@ export class MockClient extends EventEmitter implements SkypeClient {
         uri: 'sip:foo@bar.com'
     };
 
+    public start() {
+        this.emit('clientStarted');
+    }
+
     public call(uri: string, fullscreen = true, display = 0) {
         this.emit('connected', [uri]);
         return true;

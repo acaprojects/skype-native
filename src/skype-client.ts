@@ -74,6 +74,11 @@ export interface SkypeClient extends EventEmitter {
     mute(state: boolean): void;
 
     /**
+     * Launch the Lync.exe process.
+     */
+    start(): void;
+
+    /**
      * Subscribe to Skype client app launch events.
      */
     on(event: 'clientStarted', listener: () => void): this;
