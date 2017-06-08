@@ -57,5 +57,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\src\bindings\SkypeClient.csproj">
+      <Project>{88a2ef84-e167-4240-8ae1-b895e8cc5cc3}</Project>
+      <Name>SkypeClient</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

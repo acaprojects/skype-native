@@ -20,7 +20,7 @@ export class MockClient extends EventEmitter implements SkypeClient {
         return true;
     }
 
-    public endCall() {
+    public end() {
         this.emit('disconnected');
         return true;
     }

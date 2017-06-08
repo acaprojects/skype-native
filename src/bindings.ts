@@ -12,7 +12,10 @@ const relative = (...path: string[]) => join(__dirname, ...path);
  */
 const bindingTarget = {
     assemblyFile: relative('../lib/native/win32', 'SkypeClient.dll'),
-    references: [relative('../lib/native/win32', 'Microsoft.Lync.Model.dll')],
+    references: [
+        relative('../lib/native/win32', 'Microsoft.Lync.Model.dll'),
+        'System.Management.dll'
+    ],
     typeName: 'SkypeClient.Bindings'
 };
 
@@ -63,6 +66,8 @@ export interface UserDetails {
 export interface EventSubscription<T> {
     callback: (input: T, callback: Callback<void>) => void;
 }
+
+export const onClientStart = bindSync<EventSubscription<any>, void>('OnClientStart');
 
 export const onIncoming = bindSync<EventSubscription<EventIncomingArgs>, void>('OnIncoming');
 export interface IncomingCallInfo {

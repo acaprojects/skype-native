@@ -1,12 +1,16 @@
 ﻿using Microsoft.Lync.Model;
 using Microsoft.Lync.Model.Conversation;
 using Microsoft.Lync.Model.Conversation.AudioVideo;
+using SkypeClient;
 using System;
+using System.Threading.Tasks;
 
 namespace EventMonitor
 {
     class Program
     {
+        private static ProcessWatcher lyncWatcher;
+
         static EventHandler<T> PrintEvent<T>(string message)
         {
             return (o, e) => Console.WriteLine(message);
@@ -14,37 +18,63 @@ namespace EventMonitor
 
         static void SubscribeToEvents()
         {
-            var client = LyncClient.GetClient();
-
-            client.ConversationManager.ConversationAdded +=
-                PrintEvent<ConversationManagerEventArgs>("Conversation added");
-
-            client.ConversationManager.ConversationRemoved +=
-                PrintEvent<ConversationManagerEventArgs>("Conversation removed");
-
-            client.ConversationManager.ConversationAdded += (o, e) =>
+            try
             {
-                var av = (AVModality)e.Conversation.Modalities[ModalityTypes.AudioVideo];
+                var client = LyncClient.GetClient();
 
-                av.ModalityStateChanged += (sender, args) =>
+                Console.WriteLine("Attaching client events");
+
+                client.ConversationManager.ConversationAdded +=
+                    PrintEvent<ConversationManagerEventArgs>("Conversation added");
+
+                client.ConversationManager.ConversationRemoved +=
+                    PrintEvent<ConversationManagerEventArgs>("Conversation removed");
+
+                client.ConversationManager.ConversationAdded += (o, e) =>
                 {
-                    Console.WriteLine("AV modality " + args.OldState + " --> " + args.NewState);
+                    var av = (AVModality)e.Conversation.Modalities[ModalityTypes.AudioVideo];
+
+                    av.ModalityStateChanged += (sender, args) =>
+                    {
+                        Console.WriteLine("AV modality " + args.OldState + " --> " + args.NewState);
+                    };
                 };
+
+                client.StateChanged += (o, e) =>
+                {
+                    Console.WriteLine("Client state " + e.OldState + " --> " + e.NewState);
+                };
+            }
+            catch (ClientNotFoundException)
+            {
+                Console.WriteLine("Could not connect to Lync - waiting process start.");
+            }
+        }
+
+        static void WatchProcessStart()
+        {
+            Action delayedSubscribe = async () =>
+            {
+                Console.WriteLine("Lync process started");
+                await Task.Delay(TimeSpan.FromSeconds(5));
+                SubscribeToEvents();
             };
 
-            client.StateChanged += (o, e) =>
-            {
-                Console.WriteLine("Client state " + e.OldState + " --> " + e.NewState);
-            };
+            lyncWatcher = new ProcessWatcher("lync.exe", delayedSubscribe);
         }
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Listening for Skype client events");
+            Console.WriteLine("Spinning up event monitor");
+            Console.WriteLine("Hit any key to quit...");
+            Console.WriteLine();
+            Console.WriteLine("---");
+            Console.WriteLine();
 
             SubscribeToEvents();
 
-            Console.WriteLine("Hit any key to quit...");
+            WatchProcessStart();
+
             Console.ReadKey();
         }
     }

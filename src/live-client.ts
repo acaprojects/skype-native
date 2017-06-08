@@ -15,7 +15,7 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
 
         // TODO: attempt to connect with / launch client on init
 
-        this.bindEvents();
+        this.bindLifeCycleEvents();
 
         this.user = bindings.getActiveUser(null);
     }
@@ -31,7 +31,7 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
         resolveJoinUrl(meetingUrl, join);
     }
 
-    public endCall() {
+    public end() {
         return bindings.hangupAll(null);
     }
 
@@ -39,7 +39,21 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
         return bindings.mute({state});
     }
 
-    private bindEvents() {
+    private bindLifeCycleEvents() {
+        type Action = () => void;
+
+        const execIfDefined = (a?: Action) => a ? a() : undefined;
+
+        const emit = <T>(event: client.SkypeLifecycleEvent, pre?: Action) =>
+            bindings.callback<T>((p) => {
+                execIfDefined(pre);
+                this.emit(event);
+            });
+
+        bindings.onClientStart(emit('clientStarted', this.bindClientEvents));
+    }
+
+    private bindClientEvents() {
         // Event subscriptions that are passed to CLR components provide
         // a single object payload when they are activated. The below creates
         // a bit of middleware that ingests this, optionally applying a

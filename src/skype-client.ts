@@ -11,9 +11,14 @@ export type SkypeCallStateEvent = 'incoming' | 'connected' | 'disconnected';
 export type SkypeMuteStateEvent = 'mute'| 'muted' | 'unmuted';
 
 /**
- * Events emitted by the Skype client.
+ * Events emitted in reponse to client actions.
  */
 export type SkypeClientEvent = SkypeCallStateEvent | SkypeMuteStateEvent;
+
+/**
+ * Events emitted in reponse to client application lifecycle events.
+ */
+export type SkypeLifecycleEvent = 'clientStarted' | 'clientClosed';
 
 /**
  * Comms proxy for controlling and interacting with the desktop Skype for
@@ -61,12 +66,17 @@ export interface SkypeClient extends EventEmitter {
     /**
      * End all currently active calls.
      */
-    endCall(): void;
+    end(): void;
 
     /**
      * Set the privacy mute state of any calls currently in progress.
      */
     mute(state: boolean): void;
+
+    /**
+     * Subscribe to Skype client app launch events.
+     */
+    on(event: 'clientStarted', listener: () => void): this;
 
     /**
      * Subsribe to incoming call events.
