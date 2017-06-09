@@ -71,8 +71,10 @@ namespace SkypeClient
 
         public object GetActiveUser()
         {
+            var self = client.Self.Contact;
             return new {
-                uri = client.Self.Contact.Uri
+                uri = self.Uri,
+                name = self.GetContactInformation(ContactInformationType.DisplayName)
             };
         }
         
