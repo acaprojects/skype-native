@@ -8,12 +8,18 @@ import { resolveJoinUrl } from './meeting';
  */
 export class LiveClient extends EventEmitter implements client.SkypeClient {
 
-    constructor() {
+    public static bind() {
+        const client = new LiveClient();
+
+        client.attachLifeCycleEvents();
+
+        bindings.attempt(() => client.attachClientEvents(), client.start);
+
+        return client;
+    }
+
+    private constructor() {
         super();
-
-        this.attachLifeCycleEvents();
-
-        bindings.attempt(this.attachClientEvents, this.start);
     }
 
     public get user() {
@@ -56,7 +62,9 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
                 this.emit(event);
             });
 
-        bindings.onClientStart(emit('clientStarted', this.attachClientEvents));
+        // Proxy private function for external exec
+        const bindClient = () => this.attachClientEvents();
+        bindings.onClientStart(emit('clientStarted', bindClient));
 
         bindings.onClientExit(emit('clientExited'));
     }

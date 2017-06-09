@@ -47,14 +47,13 @@ export function callback<T>(handler: ActionWithArgs<T>,
  * to the process not running or user not being authed)
  */
 export function attempt<T>(clientInteraction: Func<T>,
-                           invalidStateFallback?: Func<T>) {
+                           invalidStateFallback: Func<T>) {
     try {
         return clientInteraction();
     } catch (e) {
-        const fallback = invalidStateFallback || (() => undefined);
         const rethrow = () => { throw e; };
         return e.name === 'SkypeClient.InvalidStateException'
-            ? fallback()
+            ? invalidStateFallback()
             : rethrow();
     }
 }

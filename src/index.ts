@@ -46,4 +46,4 @@ export function useMock(environment = runtime) {
 
 const client = useMock() || !isSupportedPlatform() ? MockClient : LiveClient;
 
-export const skype: SkypeClient = new client();
+export const skype: SkypeClient = client.bind();
