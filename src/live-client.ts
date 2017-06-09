@@ -13,11 +13,18 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
     constructor() {
         super();
 
-        // TODO: attempt to connect with / launch client on init
-
         this.attachLifeCycleEvents();
 
-        this.user = bindings.getActiveUser(null);
+        try {
+            this.attachClientEvents();
+
+            this.user = bindings.getActiveUser(null);
+        } catch (e) {
+            const rethrow = () => { throw e; };
+            e.name === 'SkypeClient.InvalidStateException'
+                ? bindings.startClient(null)
+                : rethrow();
+        }
     }
 
     public start() {
