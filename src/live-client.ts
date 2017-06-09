@@ -8,8 +8,6 @@ import { resolveJoinUrl } from './meeting';
  */
 export class LiveClient extends EventEmitter implements client.SkypeClient {
 
-    public readonly user: {uri: string};
-
     constructor() {
         super();
 
@@ -17,14 +15,16 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
 
         try {
             this.attachClientEvents();
-
-            this.user = bindings.getActiveUser(null);
         } catch (e) {
             const rethrow = () => { throw e; };
             e.name === 'SkypeClient.InvalidStateException'
                 ? bindings.startClient(null)
                 : rethrow();
         }
+    }
+
+    public get user() {
+        return bindings.getActiveUser(null);
     }
 
     public start() {
