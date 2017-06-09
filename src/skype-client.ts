@@ -29,9 +29,7 @@ export interface SkypeClient extends EventEmitter {
     /**
      * Information about the currently logged in user.
      */
-    readonly user: {
-        uri: string
-    };
+    readonly user?: UserInfo;
 
     /**
      * Start a fullscreen, outbound call on the primary diplay.
@@ -121,6 +119,11 @@ export interface SkypeClient extends EventEmitter {
     on(event: 'videoStarted', listener: () => void): this;
 
     on(event: 'videoStopped', listener: () => void): this;
+}
+
+export interface UserInfo {
+    uri: string;
+    name: string;
 }
 
 export interface InviterInfo {

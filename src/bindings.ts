@@ -27,14 +27,36 @@ const bindAsync = <I, O>(methodName: string) => async<I, O>(method(methodName));
 
 export type Action = () => void;
 export type ActionWithArgs<T> = (x: T) => void;
-export type Predicate<T> = (x: T) => boolean;
+export type Func<T> = () => T;
+export type FuncWithArgs<T, U> = (x: T) => U;
+export type Predicate<T> = FuncWithArgs<T, boolean>;
 
+/**
+ * Create an EventSubscription for parsing into our CLR event bindings.
+ */
 export function callback<T>(handler: ActionWithArgs<T>,
                             when?: Predicate<T>): EventSubscription<T> {
     const action: ActionWithArgs<T> = when
         ? (x) => when(x) ? handler(x) : undefined
         : handler;
     return { callback: proxy<T, void>(action) };
+}
+
+/**
+ * Safely attempt an interaction with the native client that may fail (i.e. due
+ * to the process not running or user not being authed)
+ */
+export function attempt<T>(clientInteraction: Func<T>,
+                           invalidStateFallback?: Func<T>) {
+    try {
+        return clientInteraction();
+    } catch (e) {
+        const fallback = invalidStateFallback || (() => undefined);
+        const rethrow = () => { throw e; };
+        return e.name === 'SkypeClient.InvalidStateException'
+            ? fallback()
+            : rethrow();
+    }
 }
 
 export const startClient = bindSync<null, void>('StartClient');
@@ -63,6 +85,7 @@ export interface MuteArgs {
 export const getActiveUser = bindSync<null, UserDetails>('GetActiveUser');
 export interface UserDetails {
     uri: string;
+    name: string;
 }
 
 export interface EventSubscription<T> {

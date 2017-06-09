@@ -7,7 +7,8 @@ import { SkypeClient } from './skype-client';
 export class MockClient extends EventEmitter implements SkypeClient {
 
     public readonly user = {
-        uri: 'sip:foo@bar.com'
+        uri: 'sip:foo@bar.com',
+        name: 'Not a real user'
     };
 
     public start() {
