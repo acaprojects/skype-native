@@ -1,6 +1,7 @@
 import { MockClient } from './mock-client';
 import { LiveClient } from './live-client';
 import { SkypeClient } from './skype-client';
+import { attempt } from './util';
 
 /**
  * Safe references to some of the Globals that may exist.
@@ -11,19 +12,12 @@ const runtime = {
 };
 
 /**
- * Attempt to run a function that may fail due to a ReferenceError.
+ * Safely check an element of the runtime env that may result in a reference
+ * error.
  */
-function attempt<T>(func: () => T, fallback: T): T {
-    try {
-        return func();
-    }
-    catch (e) {
-        if (e instanceof ReferenceError) {
-            return fallback;
-        } else {
-            throw e;
-        }
-    }
+function attemptLookup<T>(envCheck: () => T, fallback: T) {
+    const refError = (e: Error) => e instanceof ReferenceError;
+    return attempt(envCheck, () => fallback, refError);
 }
 
 /**
@@ -31,8 +25,7 @@ function attempt<T>(func: () => T, fallback: T): T {
  */
 export function isSupportedPlatform(environment = runtime) {
     const supported = () => environment.process.platform === 'win32';
-
-    return attempt(supported, false);
+    return attemptLookup(supported, false);
 }
 
 /**
@@ -40,8 +33,7 @@ export function isSupportedPlatform(environment = runtime) {
  */
 export function useMock(environment = runtime) {
     const mock = () => !!environment.process.env.MOCK_SKYPE_CLIENT;
-
-    return attempt(mock, true);
+    return attemptLookup(mock, true);
 }
 
 const client = useMock() || !isSupportedPlatform() ? MockClient : LiveClient;

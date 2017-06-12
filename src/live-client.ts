@@ -13,7 +13,7 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
 
         client.attachLifeCycleEvents();
 
-        bindings.attempt(() => client.attachClientEvents(), client.start);
+        bindings.attemptInteraction(() => client.attachClientEvents(), client.start);
 
         return client;
     }
@@ -25,7 +25,8 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
     public get user() {
         const getUser = () => bindings.method.getActiveUser(null);
         const none = () => undefined;
-        return bindings.attempt(getUser, none);
+
+        return bindings.attemptInteraction(getUser, none);
     }
 
     public start() {

@@ -1,6 +1,6 @@
-import { join } from 'path';
 import * as R from 'ramda';
 import * as edge from 'edge-ts';
+import { relative, attempt } from './util';
 
 // Base function signatures used within the client bindings.
 export type Action = () => void;
@@ -12,11 +12,6 @@ export type Predicate<T> = FuncWithArgs<T, boolean>;
 export interface EventSubscription<T> {
     callback: (input: T, callback: edge.Callback<void>) => void;
 }
-
-/**
- * Resolves a set of paths relative to the curent directory.
- */
-const relative = (...path: string[]) => join(__dirname, ...path);
 
 /**
  * Binding environmnt for our native libs.
@@ -68,16 +63,10 @@ export function callback<T>(handler: ActionWithArgs<T>,
  * Safely attempt an interaction with the native client that may fail (i.e. due
  * to the process not running or user not being authed)
  */
-export function attempt<T>(clientInteraction: Func<T>,
-                           invalidStateFallback: Func<T>) {
-    try {
-        return clientInteraction();
-    } catch (e) {
-        const rethrow = () => { throw e; };
-        return e.name === 'SkypeClient.InvalidStateException'
-            ? invalidStateFallback()
-            : rethrow();
-    }
+export function attemptInteraction<T>(interaction: Func<T>,
+                                      fallback: Func<T>) {
+    const invalidState = (e: Error) => e.name === 'SkypeClient.InvalidStateException';
+    return attempt(interaction, fallback, invalidState);
 }
 
 export interface CallArgs {
