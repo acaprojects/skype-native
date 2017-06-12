@@ -90,7 +90,7 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
         };
 
         bindings.method.onIncoming(emit<bindings.EventIncomingArgs,
-                                         client.InviterInfo,
+                                         client.Inviter,
                                          client.IncomingCallActions>(
             'incoming',
             (call) => [
@@ -104,7 +104,7 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
         ));
 
         bindings.method.onConnect(emit<bindings.EventConnectedArgs,
-                                        client.ConnectedCallInfo,
+                                        client.Participants,
                                         client.ConnectedCallActions>(
             'connected',
             (conversation) => [

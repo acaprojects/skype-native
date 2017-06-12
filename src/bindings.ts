@@ -99,7 +99,7 @@ export interface EventIncomingArgs {
 }
 
 export interface EventConnectedArgs {
-    participants: string[]; // TODO change to UserDetails list
+    participants: UserDetails[];
     actions: {
         fullscreen: ActionWithArgs<{display: number}>,
         show: Action,

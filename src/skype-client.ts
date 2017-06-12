@@ -29,7 +29,7 @@ export interface SkypeClient extends EventEmitter {
     /**
      * Information about the currently logged in user.
      */
-    readonly user?: UserInfo;
+    readonly user?: UserDetails;
 
     /**
      * Start a fullscreen, outbound call on the primary diplay.
@@ -89,12 +89,12 @@ export interface SkypeClient extends EventEmitter {
     /**
      * Subsribe to incoming call events.
      */
-    on(event: 'incoming', listener: (inviter: InviterInfo, actions: IncomingCallActions) => void): this;
+    on(event: 'incoming', listener: (inviter: Inviter, actions: IncomingCallActions) => void): this;
 
     /**
      * Subscribe to call connected events.
      */
-    on(event: 'connected', listener: (participants: ConnectedCallInfo, actions: ConnectedCallActions) => void): this;
+    on(event: 'connected', listener: (participants: Participants, actions: ConnectedCallActions) => void): this;
 
     /**
      * Subscribe to call disconnected events.
@@ -121,17 +121,14 @@ export interface SkypeClient extends EventEmitter {
     on(event: 'videoStopped', listener: () => void): this;
 }
 
-export interface UserInfo {
+export interface UserDetails {
     uri: string;
     name: string;
 }
 
-export interface InviterInfo {
-    name: string;
-    uri: string;
-}
+export type Inviter = UserDetails;
 
-export type ConnectedCallInfo = string[];
+export type Participants = UserDetails[];
 
 export type MuteInfo = boolean;
 

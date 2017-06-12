@@ -76,6 +76,7 @@
     <Compile Include="ProcessWatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CallWindow.cs" />
+    <Compile Include="UserDetails.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
