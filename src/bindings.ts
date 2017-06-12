@@ -1,6 +1,17 @@
 import { join } from 'path';
 import * as R from 'ramda';
-import { sync, async, proxy, Callback } from 'edge-ts';
+import * as edge from 'edge-ts';
+
+// Base function signatures used within the client bindings.
+export type Action = () => void;
+export type ActionWithArgs<T> = (x: T) => void;
+export type Func<T> = () => T;
+export type FuncWithArgs<T, U> = (x: T) => U;
+export type Predicate<T> = FuncWithArgs<T, boolean>;
+
+export interface EventSubscription<T> {
+    callback: (input: T, callback: edge.Callback<void>) => void;
+}
 
 /**
  * Resolves a set of paths relative to the curent directory.
@@ -10,7 +21,7 @@ const relative = (...path: string[]) => join(__dirname, ...path);
 /**
  * Binding environmnt for our native libs.
  */
-const bindingTarget = {
+const skypeLib: edge.BindingTarget = {
     assemblyFile: relative('../lib/native/win32', 'SkypeClient.dll'),
     references: [
         relative('../lib/native/win32', 'Microsoft.Lync.Model.dll'),
@@ -19,17 +30,28 @@ const bindingTarget = {
     typeName: 'SkypeClient.Bindings'
 };
 
-const method = (name: string) => R.merge(bindingTarget, {methodName: name});
+/**
+ * Create a bindable target from a base binding target (lib or source
+ * reference) and method name.
+ */
+function target(method: string, base: edge.BindingTarget) {
+    type Bindable = edge.PrecompiledTarget | edge.CompilableTarget;
+    return R.merge(base, {methodName: method}) as Bindable;
+}
 
-const bindSync = <I, O>(methodName: string) => sync<I, O>(method(methodName));
+/**
+ * Create a synchronous function binding to a method in the skype client lib.
+ */
+export function sync<I, O>(method: string) {
+    return edge.sync<I, O>(target(method, skypeLib));
+}
 
-const bindAsync = <I, O>(methodName: string) => async<I, O>(method(methodName));
-
-export type Action = () => void;
-export type ActionWithArgs<T> = (x: T) => void;
-export type Func<T> = () => T;
-export type FuncWithArgs<T, U> = (x: T) => U;
-export type Predicate<T> = FuncWithArgs<T, boolean>;
+/**
+ * Create an asynchronous funcion binding to a method in the skype client lib.
+ */
+export function async<I, O>(method: string) {
+    return edge.async<I, O>(target(method, skypeLib));
+}
 
 /**
  * Create an EventSubscription for parsing into our CLR event bindings.
@@ -39,7 +61,7 @@ export function callback<T>(handler: ActionWithArgs<T>,
     const action: ActionWithArgs<T> = when
         ? (x) => when(x) ? handler(x) : undefined
         : handler;
-    return { callback: proxy<T, void>(action) };
+    return { callback: edge.proxy<T, void>(action) };
 }
 
 /**
@@ -58,72 +80,75 @@ export function attempt<T>(clientInteraction: Func<T>,
     }
 }
 
-export const startClient = bindSync<null, void>('StartClient');
-
-export const startCall = bindSync<CallArgs, void>('Call');
 export interface CallArgs {
     uri: string;
     fullscreen: boolean;
     display: number;
 }
 
-export const joinMeeting = bindSync<JoinArgs, void>('Join');
 export interface JoinArgs {
     url: string;
     fullscreen: boolean;
     display: number;
 }
 
-export const hangupAll = bindSync<null, void>('HangupAll');
-
-export const mute = bindSync<MuteArgs, void>('Mute');
 export interface MuteArgs {
     state: boolean;
 }
 
-export const getActiveUser = bindSync<null, UserDetails>('GetActiveUser');
 export interface UserDetails {
     uri: string;
     name: string;
 }
 
-export interface EventSubscription<T> {
-    callback: (input: T, callback: Callback<void>) => void;
-}
-
-export const onClientStart = bindSync<EventSubscription<any>, void>('OnClientStart');
-
-export const onClientExit = bindSync<EventSubscription<any>, void>('OnClientExit');
-
-export const onIncoming = bindSync<EventSubscription<EventIncomingArgs>, void>('OnIncoming');
-export interface IncomingCallInfo {
-    name: string;
-    uri: string;
-}
-export interface IncomingCallActions {
-    accept: ActionWithArgs<{fullscreen: boolean, display: number}>;
-    reject: Action;
-}
 export interface EventIncomingArgs {
-    inviter: IncomingCallInfo;
-    actions: IncomingCallActions;
+    inviter: UserDetails;
+    actions: {
+        accept: ActionWithArgs<{fullscreen: boolean, display: number}>,
+        reject: Action
+    };
 }
 
-export const onConnect = bindSync<EventSubscription<EventConnectedArgs>, void>('OnConnect');
-export interface ConnectedCallActions {
-    fullscreen: ActionWithArgs<{display: number}>;
-    show: Action;
-    hide: Action;
-    mute: ActionWithArgs<{state: boolean}>;
-    startVideo: Action;
-    stopVideo: Action;
-    end: Action;
-}
 export interface EventConnectedArgs {
-    participants: string[];
-    actions: ConnectedCallActions;
+    participants: string[]; // TODO change to UserDetails list
+    actions: {
+        fullscreen: ActionWithArgs<{display: number}>,
+        show: Action,
+        hide: Action,
+        mute: ActionWithArgs<{state: boolean}>,
+        startVideo: Action,
+        stopVideo: Action,
+        end: Action,
+    };
 }
 
-export const onDisconnect = bindSync<EventSubscription<any>, void>('OnDisconnect');
+/**
+ * Skype lib methods that have been bound to Node functions.
+ */
+export const method = {
 
-export const onMuteChange = bindSync<EventSubscription<boolean>, void>('OnMuteChange');
+    startClient: sync<null, void>('StartClient'),
+
+    startCall: sync<CallArgs, void>('Call'),
+
+    joinMeeting: sync<JoinArgs, void>('Join'),
+
+    hangupAll: sync<null, void>('HangupAll'),
+
+    mute: sync<MuteArgs, void>('Mute'),
+
+    getActiveUser: sync<null, UserDetails>('GetActiveUser'),
+
+    onClientStart: sync<EventSubscription<any>, void>('OnClientStart'),
+
+    onClientExit: sync<EventSubscription<any>, void>('OnClientExit'),
+
+    onIncoming: sync<EventSubscription<EventIncomingArgs>, void>('OnIncoming'),
+
+    onConnect: sync<EventSubscription<EventConnectedArgs>, void>('OnConnect'),
+
+    onDisconnect: sync<EventSubscription<any>, void>('OnDisconnect'),
+
+    onMuteChange: sync<EventSubscription<boolean>, void>('OnMuteChange')
+
+};

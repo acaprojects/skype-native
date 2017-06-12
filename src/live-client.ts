@@ -23,32 +23,32 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
     }
 
     public get user() {
-        const getUser = () => bindings.getActiveUser(null);
+        const getUser = () => bindings.method.getActiveUser(null);
         const none = () => undefined;
         return bindings.attempt(getUser, none);
     }
 
     public start() {
-        bindings.startClient(null);
+        bindings.method.startClient(null);
     }
 
     public call(uri: string, fullscreen = true, display = 0) {
-        return bindings.startCall({uri, fullscreen, display});
+        return bindings.method.startCall({uri, fullscreen, display});
     }
 
     public join(meetingUrl: string, fullscreen = true, display = 0) {
         const join = (url: string) =>
-            bindings.joinMeeting({url, fullscreen, display});
+            bindings.method.joinMeeting({url, fullscreen, display});
 
         resolveJoinUrl(meetingUrl, join);
     }
 
     public end() {
-        return bindings.hangupAll(null);
+        return bindings.method.hangupAll(null);
     }
 
     public mute(state = true) {
-        return bindings.mute({state});
+        return bindings.method.mute({state});
     }
 
     private attachLifeCycleEvents() {
@@ -64,9 +64,9 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
 
         // Proxy private function for external exec
         const bindClient = () => this.attachClientEvents();
-        bindings.onClientStart(emit('clientStarted', bindClient));
+        bindings.method.onClientStart(emit('clientStarted', bindClient));
 
-        bindings.onClientExit(emit('clientExited'));
+        bindings.method.onClientExit(emit('clientExited'));
     }
 
     private attachClientEvents() {
@@ -88,23 +88,29 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
             return bindings.callback<T>((p) => this.emit(event, ...t(p)), c);
         };
 
-        bindings.onIncoming(emit<bindings.EventIncomingArgs, client.InviterInfo, client.IncomingCallActions>(
+        bindings.method.onIncoming(emit<bindings.EventIncomingArgs,
+                                         client.InviterInfo,
+                                         client.IncomingCallActions>(
             'incoming',
             (call) => [
                 call.inviter,
                 {
-                    accept: (fullscreen = true, display = 0) => call.actions.accept({fullscreen, display}),
+                    accept: (fullscreen = true, display = 0) =>
+                        call.actions.accept({fullscreen, display}),
                     reject: call.actions.reject
                 }
              ]
         ));
 
-        bindings.onConnect(emit<bindings.EventConnectedArgs, client.ConnectedCallInfo, client.ConnectedCallActions>(
+        bindings.method.onConnect(emit<bindings.EventConnectedArgs,
+                                        client.ConnectedCallInfo,
+                                        client.ConnectedCallActions>(
             'connected',
             (conversation) => [
                 conversation.participants,
                 {
-                    fullscreen: (display = 0) => conversation.actions.fullscreen({display}),
+                    fullscreen: (display = 0) =>
+                        conversation.actions.fullscreen({display}),
                     show: conversation.actions.show,
                     hide: conversation.actions.hide,
                     mute: (state) => conversation.actions.mute({state}),
@@ -115,17 +121,17 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
             ]
         ));
 
-        bindings.onDisconnect(emit<undefined, undefined, undefined>('disconnected'));
+        bindings.method.onDisconnect(emit<undefined, undefined, undefined>('disconnected'));
 
-        bindings.onMuteChange(emit<boolean, client.MuteInfo, undefined>('mute'));
+        bindings.method.onMuteChange(emit<boolean, client.MuteInfo, undefined>('mute'));
 
-        bindings.onMuteChange(emit<boolean, undefined, undefined>(
+        bindings.method.onMuteChange(emit<boolean, undefined, undefined>(
             'muted',
             (isMuted) => [undefined, undefined],
             (isMuted) => isMuted
         ));
 
-        bindings.onMuteChange(emit<boolean, undefined, undefined>(
+        bindings.method.onMuteChange(emit<boolean, undefined, undefined>(
             'unmuted',
             (isMuted) => [undefined, undefined],
             (isMuted) => !isMuted
