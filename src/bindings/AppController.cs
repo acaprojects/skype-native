@@ -24,7 +24,17 @@ namespace SkypeClient
             this.client = client;
             this.automation = automation;
 
-            CallMedia.AlwaysStartVideo(client);
+            // Always start video on AV modality connect
+            ExecuteAction.InState<AVModality>(client, ModalityTypes.AudioVideo, ModalityState.Connected, (conversation, modality) =>
+            {
+                CallMedia.StartVideo(modality);
+            });
+
+            // Always end the conversation (and close the window) on AV modality disconnect
+            ExecuteAction.InState<AVModality>(client, ModalityTypes.AudioVideo, ModalityState.Disconnected, (conversation, modality) =>
+            {
+                conversation.End();
+            });
         }
 
         private static void BindNewInstance()
@@ -129,7 +139,6 @@ namespace SkypeClient
                 ar =>
                 {
                     av.EndDisconnect(ar);
-                    conversation.End();
                 },
                 null);
         }

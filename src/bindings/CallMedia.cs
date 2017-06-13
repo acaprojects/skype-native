@@ -58,13 +58,5 @@ namespace SkypeClient
             var video = av.VideoChannel;
             StopMediaChannel(video);
         }
-
-        public static void AlwaysStartVideo(LyncClient client)
-        {
-            ExecuteAction.InState<AVModality>(client, ModalityTypes.AudioVideo, ModalityState.Connected, (conversation, modality) =>
-            {
-                StartVideo(modality);
-            });
-        }
     }
 }
