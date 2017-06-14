@@ -36,6 +36,18 @@ namespace SkypeClient
             return null;
         }
 
+        public async Task<object> SignIn(dynamic kwargs)
+        {
+            AppController.Instance(false).SignIn(kwargs.user, kwargs.password);
+            return null;
+        }
+
+        public async Task<object> SignOut(dynamic kwargs)
+        {
+            AppController.Instance().SignOut();
+            return null;
+        }
+
         public async Task<object> Call(dynamic kwargs)
         {
             AppController.Instance().Call(kwargs.uri, kwargs.fullscreen, kwargs.display);

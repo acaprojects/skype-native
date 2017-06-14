@@ -42,6 +42,16 @@ export interface SkypeClient extends EventEmitter {
     readonly user?: UserDetails;
 
     /**
+     * Sign into Skype.
+     */
+    signIn(user: string, password: string): void;
+
+    /**
+     * Sign into Skype using the cached credentials.
+     */
+    signIn(): void;
+
+    /**
      * Start a fullscreen, outbound call on the primary diplay.
      */
     call(uri: string): void;

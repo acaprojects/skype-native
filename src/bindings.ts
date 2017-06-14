@@ -69,6 +69,11 @@ export function attemptInteraction<T>(interaction: Func<T>,
     return attempt(interaction, fallback, invalidState);
 }
 
+export interface SignInArgs {
+    user?: string;
+    password?: string;
+}
+
 export interface CallArgs {
     uri: string;
     fullscreen: boolean;
@@ -127,6 +132,10 @@ export type ClientState =
 export const method = {
 
     startClient: sync<null, void>('StartClient'),
+
+    signIn: sync<SignInArgs, void>('SignIn'),
+
+    signOut: sync<null, void>('SignOut'),
 
     startCall: sync<CallArgs, void>('Call'),
 

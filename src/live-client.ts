@@ -56,6 +56,18 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
         bindings.method.startClient(null);
     }
 
+    public signIn(user?: string, password?: string) {
+        if (user ? !password : password) {
+            throw new Error('A user and password must both be specified if not using cached credentials');
+        }
+
+        return bindings.method.signIn({user, password});
+    }
+
+    public signOut() {
+        return bindings.method.signOut(null);
+    }
+
     public call(uri: string, fullscreen = true, display = 0) {
         return bindings.method.startCall({uri, fullscreen, display});
     }

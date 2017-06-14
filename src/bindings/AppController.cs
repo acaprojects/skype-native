@@ -92,7 +92,40 @@ namespace SkypeClient
         {
             return client.State.ToString();
         }
-        
+
+        public void SignIn(string user = null, string password = null)
+        {
+            if (client.State != ClientState.SignedOut)
+            {
+                throw new InvalidStateException("Skype / Lync client must be signed out in order to sign in a new user");
+            }
+
+            client.BeginSignIn(
+                user,
+                user,
+                password,
+                ar =>
+                {
+                    client.EndSignIn(ar);
+                },
+                null);
+        }
+
+        public void SignOut()
+        {
+            if (client.State != ClientState.SignedIn)
+            {
+                throw new InvalidStateException("Skype / Lync client must be signed in in order to sign out");
+            }
+
+            client.BeginSignOut(
+                ar =>
+                {
+                    client.EndSignIn(ar);
+                },
+                null);
+        }
+
         public void Call(string uri, bool fullscreen = true, int display = 0)
         {
             List<string> participants = new List<string> { uri };
