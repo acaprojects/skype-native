@@ -111,6 +111,16 @@ export interface EventConnectedArgs {
     };
 }
 
+export type ClientState =
+      'Initializing'
+    | 'Invalid'
+    | 'ShuttingDown'
+    | 'SignedIn'
+    | 'SignedOut'
+    | 'SigningIn'
+    | 'SigningOut'
+    | 'Uninitialized';
+
 /**
  * Skype lib methods that have been bound to Node functions.
  */
@@ -128,6 +138,8 @@ export const method = {
 
     getActiveUser: sync<null, UserDetails>('GetActiveUser'),
 
+    getClientState: sync<null, ClientState>('GetClientState'),
+
     onClientStart: sync<EventSubscription<any>, void>('OnClientStart'),
 
     onClientExit: sync<EventSubscription<any>, void>('OnClientExit'),
@@ -140,6 +152,6 @@ export const method = {
 
     onMuteChange: sync<EventSubscription<boolean>, void>('OnMuteChange'),
 
-    onClientStateChange: sync<EventSubscription<string>, void>('OnClientStateChange')
+    onClientStateChange: sync<EventSubscription<ClientState>, void>('OnClientStateChange')
 
 };

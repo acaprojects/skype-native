@@ -10,6 +10,8 @@ export class MockClient extends EventEmitter implements SkypeClient {
         return new MockClient();
     }
 
+    public readonly state = 'signedIn';
+
     public readonly user = {
         uri: 'sip:foo@bar.com',
         name: 'Not a real user'

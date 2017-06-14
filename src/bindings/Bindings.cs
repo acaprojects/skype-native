@@ -86,14 +86,18 @@ namespace SkypeClient
 
         public async Task<object> OnClientStateChange(dynamic kwargs)
         {
-            AppController.Instance().OnClientStateChange(kwargs.callback);
+            AppController.Instance(false).OnClientStateChange(kwargs.callback);
             return null;
         }
 
         public async Task<object> GetActiveUser(dynamic kwargs)
         {
-            var user = AppController.Instance().GetActiveUser();
-            return user;
+            return AppController.Instance().GetActiveUser();
+        }
+
+        public async Task<object> GetClientState(dynamic kwargs)
+        {
+            return AppController.Instance(false).GetClientState();
         }
     }
 #pragma warning restore 1998

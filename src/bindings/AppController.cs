@@ -87,6 +87,11 @@ namespace SkypeClient
                 name = self.GetContactInformation(ContactInformationType.DisplayName)
             };
         }
+
+        public string GetClientState()
+        {
+            return client.State.ToString();
+        }
         
         public void Call(string uri, bool fullscreen = true, int display = 0)
         {

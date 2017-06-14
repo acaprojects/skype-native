@@ -32,6 +32,11 @@ export type SkypeAppState = 'offline' | SkypeAuthState;
 export interface SkypeClient extends EventEmitter {
 
     /**
+     * Current app state information.
+     */
+    readonly state: SkypeAppState;
+
+    /**
      * Information about the currently logged in user.
      */
     readonly user?: UserDetails;

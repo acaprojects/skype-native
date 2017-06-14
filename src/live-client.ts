@@ -37,6 +37,21 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
         return bindings.attemptInteraction(getUser, none);
     }
 
+    public get state() {
+        const appStates = new Map<bindings.ClientState, client.SkypeAppState>();
+        appStates.set('SignedIn', 'signedIn');
+        appStates.set('SignedOut', 'signedOut');
+        appStates.set('SigningIn', 'signingIn');
+        appStates.set('SigningOut', 'signingOut');
+
+        const getClientState = () => bindings.method.getClientState(null);
+        const unknown = () => 'Invalid' as bindings.ClientState;
+
+        const clientState = bindings.attemptInteraction(getClientState, unknown);
+
+        return appStates.get(clientState) || 'offline';
+    }
+
     public start() {
         bindings.method.startClient(null);
     }
@@ -72,25 +87,16 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
         };
 
         bindings.method.onClientStart(exec(bindClient));
-        // TODO emit auth / app state once we've been able to connect to lync process
+        bindings.method.onClientStart(emit(this.state));
 
         bindings.method.onClientExit(emit('offline'));
     }
 
     private attachAuthEvents() {
-        const emit = <T>(event: client.SkypeAuthState, when?: Predicate<T>) =>
-            bindings.callback<T>((p) => this.emit(event), when);
+        const emitAppState = <T>() =>
+            bindings.callback<T>((p) => this.emit(this.state));
 
-        const ciCompare = (s1: string) =>
-            (s2: string) => s1.toUpperCase() === s2.toUpperCase();
-
-        const emitState = (event: client.SkypeAuthState) =>
-            emit(event, ciCompare(event));
-
-        bindings.method.onClientStateChange(emitState('signedIn'));
-        bindings.method.onClientStateChange(emitState('signedOut'));
-        bindings.method.onClientStateChange(emitState('signingIn'));
-        bindings.method.onClientStateChange(emitState('signingOut'));
+        bindings.method.onClientStateChange(emitAppState());
     }
 
     private attachClientEvents() {
