@@ -3,6 +3,9 @@ import * as client from './skype-client';
 import * as bindings from './bindings';
 import { resolveJoinUrl } from './meeting';
 
+type Action = () => void;
+type Predicate<T> = (payload: T) => boolean;
+
 /**
  * Live bindings into the native Skype SDK.
  */
@@ -13,7 +16,12 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
 
         client.attachLifeCycleEvents();
 
-        bindings.attemptInteraction(() => client.attachClientEvents(), client.start);
+        const bindClient = () => {
+            client.attachAuthEvents();
+            client.attachClientEvents();
+        };
+
+        bindings.attemptInteraction(bindClient, client.start);
 
         return client;
     }
@@ -53,21 +61,36 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
     }
 
     private attachLifeCycleEvents() {
-        type Action = () => void;
+        const exec = <T>(a: Action) => bindings.callback<T>((p) => a());
 
-        const execIfDefined = (a?: Action) => a ? a() : undefined;
+        const emit = <T>(event: client.SkypeAppState) =>
+            bindings.callback<T>((p) => this.emit(event));
 
-        const emit = <T>(event: client.SkypeLifecycleEvent, pre?: Action) =>
-            bindings.callback<T>((p) => {
-                execIfDefined(pre);
-                this.emit(event);
-            });
+        const bindClient = () => {
+            this.attachAuthEvents();
+            this.attachClientEvents();
+        };
 
-        // Proxy private function for external exec
-        const bindClient = () => this.attachClientEvents();
-        bindings.method.onClientStart(emit('clientStarted', bindClient));
+        bindings.method.onClientStart(exec(bindClient));
+        // TODO emit auth / app state once we've been able to connect to lync process
 
-        bindings.method.onClientExit(emit('clientExited'));
+        bindings.method.onClientExit(emit('offline'));
+    }
+
+    private attachAuthEvents() {
+        const emit = <T>(event: client.SkypeAuthState, when?: Predicate<T>) =>
+            bindings.callback<T>((p) => this.emit(event), when);
+
+        const ciCompare = (s1: string) =>
+            (s2: string) => s1.toUpperCase() === s2.toUpperCase();
+
+        const emitState = (event: client.SkypeAuthState) =>
+            emit(event, ciCompare(event));
+
+        bindings.method.onClientStateChange(emitState('signedIn'));
+        bindings.method.onClientStateChange(emitState('signedOut'));
+        bindings.method.onClientStateChange(emitState('signingIn'));
+        bindings.method.onClientStateChange(emitState('signingOut'));
     }
 
     private attachClientEvents() {
@@ -77,12 +100,10 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
         // transform so we can emit a Node event with a common signature.
         type EventPayload<InfoType, ActionsType> = [InfoType, ActionsType];
 
-        type Transform<T, U, V> = (payload: T) => EventPayload<U, V>;
-
-        type Predicate<T> = (payload: T) => boolean;
+        type PayloadTransform<T, U, V> = (payload: T) => EventPayload<U, V>;
 
         const emit = <T, U, V>(event: client.SkypeClientEvent,
-                               transform?: Transform<T, U, V>,
+                               transform?: PayloadTransform<T, U, V>,
                                when?: Predicate<T>) => {
             const t = transform || ((p) => [p]);
             const c = when || ((p) => true);

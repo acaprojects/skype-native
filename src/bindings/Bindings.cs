@@ -84,11 +84,11 @@ namespace SkypeClient
             return null;
         }
 
-        // OnSignIn
-
-        // OnSignOut
-
-        // State
+        public async Task<object> OnClientStateChange(dynamic kwargs)
+        {
+            AppController.Instance().OnClientStateChange(kwargs.callback);
+            return null;
+        }
 
         public async Task<object> GetActiveUser(dynamic kwargs)
         {

@@ -274,5 +274,13 @@ namespace SkypeClient
                 };
             });
         }
+
+        public void OnClientStateChange(Proxy callback)
+        {
+            client.StateChanged += (o, e) =>
+            {
+                callback(e.NewState.ToString());
+            };
+        }
     }
 }
