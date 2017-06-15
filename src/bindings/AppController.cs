@@ -285,10 +285,7 @@ namespace SkypeClient
 
         public void OnDisconnect(Proxy callback)
         {
-            ExecuteAction.InState<AVModality>(client, ModalityTypes.AudioVideo, ModalityState.Disconnected, (conversation, modality) =>
-            {
-                callback(null);
-            });
+            ExecuteAction.OnConversationEnd(client, conversation => callback(null));
         }
 
         public void OnMuteChange(Proxy callback)

@@ -24,6 +24,17 @@ namespace SkypeClient
         }
 
         /// <summary>
+        /// Execute an action on every conversation end event.
+        /// </summary>
+        public static void OnConversationEnd(LyncClient client, Action<Conversation> action)
+        {
+            client.ConversationManager.ConversationRemoved += (o, e) =>
+            {
+                action(e.Conversation);
+            };
+        }
+
+        /// <summary>
         /// Execute an action on a specific conversation's modality in a specific state.
         /// </summary>
         public static void InState<T>(T modality, ModalityState state, Action<T> action) where T : Modality
