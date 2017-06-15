@@ -74,25 +74,25 @@ namespace SkypeClient
 
         public async Task<object> OnIncoming(dynamic kwargs)
         {
-            AppController.Instance().OnIncoming(kwargs.callback);
+            AppController.Instance(false).OnIncoming(kwargs.callback);
             return null;
         }
 
         public async Task<object> OnConnect(dynamic kwargs)
         {
-            AppController.Instance().OnConnect(kwargs.callback);
+            AppController.Instance(false).OnConnect(kwargs.callback);
             return null;
         }
 
         public async Task<object> OnDisconnect(dynamic kwargs)
         {
-            AppController.Instance().OnDisconnect(kwargs.callback);
+            AppController.Instance(false).OnDisconnect(kwargs.callback);
             return null;
         }
 
         public async Task<object> OnMuteChange(dynamic kwargs)
         {
-            AppController.Instance().OnMuteChange(kwargs.callback);
+            AppController.Instance(false).OnMuteChange(kwargs.callback);
             return null;
         }
 
