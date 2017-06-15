@@ -90,8 +90,8 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
     private attachLifeCycleEvents() {
         const exec = <T>(a: Action) => bindings.callback<T>((p) => a());
 
-        const emit = <T>(event: client.SkypeAppState) =>
-            bindings.callback<T>((p) => this.emit(event));
+        const emit = <T>(event: () => client.SkypeAppState) =>
+            bindings.callback<T>((p) => this.emit(event()));
 
         const bindClient = () => {
             this.attachAuthEvents();
@@ -99,9 +99,9 @@ export class LiveClient extends EventEmitter implements client.SkypeClient {
         };
 
         bindings.method.onClientStart(exec(bindClient));
-        bindings.method.onClientStart(emit(this.state));
+        bindings.method.onClientStart(emit(() => this.state));
 
-        bindings.method.onClientExit(emit('offline'));
+        bindings.method.onClientExit(emit(() => 'offline'));
     }
 
     private attachAuthEvents() {
