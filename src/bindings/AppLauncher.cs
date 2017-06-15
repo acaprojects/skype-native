@@ -3,29 +3,30 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SkypeClient
 {
-    static class AppLauncher
+    public static class AppLauncher
     {
-        private static string RootDir = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) + @"\Microsoft Office\root\";
+        private static string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
 
-        private static string newClient = RootDir + @"Office16\lync.exe";
-        private static string legacyClient = RootDir + @"Office15\lync.exe";
+        private static IEnumerable<string> installPaths = new List<string> {
+            @"Microsoft Office\root\Office16\lync.exe",
+            @"Microsoft Office\Office16\lync.exe",
+            @"Microsoft Office\root\Office15\lync.exe",
+            @"Microsoft Office\Office15\lync.exe"
+        };
+
+        public static IEnumerable<string> paths = installPaths.Select(p => Path.Combine(programFiles, p));
 
         public static void StartClient()
         {
-            if (File.Exists(newClient))
+            try
             {
-                Process.Start(newClient);
+                var client = paths.First(File.Exists);
+                Process.Start(client);
             }
-            else if (File.Exists(legacyClient))
-            {
-                Process.Start(legacyClient);
-            }
-            else
+            catch (InvalidOperationException)
             {
                 throw new Exception("No Lync or Skype client installed");
             }
