@@ -34,6 +34,12 @@ after_success:
 - npm install -g codeclimate-test-reporter
 - codeclimate-test-reporter < coverage/lcov.info
 
-env:
-  matrix:
-    secure: LR2Rx+TFMz7zUcDFtHtoK+D/ux7DwoYNH+gh97Y6QycS0drqhaGj4BY73jvtAb6eG/FkVHnoZY5a+DL5oxlBDRPSOSjDNSWmU/fTzZlx8D020SSmZKtPcQMU0KZ+k1DI67yK1YuE6Fl2E7oAN2TvE6PfcTMo0MCuxgPXxc9LLA6AT/hAP+aYKUat4qkr2+RVRB/cHItyhB2bPQYXUrnagF2HBWigHWDRezW86ODeNzEzie6KUP19FsRlAANLh+Qhc/TZ6DXw3AS4RE/XGpIA0RtBeu1PIlLYlQkZmfeRyzebS/MHODm5Vaiw791AAkIera2+0/+Md7uvr3RmTw7kpmbF/QTkH+pKFHlIo7orweqe4dHMfHFpBw/CuUfpFdr3zi6B1qPvNBE/1ga/lC3TFUXz+4u3f+uXR01IweBFdSLpMWOgPYdBQvymGjy2udDaaY5Nh7R0CoucUyRgjNDzpR+0y2urljwVRaRY1DiSUgUO8R7z3UpzFsdfmgy0+TBRpV/7UfbNcGkmCOAnv4u+4HcDBWnJfQmZEzBUxFnU2xEYpWAnrs0E9Z80T7HlE9fWkGXGdqkac5el2DdC3x3YWcYlOwd0mZ1Ar4wGMSlFE67aAkHGIrMWHfIkolfIMUTDEN0G+LcAPaHVtinK3VzYyuskGZXTlV9ATc0a3HhGcAg=
+
+before_deploy: touch docs/.nojekyll
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: "$GITHUB_TOKEN"
+  local_dir: docs
+  on:
+    branch: master
