@@ -31,9 +31,16 @@ namespace SkypeClient
             });
 
             // Always end the conversation (and close the window) on AV modality disconnect
-            ExecuteAction.InState<AVModality>(client, ModalityTypes.AudioVideo, ModalityState.Disconnected, (conversation, modality) =>
+            ExecuteAction.OnAllConversations(client, conversation =>
             {
-                conversation.End();
+                var av = conversation.Modalities[ModalityTypes.AudioVideo];
+                av.ModalityStateChanged += (o, e) =>
+                {
+                    if (e.NewState == ModalityState.Disconnected && e.OldState != ModalityState.Invalid)
+                    {
+                        conversation.End();
+                    }
+                };
             });
         }
 
