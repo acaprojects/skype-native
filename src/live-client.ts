@@ -12,18 +12,18 @@ type Predicate<T> = (payload: T) => boolean;
 export class LiveClient extends EventEmitter implements client.SkypeClient {
 
     public static bind() {
-        const client = new LiveClient();
+        const clientInstance = new LiveClient();
 
-        client.attachLifeCycleEvents();
+        clientInstance.attachLifeCycleEvents();
 
         const bindClient = () => {
-            client.attachAuthEvents();
-            client.attachClientEvents();
+            clientInstance.attachAuthEvents();
+            clientInstance.attachClientEvents();
         };
 
-        bindings.attemptInteraction(bindClient, client.start);
+        bindings.attemptInteraction(bindClient, clientInstance.start);
 
-        return client;
+        return clientInstance;
     }
 
     private constructor() {

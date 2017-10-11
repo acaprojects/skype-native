@@ -29,23 +29,23 @@ const skypeLib: edge.BindingTarget = {
  * Create a bindable target from a base binding target (lib or source
  * reference) and method name.
  */
-function target(method: string, base: edge.BindingTarget) {
+function target(methodName: string, base: edge.BindingTarget) {
     type Bindable = edge.PrecompiledTarget | edge.CompilableTarget;
-    return R.merge(base, {methodName: method}) as Bindable;
+    return R.merge(base, {methodName}) as Bindable;
 }
 
 /**
  * Create a synchronous function binding to a method in the skype client lib.
  */
-export function sync<I, O>(method: string) {
-    return edge.sync<I, O>(target(method, skypeLib));
+export function sync<I, O>(methodName: string) {
+    return edge.sync<I, O>(target(methodName, skypeLib));
 }
 
 /**
  * Create an asynchronous funcion binding to a method in the skype client lib.
  */
-export function async<I, O>(method: string) {
-    return edge.async<I, O>(target(method, skypeLib));
+export function async<I, O>(methodName: string) {
+    return edge.async<I, O>(target(methodName, skypeLib));
 }
 
 /**

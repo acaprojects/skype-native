@@ -18,12 +18,12 @@
   "author": "Kim Burgess <kim@acaprojects.com>",
   "license": "MIT",
   "scripts": {
-    "clean": "rm -rf ./dist ./docs ./coverage ./.nyc_output ./.vs",
+    "clean": "rm -rf ./dist ./docs ./.vs",
     "lint": "tslint -p . --type-check",
     "compile:typescript": "tsc",
     "compile:native": "gulp compile:native",
     "doc": "typedoc --out docs src --name skype-native --readme README.md --excludeNotExported --includeDeclarations --target ES6",
-    "build": "npm-run-all clean -p compile:** -s doc",
+    "build": "npm-run-all clean lint -p compile:** -s doc",
     "prepare": "npm run build"
   },
   "devDependencies": {
