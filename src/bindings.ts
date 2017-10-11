@@ -1,4 +1,3 @@
-import * as R from 'ramda';
 import * as edge from 'edge-ts';
 import { relative, attempt } from './util';
 
@@ -31,7 +30,7 @@ const skypeLib: edge.BindingTarget = {
  */
 function target(methodName: string, base: edge.BindingTarget) {
     type Bindable = edge.PrecompiledTarget | edge.CompilableTarget;
-    return R.merge(base, {methodName}) as Bindable;
+    return Object.assign({}, base, {methodName}) as Bindable;
 }
 
 /**
