@@ -18,49 +18,24 @@
   "author": "Kim Burgess <kim@acaprojects.com>",
   "license": "MIT",
   "scripts": {
-    "prepublish": "gulp build",
-    "pretest": "gulp lint",
-    "test": "nyc mocha --opts mocha.opts"
-  },
-  "nyc": {
-    "extension": [
-      ".ts"
-    ],
-    "exclude": [
-      "**/*.d.ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ],
-    "reporter": [
-      "lcov"
-    ]
+    "clean": "rm -rf ./dist ./docs ./coverage ./.nyc_output ./.vs",
+    "lint": "tslint -p . --type-check",
+    "compile:typescript": "tsc",
+    "compile:native": "gulp compile:native",
+    "doc": "typedoc --out docs src --name skype-native --readme README.md --excludeNotExported --includeDeclarations --target ES6",
+    "build": "npm-run-all clean -p compile:** -s doc",
+    "prepare": "npm run build"
   },
   "devDependencies": {
-    "@types/chai": "^4.0.4",
-    "@types/mocha": "^2.2.43",
+    "@types/gulp": "^4.0.4",
+    "@types/gulp-msbuild": "^0.5.0",
     "@types/node": "^8.0.34",
     "@types/ramda": "0.24.16",
     "@types/request": "2.0.4",
-    "babel-core": "^6.26.0",
-    "babel-preset-env": "^1.6.0",
-    "babel-register": "^6.26.0",
-    "chai": "^4.1.2",
-    "del": "^3.0.0",
     "gulp": "^3.9.1",
-    "gulp-babel": "^7.0.0",
-    "gulp-load-plugins": "^1.5.0",
     "gulp-message": "^1.0.4",
     "gulp-msbuild": "^0.5.4",
-    "gulp-run": "^1.7.1",
-    "gulp-tslint": "^8.1.2",
-    "gulp-typedoc": "^2.1.0",
-    "gulp-typescript": "^3.2.2",
-    "merge2": "^1.2.0",
-    "mocha": "^4.0.1",
-    "nyc": "^11.2.1",
-    "run-sequence": "^2.2.0",
-    "source-map-support": "^0.5.0",
+    "npm-run-all": "^4.1.1",
     "ts-node": "^3.3.0",
     "tslint": "^5.7.0",
     "typedoc": "^0.9.0",

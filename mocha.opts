@@ -1,5 +1,0 @@
---compilers ts-node/register
---require source-map-support/register
---watch-extensions ts
---recursive
-src/**/*.spec.ts
