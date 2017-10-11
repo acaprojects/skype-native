@@ -180,12 +180,15 @@ namespace SkypeClient
         public void EndConversation(Conversation conversation)
         {
             var av = conversation.Modalities[ModalityTypes.AudioVideo];
-            av.BeginDisconnect(ModalityDisconnectReason.None,
-                ar =>
-                {
-                    av.EndDisconnect(ar);
-                },
-                null);
+            if (av.CanInvoke(ModalityAction.Disconnect))
+            {
+                av.BeginDisconnect(ModalityDisconnectReason.None,
+                    ar =>
+                    {
+                        av.EndDisconnect(ar);
+                    },
+                    null);
+            }
         }
 
         public void HangupAll()
