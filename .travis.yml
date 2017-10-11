@@ -27,7 +27,7 @@ before_install:
 - export LINK="gcc-4.8"
 - export LINKXX="g++-4.8"
 
-script: gulp build
+script: npm run build
 
 after_success:
 - npm install -g codeclimate-test-reporter
